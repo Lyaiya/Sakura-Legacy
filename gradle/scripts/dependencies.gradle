@@ -56,7 +56,7 @@ repositories {
 }
 
 dependencies {
-// Include StripLatestForgeRequirements by default for the dev env, saves everyone a hassle
+    // Include StripLatestForgeRequirements by default for the dev env, saves everyone a hassle
     runtimeOnly 'com.cleanroommc:strip-latest-forge-requirements:1.0'
     // Include OSXNarratorBlocker by default for the dev env, for M1+ Macs
     runtimeOnly 'com.cleanroommc:osxnarratorblocker:1.0'
@@ -93,8 +93,10 @@ dependencies {
     //     transitive = false
     // }
 
+    compileOnly 'org.jetbrains:annotations:26.0.2'
+
     // MMLib v2.3.0
-    api rfg.deobf("curse.maven:mm_lib-368098:3254750")
+    implementation rfg.deobf("curse.maven:mm_lib-368098:3254750")
 
     compileOnly "vazkii.patchouli:Patchouli:1.0-23.6"
     compileOnly "blusunrize:ImmersiveEngineering:0.12-92-559"
@@ -114,7 +116,7 @@ dependencies {
     compileOnly rfg.deobf("curse.maven:toughasnails-246391:2710969")
 
     // Hwyla v1.8.26-B41
-    compileOnly rfg.deobf("curse.maven:hwyla-253449:2568751")
+    implementation rfg.deobf("curse.maven:hwyla-253449:2568751")
 
     // Kiwi v0.5.3.32
     compileOnly rfg.deobf("curse.maven:kiwi-303657:2704824")
