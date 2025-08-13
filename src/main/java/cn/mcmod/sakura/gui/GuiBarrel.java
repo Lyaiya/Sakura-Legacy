@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiBarrel extends GuiContainer {
     private static final ResourceLocation mortarGuiTextures = new ResourceLocation("sakura:textures/gui/barrel.png");
 
-    private TileEntityBarrel tilePot;
+    private final TileEntityBarrel tilePot;
 
     public GuiBarrel(InventoryPlayer inventory, TileEntityBarrel tile) {
         super(new ContainerBarrel(inventory, tile));

@@ -16,19 +16,20 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class BlockTaiko extends BlockFacing {
 
-	public BlockTaiko() {
-		super(Material.WOOD, false);
+    public BlockTaiko() {
+        super(Material.WOOD, false);
         this.setSoundType(SoundType.WOOD);
         this.setHardness(1.2F);
         this.setResistance(4.0F);
-	}
-	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if(RecipesUtil.getInstance().containsMatch(false, OreDictionary.getOres("stickWood"), playerIn.getHeldItem(hand))){
-			worldIn.playSound(playerIn, pos, CommonProxy.TAIKO, SoundCategory.BLOCKS, 1.2F, 1.2F);
-			playerIn.swingArm(hand);
-			}
-		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
-	}
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+                                    EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (RecipesUtil.getInstance().containsMatch(false, OreDictionary.getOres("stickWood"), playerIn.getHeldItem(hand))) {
+            worldIn.playSound(playerIn, pos, CommonProxy.TAIKO, SoundCategory.BLOCKS, 1.2F, 1.2F);
+            playerIn.swingArm(hand);
+        }
+        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
 }

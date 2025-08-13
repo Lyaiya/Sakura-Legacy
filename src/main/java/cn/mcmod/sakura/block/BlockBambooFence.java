@@ -16,26 +16,27 @@ import net.minecraft.world.IBlockAccess;
 public class BlockBambooFence extends BlockFence {
 
     public static final PropertyBool UP = PropertyBool.create("up");
-	public BlockBambooFence() {
-		super(Material.WOOD, MapColor.WOOD);
-		this.setCreativeTab(CommonProxy.tab);
-		this.setHardness(1.2F).setResistance(5.0F);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(UP, Boolean.valueOf(false)).withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false)));
-	}
 
-    private boolean canFenceConnectTo(IBlockAccess world, BlockPos pos, EnumFacing facing)
-    {
+    public BlockBambooFence() {
+        super(Material.WOOD, MapColor.WOOD);
+        this.setCreativeTab(CommonProxy.tab);
+        this.setHardness(1.2F).setResistance(5.0F);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(UP, Boolean.valueOf(false)).withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false)));
+    }
+
+    private boolean canFenceConnectTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
         BlockPos other = pos.offset(facing);
         Block block = world.getBlockState(other).getBlock();
         return block.canBeConnectedTo(world, other, facing.getOpposite()) || canConnectTo(world, other, facing.getOpposite());
     }
+
     /**
      * Get the actual Block state of this Block at the given position. This applies properties not visible in the
      * metadata, such as fence connections.
      */
-	@Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos){
-        boolean flag =  canFenceConnectTo(worldIn, pos, EnumFacing.NORTH);
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        boolean flag = canFenceConnectTo(worldIn, pos, EnumFacing.NORTH);
         boolean flag1 = canFenceConnectTo(worldIn, pos, EnumFacing.EAST);
         boolean flag2 = canFenceConnectTo(worldIn, pos, EnumFacing.SOUTH);
         boolean flag3 = canFenceConnectTo(worldIn, pos, EnumFacing.WEST);
@@ -44,8 +45,8 @@ public class BlockBambooFence extends BlockFence {
     }
 
     @Override
-    protected BlockStateContainer createBlockState(){
-        return new BlockStateContainer(this, new IProperty[] {UP, NORTH, EAST, WEST, SOUTH});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, UP, NORTH, EAST, WEST, SOUTH);
     }
 
 }

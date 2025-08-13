@@ -2,7 +2,6 @@ package cn.mcmod.sakura.item.katana;
 
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.item.ItemLoader;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,7 +9,9 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -81,24 +82,24 @@ public class ItemSheath extends Item {
     }
 
     public void sheath_In(EntityPlayer player) {
-		ItemStack item_l = player.getHeldItemMainhand();
-		ItemStack item_r = player.getHeldItemOffhand();
-		if(item_r.getItem()==ItemLoader.KATANA){
-			player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
-			player.setHeldItem(EnumHand.MAIN_HAND, ItemLoader.KATANA_SHEATH.setBlade(item_r));
-			player.setHeldItem(EnumHand.OFF_HAND, ItemStack.EMPTY);
-		}else if(item_r.getItem()==ItemLoader.SAKURAKATANA){
-			player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
-			player.setHeldItem(EnumHand.MAIN_HAND, ItemLoader.SAKURAKATANA_SHEATH.setBlade(item_r));
-			player.setHeldItem(EnumHand.OFF_HAND, ItemStack.EMPTY);
-		}else if(item_l.getItem()==ItemLoader.KATANA){
-			player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
-			player.setHeldItem(EnumHand.OFF_HAND, ItemLoader.KATANA_SHEATH.setBlade(item_l));
-			player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
-		}else if(item_l.getItem()==ItemLoader.SAKURAKATANA){
-			player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
-			player.setHeldItem(EnumHand.OFF_HAND, ItemLoader.SAKURAKATANA_SHEATH.setBlade(item_l));
-			player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
-		}	
-	}
+        ItemStack item_l = player.getHeldItemMainhand();
+        ItemStack item_r = player.getHeldItemOffhand();
+        if (item_r.getItem() == ItemLoader.KATANA) {
+            player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
+            player.setHeldItem(EnumHand.MAIN_HAND, ItemLoader.KATANA_SHEATH.setBlade(item_r));
+            player.setHeldItem(EnumHand.OFF_HAND, ItemStack.EMPTY);
+        } else if (item_r.getItem() == ItemLoader.SAKURAKATANA) {
+            player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
+            player.setHeldItem(EnumHand.MAIN_HAND, ItemLoader.SAKURAKATANA_SHEATH.setBlade(item_r));
+            player.setHeldItem(EnumHand.OFF_HAND, ItemStack.EMPTY);
+        } else if (item_l.getItem() == ItemLoader.KATANA) {
+            player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
+            player.setHeldItem(EnumHand.OFF_HAND, ItemLoader.KATANA_SHEATH.setBlade(item_l));
+            player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+        } else if (item_l.getItem() == ItemLoader.SAKURAKATANA) {
+            player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
+            player.setHeldItem(EnumHand.OFF_HAND, ItemLoader.SAKURAKATANA_SHEATH.setBlade(item_l));
+            player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package cn.mcmod.sakura.tileentity;
 import cn.mcmod.sakura.api.recipes.MortarRecipes;
 import cn.mcmod.sakura.inventory.ContainerStoneMortar;
 import cn.mcmod_mmf.mmlib.util.RecipesUtil;
+import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -17,11 +18,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 
-import java.util.ArrayList;
-
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 
 public class TileEntityStoneMortar extends TileEntity implements ITickable, ISidedInventory {
     private int processTimer = 0;
@@ -30,61 +28,62 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
     public int getProcessTimer() {
         return processTimer;
     }
+
     @Override
     public void update() {
         if (this.getWorld().isRemote) {
             return;
         }
-    	ItemStack input1 = this.inventorySlotItemStack.get(0);
+        ItemStack input1 = this.inventorySlotItemStack.get(0);
         ItemStack input2 = this.inventorySlotItemStack.get(1);
         ItemStack input3 = this.inventorySlotItemStack.get(2);
         ItemStack input4 = this.inventorySlotItemStack.get(3);
         ItemStack output1 = this.inventorySlotItemStack.get(4);
         ItemStack output2 = this.inventorySlotItemStack.get(5);
-  
+
         ArrayList<ItemStack> inventoryList = Lists.newArrayList();
         for (int i = 0; i < 4; i++) {
-          if (!this.inventorySlotItemStack.get(i).isEmpty()) {
-            inventoryList.add(this.inventorySlotItemStack.get(i).copy());
-          }
+            if (!this.inventorySlotItemStack.get(i).isEmpty()) {
+                inventoryList.add(this.inventorySlotItemStack.get(i).copy());
+            }
         }
 
         ItemStack[] result = MortarRecipes.instance().getResult(inventoryList);
-        if (result.length>0) {
-        	if(RecipesUtil.getInstance().canIncrease(result[0], output1)){
-	        	if(result.length>1){
-	        		if(RecipesUtil.getInstance().canIncrease(result[1], output2))
-	        			processTimer += 1;
-	        		else processTimer = 0;
-	       		}else processTimer += 1;	
-        	}else processTimer = 0;
-        }else processTimer = 0;
+        if (result.length > 0) {
+            if (RecipesUtil.getInstance().canIncrease(result[0], output1)) {
+                if (result.length > 1) {
+                    if (RecipesUtil.getInstance().canIncrease(result[1], output2))
+                        processTimer += 1;
+                    else processTimer = 0;
+                } else processTimer += 1;
+            } else processTimer = 0;
+        } else processTimer = 0;
 
         if (processTimer >= maxprocessTimer) {
             processTimer = 0;
-            
+
             if (output1.isEmpty()) {
                 this.inventorySlotItemStack.set(4, result[0].copy());
             } else if (output1.getItem() == result[0].getItem()) {
-            	output1.grow(result[0].getCount());
+                output1.grow(result[0].getCount());
             }
-            if(result.length>1){
-	            if (output2.isEmpty()) {
-	                this.inventorySlotItemStack.set(5, result[1].copy());
-	            } else if (output2.getItem() == result[1].getItem()) {
-	            	output2.grow(result[1].getCount());
-	            }
+            if (result.length > 1) {
+                if (output2.isEmpty()) {
+                    this.inventorySlotItemStack.set(5, result[1].copy());
+                } else if (output2.getItem() == result[1].getItem()) {
+                    output2.grow(result[1].getCount());
+                }
             }
-            
+
             input1.shrink(1);
             input2.shrink(1);
             input3.shrink(1);
             input4.shrink(1);
-            
+
             markDirty();
         }
     }
-    
+
     protected void refresh() {
         if (hasWorld() && !world.isRemote) {
             IBlockState state = world.getBlockState(pos);
@@ -96,9 +95,9 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
     public void markDirty() {
         super.markDirty();
     }
-    
+
     protected NonNullList<ItemStack> inventorySlotItemStack =
-            NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
+            NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
     @Override
     public String getName() {
@@ -167,7 +166,7 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
         if (this.world.getTileEntity(this.pos) != this) {
             return false;
         }
-		return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+        return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
@@ -223,7 +222,7 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         this.inventorySlotItemStack =
-                NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
+                NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(compound, this.inventorySlotItemStack);
 
         this.maxprocessTimer = compound.getInteger("maxProcessTimer");

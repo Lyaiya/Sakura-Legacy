@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 
 public class TileEntityCampfire extends TileEntity implements ITickable {
 
-    private ItemStackHandler inventory = new ItemStackHandler() {
+    private final ItemStackHandler inventory = new ItemStackHandler() {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return FurnaceRecipes.instance().getSmeltingResult(stack).getItem() instanceof ItemFood;
@@ -37,18 +37,20 @@ public class TileEntityCampfire extends TileEntity implements ITickable {
             return 16;
         }
     };
-	protected void refresh() {
-		if (hasWorld() && !world.isRemote) {
-			IBlockState state = world.getBlockState(pos);
-			world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
-		}
-	}
+
+    protected void refresh() {
+        if (hasWorld() && !world.isRemote) {
+            IBlockState state = world.getBlockState(pos);
+            world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
+        }
+    }
+
     private int burnTime;
     /**
      * The number of ticks that a fresh copy of the currently-burning item would keep the furnace burning for
      */
     private int cookTime;
-    
+
     public ItemStackHandler getInventory() {
         return this.inventory;
     }
@@ -70,32 +72,32 @@ public class TileEntityCampfire extends TileEntity implements ITickable {
     }
 
     public ItemStack getItemBurning() {
-		return this.inventory.getStackInSlot(0);
-	}
-    
+        return this.inventory.getStackInSlot(0);
+    }
+
     @Override
     public void update() {
         ItemStack cookstack;
         boolean flag = this.isBurning();
         boolean flag1 = false;
-        
+
         if (this.isBurning()) {
             --this.burnTime;
         }
         if (!world.isRemote) {
-            //check can cook
+            // check can cook
             if (this.isBurning()) {
                 cookstack = getItemBurning();
                 ItemStack itemstack1 = FurnaceRecipes.instance().getSmeltingResult(cookstack);
-                if (!cookstack.isEmpty()&&!(itemstack1.isEmpty())) {
-                	++this.cookTime;
+                if (!cookstack.isEmpty() && !(itemstack1.isEmpty())) {
+                    ++this.cookTime;
                     if (this.cookTime >= 700) {
-                        this.inventory.setStackInSlot(0, new ItemStack(itemstack1.getItem(), cookstack.getCount(),itemstack1.getMetadata()));
+                        this.inventory.setStackInSlot(0, new ItemStack(itemstack1.getItem(), cookstack.getCount(), itemstack1.getMetadata()));
 
                         this.cookTime = 0;
                         flag1 = true;
                     }
-                }else this.cookTime = 0;
+                } else this.cookTime = 0;
             }
 
             if (flag != this.isBurning()) {
@@ -115,62 +117,61 @@ public class TileEntityCampfire extends TileEntity implements ITickable {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) inventory : super.getCapability(capability, facing);
     }
-    
 
-	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
-		return oldState.getBlock() != newState.getBlock();
-	}
 
-	@Nonnull
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
-		NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
-		writePacketNBT(ret);
-		return ret;
-	}
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
+        return oldState.getBlock() != newState.getBlock();
+    }
 
-	@Nonnull
-	@Override
-	public final NBTTagCompound getUpdateTag() {
-		return writeToNBT(new NBTTagCompound());
-	}
+    @Nonnull
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
+        NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
+        writePacketNBT(ret);
+        return ret;
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-		super.readFromNBT(par1nbtTagCompound);
-		readPacketNBT(par1nbtTagCompound);
-	}
+    @Nonnull
+    @Override
+    public final NBTTagCompound getUpdateTag() {
+        return writeToNBT(new NBTTagCompound());
+    }
 
-	public void writePacketNBT(NBTTagCompound cmp) {
-		cmp.setInteger("BurnTime", (short) this.burnTime);
+    @Override
+    public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
+        super.readFromNBT(par1nbtTagCompound);
+        readPacketNBT(par1nbtTagCompound);
+    }
+
+    public void writePacketNBT(NBTTagCompound cmp) {
+        cmp.setInteger("BurnTime", (short) this.burnTime);
         cmp.setInteger("CookTime", (short) this.cookTime);
         cmp.setTag("Inventory", inventory.serializeNBT());
-	}
+    }
 
-	public void readPacketNBT(NBTTagCompound cmp) {
+    public void readPacketNBT(NBTTagCompound cmp) {
         this.burnTime = cmp.getInteger("BurnTime");
         this.cookTime = cmp.getInteger("CookTime");
         inventory.deserializeNBT(cmp.getCompoundTag("Inventory"));
-	}
+    }
 
-	@Override
-	public final SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound tag = new NBTTagCompound();
-		writePacketNBT(tag);
-		return new SPacketUpdateTileEntity(pos, -999, tag);
-	}
+    @Override
+    public final SPacketUpdateTileEntity getUpdatePacket() {
+        NBTTagCompound tag = new NBTTagCompound();
+        writePacketNBT(tag);
+        return new SPacketUpdateTileEntity(pos, -999, tag);
+    }
 
-	
-	
-	@Override
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-		super.onDataPacket(net, packet);
-		readPacketNBT(packet.getNbtCompound());
-	}
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+        super.onDataPacket(net, packet);
+        readPacketNBT(packet.getNbtCompound());
+    }
 }

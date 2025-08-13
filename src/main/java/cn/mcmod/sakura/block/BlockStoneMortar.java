@@ -38,11 +38,11 @@ public class BlockStoneMortar extends BlockContainer implements ITileEntityProvi
         if (world.isRemote) {
             return true;
         }
-		TileEntity tileEntity = world.getTileEntity(pos);
-		if (tileEntity instanceof TileEntityStoneMortar) {
-		    player.openGui(SakuraMain.instance, SakuraGuiHandler.ID_STONEMORTAR, world, pos.getX(), pos.getY(), pos.getZ());
-		}
-		return true;
+        TileEntity tileEntity = world.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityStoneMortar) {
+            player.openGui(SakuraMain.instance, SakuraGuiHandler.ID_STONEMORTAR, world, pos.getX(), pos.getY(), pos.getZ());
+        }
+        return true;
     }
 
     @Nullable
@@ -77,7 +77,7 @@ public class BlockStoneMortar extends BlockContainer implements ITileEntityProvi
         return super.canPlaceBlockAt(worldIn, pos) && this.canPlaceFullBlock(worldIn, pos);
     }
 
-    //Only on top of FullBlock can place
+    // Only on top of FullBlock can place
     private boolean canPlaceFullBlock(World worldIn, BlockPos pos) {
         IBlockState downState = worldIn.getBlockState(pos.down());
         return downState.isTopSolid() && downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID;

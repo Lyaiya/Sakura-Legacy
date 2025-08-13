@@ -9,7 +9,7 @@ import net.minecraft.util.EnumFacing;
 public class BlockAndon extends BlockFacing {
 
     public BlockAndon() {
-        super(Material.WOOD,false);
+        super(Material.WOOD, false);
         this.setSoundType(SoundType.WOOD);
         this.setCreativeTab(CommonProxy.tab);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));

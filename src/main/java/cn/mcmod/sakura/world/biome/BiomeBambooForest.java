@@ -12,8 +12,9 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 import java.util.Random;
 
 public class BiomeBambooForest extends Biome {
-	protected static final WorldGenAbstractTree SAKURA = new WorldGenSakuraTree(false, 5);
-	protected static final WorldGenAbstractTree SAKURA_BIG = new WorldGenBigSakura(false);
+    protected static final WorldGenAbstractTree SAKURA = new WorldGenSakuraTree(false, 5);
+    protected static final WorldGenAbstractTree SAKURA_BIG = new WorldGenBigSakura(false);
+
     public BiomeBambooForest(BiomeProperties bambooForest) {
         super(bambooForest);
         this.decorator.treesPerChunk = 30;
@@ -22,9 +23,9 @@ public class BiomeBambooForest extends Biome {
     }
 
     public WorldGenAbstractTree getRandomTreeFeature(Random rand) {
-    	if (rand.nextInt(160) == 0) {
+        if (rand.nextInt(160) == 0) {
             return SAKURA_BIG;
-        }else if (rand.nextInt(40) == 0) {
+        } else if (rand.nextInt(40) == 0) {
             return SAKURA;
         } else if (rand.nextInt(20) == 0) {
             return BIG_TREE_FEATURE;
@@ -33,8 +34,7 @@ public class BiomeBambooForest extends Biome {
         }
     }
 
-    public WorldGenerator getRandomWorldGenForGrass(Random rand)
-    {
+    public WorldGenerator getRandomWorldGenForGrass(Random rand) {
         return rand.nextInt(4) == 0 ? new WorldGenTallGrass(BlockTallGrass.EnumType.FERN) : new WorldGenTallGrass(BlockTallGrass.EnumType.GRASS);
     }
 }

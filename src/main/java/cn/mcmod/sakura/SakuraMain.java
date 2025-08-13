@@ -1,8 +1,7 @@
 package cn.mcmod.sakura;
 
-import org.apache.logging.log4j.Logger;
-
 import cn.mcmod.sakura.gui.SakuraGuiHandler;
+import cn.mcmod.sakura.sakura.Tags;
 import cn.mcmod.sakura.world.biome.SakuraBiomes;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,18 +18,19 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
-// 
-@Mod(modid = SakuraMain.MODID, name = SakuraMain.NAME, version = SakuraMain.VERSION,dependencies = "required-after:mm_lib@[2.2.0,) ;")
+import org.apache.logging.log4j.Logger;
+
+@Mod(modid = SakuraMain.MODID, name = SakuraMain.NAME, version = SakuraMain.VERSION, dependencies = "required-after:mm_lib@[2.2.0,);")
 public class SakuraMain {
-    public static final String MODID = "sakura";
-    public static final String NAME = "Sakura";
-    public static final String VERSION = "@version@";
+    public static final String MODID = Tags.MOD_ID;
+    public static final String NAME = Tags.MOD_NAME;
+    public static final String VERSION = Tags.VERSION;
 
     @Instance(SakuraMain.MODID)
     public static SakuraMain instance;
 
     public static Logger logger;
-    
+
     @SidedProxy(clientSide = "cn.mcmod.sakura.ClientProxy", serverSide = "cn.mcmod.sakura.CommonProxy")
     public static CommonProxy proxy;
 

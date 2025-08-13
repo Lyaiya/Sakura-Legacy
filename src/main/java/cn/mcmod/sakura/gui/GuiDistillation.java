@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiDistillation extends GuiContainer {
     private static final ResourceLocation mortarGuiTextures = new ResourceLocation("sakura:textures/gui/barrel.png");
 
-    private TileEntityDistillation tilePot;
+    private final TileEntityDistillation tilePot;
 
     public GuiDistillation(InventoryPlayer inventory, TileEntityDistillation tile) {
         super(new ContainerDistillation(inventory, tile));

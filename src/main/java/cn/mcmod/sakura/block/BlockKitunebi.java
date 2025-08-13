@@ -1,7 +1,5 @@
 package cn.mcmod.sakura.block;
 
-import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -23,33 +21,36 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Random;
+
 public class BlockKitunebi extends Block {
-	public static final PropertyBool ISVISIBLE = PropertyBool.create("isvisible");
-	
-	public BlockKitunebi() {
-		super(Material.WOOD);
+    public static final PropertyBool ISVISIBLE = PropertyBool.create("isvisible");
+
+    public BlockKitunebi() {
+        super(Material.WOOD);
         setTickRandomly(true);
         setHardness(0.0F);
         setLightLevel(1F);
         setDefaultState(this.blockState.getBaseState().withProperty(ISVISIBLE, false));
-	}
+    }
 
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
-	}
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.MODEL;
+    }
+
     @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
         return BlockFaceShape.UNDEFINED;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state)
-    {
+    public boolean isFullCube(IBlockState state) {
         return false;
     }
 
@@ -60,55 +61,54 @@ public class BlockKitunebi extends Block {
 
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-    	return Block.NULL_AABB;
+        return Block.NULL_AABB;
     }
-    
+
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    	return state.getValue(ISVISIBLE)?Block.FULL_BLOCK_AABB:new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+        return state.getValue(ISVISIBLE) ? Block.FULL_BLOCK_AABB : new AxisAlignedBB(0, 0, 0, 0, 0, 0);
     }
 
     @Override
     protected BlockStateContainer createBlockState() {
-    	return new BlockStateContainer(this,  new IProperty[] {ISVISIBLE});
+        return new BlockStateContainer(this, ISVISIBLE);
     }
-    
+
     @Override
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-    	setVisibleFlg(worldIn, pos, stateIn);
+        setVisibleFlg(worldIn, pos, stateIn);
     }
-    
-    private void setVisibleFlg(World world, BlockPos pos,IBlockState state) {
+
+    private void setVisibleFlg(World world, BlockPos pos, IBlockState state) {
         world.setBlockState(pos, state.withProperty(ISVISIBLE, false));
-    	EntityPlayer player = world.getClosestPlayer(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, 5.0D, false);
-    	if(player ==null){
-    		world.setBlockState(pos, state.withProperty(ISVISIBLE, false));
-    		return;
-    	}
+        EntityPlayer player = world.getClosestPlayer(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, 5.0D, false);
+        if (player == null) {
+            world.setBlockState(pos, state.withProperty(ISVISIBLE, false));
+            return;
+        }
         ItemStack is = player.getHeldItemMainhand();
-        ItemStack offis =player.getHeldItemOffhand();
-        if (!is.isEmpty()||!offis.isEmpty()) {
-        	Item mainItem = is.getItem(),offItem=offis.getItem();
-            if (mainItem instanceof ItemBlock||offItem instanceof ItemBlock) {
-                if (Block.getBlockFromItem(mainItem) == this||Block.getBlockFromItem(offItem) == this) {
+        ItemStack offis = player.getHeldItemOffhand();
+        if (!is.isEmpty() || !offis.isEmpty()) {
+            Item mainItem = is.getItem(), offItem = offis.getItem();
+            if (mainItem instanceof ItemBlock || offItem instanceof ItemBlock) {
+                if (Block.getBlockFromItem(mainItem) == this || Block.getBlockFromItem(offItem) == this) {
                     world.setBlockState(pos, state.withProperty(ISVISIBLE, true));
                 }
             }
         }
     }
+
     /**
      * Convert the given metadata into a BlockState for this Block
      */
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return this.getDefaultState().withProperty(ISVISIBLE, meta>0?true:false);
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState().withProperty(ISVISIBLE, meta > 0);
     }
 
     /**
      * Convert the BlockState into the correct metadata value
      */
-    public int getMetaFromState(IBlockState state)
-    {
-        return state.getValue(ISVISIBLE)?1:0;
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(ISVISIBLE) ? 1 : 0;
     }
 }

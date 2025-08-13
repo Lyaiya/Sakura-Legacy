@@ -37,7 +37,7 @@ public class BlockMapleLeaveRed extends BlockLeaves {
 
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-    	Blocks.LEAVES.randomDisplayTick(stateIn, worldIn, pos, rand);
+        Blocks.LEAVES.randomDisplayTick(stateIn, worldIn, pos, rand);
         if (rand.nextInt(40) == 0) {
             int j = rand.nextInt(2) * 2 - 1;
             int k = rand.nextInt(2) * 2 - 1;
@@ -77,7 +77,7 @@ public class BlockMapleLeaveRed extends BlockLeaves {
 
         return i;
     }
-    
+
     @Override
     public void getSubBlocks(CreativeTabs creativeTab, NonNullList<ItemStack> list) {
         list.add(new ItemStack(this, 1, 0));
@@ -89,8 +89,7 @@ public class BlockMapleLeaveRed extends BlockLeaves {
     }
 
     @Override
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-    {
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
         return new ItemStack(this);
     }
 
@@ -125,20 +124,21 @@ public class BlockMapleLeaveRed extends BlockLeaves {
     public List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
         return NonNullList.withSize(1, new ItemStack(this, 1));
     }
+
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getRenderLayer(){
+    public BlockRenderLayer getRenderLayer() {
         return Blocks.LEAVES.getRenderLayer();
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state){
+    public boolean isOpaqueCube(IBlockState state) {
         return Blocks.LEAVES.isOpaqueCube(state);
     }
 
     @SideOnly(Side.CLIENT)
     @Override
-    public boolean shouldSideBeRendered(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side){
+    public boolean shouldSideBeRendered(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
         return Blocks.LEAVES.shouldSideBeRendered(state, world, pos, side);
     }
 }

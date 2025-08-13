@@ -29,10 +29,7 @@ public class TileEntityShoji extends TileEntity implements ITickable {
 
     @Override
     public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-        if (oldState.getBlock() == newSate.getBlock()) {
-            return false;
-        }
-        return true;
+        return oldState.getBlock() != newSate.getBlock();
     }
 
     @Override
@@ -99,7 +96,7 @@ public class TileEntityShoji extends TileEntity implements ITickable {
 
     public void setFacing(EnumFacing facing) {
         this.facing = facing;
-        markDirty(); 
+        markDirty();
         if (world != null) {
             IBlockState state = world.getBlockState(getPos());
             world.notifyBlockUpdate(getPos(), state, state, 3);

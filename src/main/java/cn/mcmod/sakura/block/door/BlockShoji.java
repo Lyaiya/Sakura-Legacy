@@ -1,5 +1,8 @@
 package cn.mcmod.sakura.block.door;
 
+import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.tileentity.TileEntityShoji;
+import cn.mcmod_mmf.mmlib.util.RecipesUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -14,11 +17,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -28,10 +27,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-
-import cn.mcmod.sakura.block.BlockLoader;
-import cn.mcmod.sakura.tileentity.TileEntityShoji;
-import cn.mcmod_mmf.mmlib.util.RecipesUtil;
 
 public class BlockShoji extends Block implements ITileEntityProvider {
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
@@ -75,9 +70,9 @@ public class BlockShoji extends Block implements ITileEntityProvider {
         ItemStack stack = new ItemStack(this);
         TileEntityShoji te = (TileEntityShoji) world.getTileEntity(pos);
         if (te != null) {
-        	RecipesUtil.getInstance().getItemTagCompound(stack).setInteger("type", te.getType());
+            RecipesUtil.getInstance().getItemTagCompound(stack).setInteger("type", te.getType());
         } else {
-        	RecipesUtil.getInstance().getItemTagCompound(stack).setInteger("type", 0);
+            RecipesUtil.getInstance().getItemTagCompound(stack).setInteger("type", 0);
         }
         return stack;
     }
@@ -132,13 +127,13 @@ public class BlockShoji extends Block implements ITileEntityProvider {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-	    ItemStack stack = getDefaultItemStack();
-	    TileEntityShoji te = (TileEntityShoji) worldIn.getTileEntity(pos);
-	    if (te != null) {
-	    	RecipesUtil.getInstance().getItemTagCompound(stack).setInteger("type", te.getType());
-	    } else {
-	    	RecipesUtil.getInstance().getItemTagCompound(stack).setInteger("type", 0);
-	    }
+        ItemStack stack = getDefaultItemStack();
+        TileEntityShoji te = (TileEntityShoji) worldIn.getTileEntity(pos);
+        if (te != null) {
+            RecipesUtil.getInstance().getItemTagCompound(stack).setInteger("type", te.getType());
+        } else {
+            RecipesUtil.getInstance().getItemTagCompound(stack).setInteger("type", 0);
+        }
         worldIn.spawnEntity(new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack));
         super.breakBlock(worldIn, pos, state);
     }
@@ -194,17 +189,17 @@ public class BlockShoji extends Block implements ITileEntityProvider {
     public boolean isFullCube(IBlockState state) {
         return false;
     }
-    
+
     @SideOnly(Side.CLIENT)
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.MODEL;
     }
+
     @SideOnly(Side.CLIENT)
     @Override
-    public BlockRenderLayer getRenderLayer()
-    {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
-    
+
 }

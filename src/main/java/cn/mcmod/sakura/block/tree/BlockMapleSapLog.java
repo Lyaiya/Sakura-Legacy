@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+
 import java.util.Random;
 
 public class BlockMapleSapLog extends Block {
@@ -25,8 +26,7 @@ public class BlockMapleSapLog extends Block {
         this.setDefaultState(this.getBlockState().getBaseState().withProperty(SAP_AGE, 0));
     }
 
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return Item.getItemFromBlock(BlockLoader.MAPLE_LOG);
     }
 

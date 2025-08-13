@@ -23,79 +23,77 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class BlockNoodle extends Block {
 
-	public static final PropertyInteger CUTTING = PropertyInteger.create("cut", 0, 7);
-	public static final AxisAlignedBB Noodle_AABB = new AxisAlignedBB(0.0625F, 0, 0.0625F, 0.9375F, 0.25F, 0.9375F);
-	public BlockNoodle() {
-		super(Material.CAKE);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(this.getAgeProperty(), Integer.valueOf(0)));
-	}
-	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-		return Noodle_AABB;
-	}
-	@Override
-	public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
-		return Noodle_AABB;
-	}
-	
-    protected PropertyInteger getAgeProperty()
-    {
+    public static final PropertyInteger CUTTING = PropertyInteger.create("cut", 0, 7);
+    public static final AxisAlignedBB Noodle_AABB = new AxisAlignedBB(0.0625F, 0, 0.0625F, 0.9375F, 0.25F, 0.9375F);
+
+    public BlockNoodle() {
+        super(Material.CAKE);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(this.getAgeProperty(), Integer.valueOf(0)));
+    }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+        return Noodle_AABB;
+    }
+
+    @Override
+    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
+        return Noodle_AABB;
+    }
+
+    protected PropertyInteger getAgeProperty() {
         return CUTTING;
     }
-	
+
     @Override
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-    {
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
         IBlockState downState = worldIn.getBlockState(pos.down());
         return (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID) && super.canPlaceBlockAt(worldIn, pos);
     }
 
-    public boolean canBlockStay(World worldIn, BlockPos pos)
-    {
+    public boolean canBlockStay(World worldIn, BlockPos pos) {
         IBlockState downState = worldIn.getBlockState(pos.down());
         return downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID;
     }
-    
-    public boolean isReady(IBlockState state)
-    {
+
+    public boolean isReady(IBlockState state) {
         return state.getValue(this.getAgeProperty()).intValue() >= 7;
     }
-    
+
     public abstract ItemStack getNoodle();
-    
+
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-    		EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-    	if (worldIn.isRemote) {
+                                    EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (worldIn.isRemote) {
             return true;
         }
-		int i = this.getCutting(state);
-		ItemStack stack = playerIn.getHeldItem(hand);
-		if(!isReady(state)){
-		    if(stack.getItem()==ItemLoader.KNIFE_NOODLE||stack.getItem()==ItemLoader.SAKURA_KNIFE_NOODLE){
-		    	if(!playerIn.isCreative()) 
-		    		if (worldIn.rand.nextInt(99) == 0)
-		    			stack.damageItem(1, playerIn);
-		    	 if (worldIn.rand.nextInt(9) == 0) {
-		    		 worldIn.setBlockState(pos, this.withCutting(i + 1), 2);
-		    		 return true;
-		    	 }
-		    }
-		}else{
-			worldIn.setBlockToAir(pos);
-			spawnAsEntity(worldIn, pos, getNoodle());
-		}
-		return true;
+        int i = this.getCutting(state);
+        ItemStack stack = playerIn.getHeldItem(hand);
+        if (!isReady(state)) {
+            if (stack.getItem() == ItemLoader.KNIFE_NOODLE || stack.getItem() == ItemLoader.SAKURA_KNIFE_NOODLE) {
+                if (!playerIn.isCreative())
+                    if (worldIn.rand.nextInt(99) == 0)
+                        stack.damageItem(1, playerIn);
+                if (worldIn.rand.nextInt(9) == 0) {
+                    worldIn.setBlockState(pos, this.withCutting(i + 1), 2);
+                    return true;
+                }
+            }
+        } else {
+            worldIn.setBlockToAir(pos);
+            spawnAsEntity(worldIn, pos, getNoodle());
+        }
+        return true;
     }
-    
+
     /**
      * Spawns the given ItemStack as an EntityItem into the World at the given position
      */
-    public static void spawnAsEntity(World worldIn, BlockPos pos, ItemStack stack)
-    {
-        if (!worldIn.isRemote && !stack.isEmpty() && worldIn.getGameRules().getBoolean("doTileDrops")&& !worldIn.restoringBlockSnapshots) // do not drop items while restoring blockstates, prevents item dupe
+    public static void spawnAsEntity(World worldIn, BlockPos pos, ItemStack stack) {
+        if (!worldIn.isRemote && !stack.isEmpty() && worldIn.getGameRules().getBoolean("doTileDrops") && !worldIn.restoringBlockSnapshots) // do not drop items while restoring blockstates, prevents item dupe
         {
-            if (captureDrops.get()){
+            if (captureDrops.get()) {
                 capturedDrops.get().add(stack);
                 return;
             }
@@ -108,38 +106,34 @@ public abstract class BlockNoodle extends Block {
         }
     }
 
-    
-    protected int getCutting(IBlockState state)
-    {
+
+    protected int getCutting(IBlockState state) {
         return state.getValue(this.getAgeProperty()).intValue();
     }
 
-    public IBlockState withCutting(int age)
-    {
+    public IBlockState withCutting(int age) {
         return this.getDefaultState().withProperty(this.getAgeProperty(), Integer.valueOf(age));
     }
-	
+
     /**
      * Convert the given metadata into a BlockState for this Block
      */
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         return this.withCutting(meta);
     }
 
     /**
      * Convert the BlockState into the correct metadata value
      */
-    public int getMetaFromState(IBlockState state)
-    {
+    public int getMetaFromState(IBlockState state) {
         return this.getCutting(state);
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {CUTTING});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, CUTTING);
     }
-	@Override
+
+    @Override
     public boolean isFullCube(IBlockState state) {
         return false;
     }

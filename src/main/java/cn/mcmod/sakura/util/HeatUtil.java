@@ -13,7 +13,7 @@ public class HeatUtil {
     public static int getHeatStrength(World par1World, BlockPos pos) {
         for (int i = 1; i < 5; i++) {
             Block block = par1World.getBlockState(pos.down(i)).getBlock();
-            if (block instanceof BlockCampfire||block instanceof BlockMagma||block instanceof BlockFire || block == Blocks.LAVA || block == Blocks.FLOWING_LAVA) {
+            if (block instanceof BlockCampfire || block instanceof BlockMagma || block instanceof BlockFire || block == Blocks.LAVA || block == Blocks.FLOWING_LAVA) {
                 return i <= 3 ? 2 : 1;
             }
         }

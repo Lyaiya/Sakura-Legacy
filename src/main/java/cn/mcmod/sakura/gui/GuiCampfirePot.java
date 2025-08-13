@@ -17,7 +17,7 @@ public class GuiCampfirePot extends GuiContainer {
 
     private static final ResourceLocation mortarGuiTextures = new ResourceLocation("sakura:textures/gui/pot.png");
 
-    private TileEntityCampfirePot tilePot;
+    private final TileEntityCampfirePot tilePot;
     private final IInventory playerInventory;
 
     public GuiCampfirePot(InventoryPlayer inventory, TileEntityCampfirePot tile) {
@@ -56,12 +56,12 @@ public class GuiCampfirePot extends GuiContainer {
 
         int l2 = this.getCookProgressScaled(24);
         this.drawTexturedModalRect(k + 96, l + 37, 176, 14, l2 + 1, 16);
-        
+
         if (this.tilePot.getTank().getFluid() != null) {
             FluidTank fluidTank = this.tilePot.getTank();
             int heightInd = (int) (72 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
             if (heightInd > 0) {
-                ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167- heightInd, l + 11 , heightInd, 16f);
+                ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167 - heightInd, l + 11, heightInd, 16f);
             }
 
         }

@@ -23,7 +23,7 @@ public class ItemBuggysMeat extends ItemFood {
             tooltip.add("But Syameimaru doesn't OmO");
         }
     }
-    
+
     public int getMaxItemUseDuration(ItemStack stack) {
         return 38;
     }

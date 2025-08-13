@@ -4,7 +4,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 
 public class ShojiModel extends ModelBase {
-    private ModelRenderer main;
+    private final ModelRenderer main;
 
     public ShojiModel() {
         textureWidth = 64;

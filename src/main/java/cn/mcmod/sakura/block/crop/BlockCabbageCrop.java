@@ -9,27 +9,29 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 public class BlockCabbageCrop extends BlockCrops {
-    private static final AxisAlignedBB[] CABBAGE_AABB = new AxisAlignedBB[] {
-    		new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D),
-    		new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D),
-    		new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.09375D, 1.0D),
-    		new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1875D, 1.0D),
-    		new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.28125D, 1.0D),
-    		new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D),
-    		new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.46875D, 1.0D),
-    		new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.46875D, 1.0D)
-    		};
-	@Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-    {
+    private static final AxisAlignedBB[] CABBAGE_AABB = new AxisAlignedBB[]{
+            new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D),
+            new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D),
+            new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.09375D, 1.0D),
+            new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1875D, 1.0D),
+            new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.28125D, 1.0D),
+            new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D),
+            new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.46875D, 1.0D),
+            new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.46875D, 1.0D)
+    };
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         return CABBAGE_AABB[state.getValue(this.getAgeProperty()).intValue()];
     }
-	@Override
-	protected Item getCrop() {
-		return ItemLoader.CABBAGE;
-	}
-	@Override
-	protected Item getSeed() {
-		return ItemLoader.CABBAGE_SEEDS;
-	}
+
+    @Override
+    protected Item getCrop() {
+        return ItemLoader.CABBAGE;
+    }
+
+    @Override
+    protected Item getSeed() {
+        return ItemLoader.CABBAGE_SEEDS;
+    }
 }

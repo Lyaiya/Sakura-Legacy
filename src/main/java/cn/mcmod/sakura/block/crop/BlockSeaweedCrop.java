@@ -47,7 +47,7 @@ public class BlockSeaweedCrop extends BlockCrops {
             }
             return ret;
         }
-		return 1;
+        return 1;
     }
 
     @Override
@@ -140,7 +140,7 @@ public class BlockSeaweedCrop extends BlockCrops {
      */
     @Override
     protected Item getCrop() {
-    	 return ItemLoader.SEAWEED_RAW;
+        return ItemLoader.SEAWEED_RAW;
     }
 
 }

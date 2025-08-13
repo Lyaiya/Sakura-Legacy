@@ -199,7 +199,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             Minecraft.getMinecraft().getRenderItem().renderItem(itemstack5, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
-        
+
         ItemStack itemstack6 = te.getStackInSlot(5);
         if (itemstack6 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();

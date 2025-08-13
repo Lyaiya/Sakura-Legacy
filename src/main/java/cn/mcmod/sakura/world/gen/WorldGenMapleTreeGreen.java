@@ -28,10 +28,10 @@ public class WorldGenMapleTreeGreen extends WorldGenAbstractTree {
     private final IBlockState metaFallenLeaves;
 
     public WorldGenMapleTreeGreen(boolean p_i2027_1_, boolean sap) {
-        this(p_i2027_1_, 4, DEFAULT_TRUNK, DEFAULT_LEAF,DEFAULT_FALLEN_LEAF, sap);
+        this(p_i2027_1_, 4, DEFAULT_TRUNK, DEFAULT_LEAF, DEFAULT_FALLEN_LEAF, sap);
     }
 
-    public WorldGenMapleTreeGreen(boolean notify, int minTreeHeightIn, IBlockState woodMeta, IBlockState p_i46446_4_,IBlockState fallenMeta, boolean sap) {
+    public WorldGenMapleTreeGreen(boolean notify, int minTreeHeightIn, IBlockState woodMeta, IBlockState p_i46446_4_, IBlockState fallenMeta, boolean sap) {
         super(notify);
         this.minTreeHeight = minTreeHeightIn;
         this.metaWood = woodMeta;
@@ -74,107 +74,102 @@ public class WorldGenMapleTreeGreen extends WorldGenAbstractTree {
             if (!flag) {
                 return false;
             }
-			IBlockState state = worldIn.getBlockState(position.down());
+            IBlockState state = worldIn.getBlockState(position.down());
 
-			if (state.getBlock().canSustainPlant(state, worldIn, position.down(), net.minecraft.util.EnumFacing.UP, (net.minecraft.block.BlockSapling) Blocks.SAPLING) && position.getY() < worldIn.getHeight() - i - 1) {
-			    state.getBlock().onPlantGrow(state, worldIn, position.down(), position);
+            if (state.getBlock().canSustainPlant(state, worldIn, position.down(), net.minecraft.util.EnumFacing.UP, (net.minecraft.block.BlockSapling) Blocks.SAPLING) && position.getY() < worldIn.getHeight() - i - 1) {
+                state.getBlock().onPlantGrow(state, worldIn, position.down(), position);
 
-			    for (int i3 = position.getY() - 3 + i; i3 <= position.getY() + i; ++i3) {
-			        int i4 = i3 - (position.getY() + i);
-			        int j1 = 1 - i4 / 2;
+                for (int i3 = position.getY() - 3 + i; i3 <= position.getY() + i; ++i3) {
+                    int i4 = i3 - (position.getY() + i);
+                    int j1 = 1 - i4 / 2;
 
-			        for (int k1 = position.getX() - j1; k1 <= position.getX() + j1; ++k1) {
-			            int l1 = k1 - position.getX();
+                    for (int k1 = position.getX() - j1; k1 <= position.getX() + j1; ++k1) {
+                        int l1 = k1 - position.getX();
 
-			            for (int i2 = position.getZ() - j1; i2 <= position.getZ() + j1; ++i2) {
-			                int j2 = i2 - position.getZ();
+                        for (int i2 = position.getZ() - j1; i2 <= position.getZ() + j1; ++i2) {
+                            int j2 = i2 - position.getZ();
 
-			                if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || rand.nextInt(2) != 0 && i4 != 0) {
-			                    BlockPos blockpos = new BlockPos(k1, i3, i2);
-			                    state = worldIn.getBlockState(blockpos);
+                            if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || rand.nextInt(2) != 0 && i4 != 0) {
+                                BlockPos blockpos = new BlockPos(k1, i3, i2);
+                                state = worldIn.getBlockState(blockpos);
 
-			                    if (state.getBlock().isAir(state, worldIn, blockpos) || state.getBlock().isLeaves(state, worldIn, blockpos) || state.getMaterial() == Material.VINE) {
-			                        this.setBlockAndNotifyAdequately(worldIn, blockpos, this.metaLeaves);
-			                      BlockPos fruitBlockPos = new BlockPos(k1, i3 - 1, i2);
-			                      BlockPos blockBelowFruitPos = new BlockPos(k1, i3 - 2, i2);
-			                      if (worldIn.isAirBlock(fruitBlockPos)) 
-			                          if (worldIn.isAirBlock(blockBelowFruitPos) && i3 > 2) 
-			                              if (rand.nextInt(4) == 0) 
-			                                  this.setBlockAndNotifyAdequately(worldIn,fruitBlockPos, BlockLoader.CHESTNUTBURR.getDefaultState());
-			                    }
-			                }
-			            }
-			        }
-			    }
+                                if (state.getBlock().isAir(state, worldIn, blockpos) || state.getBlock().isLeaves(state, worldIn, blockpos) || state.getMaterial() == Material.VINE) {
+                                    this.setBlockAndNotifyAdequately(worldIn, blockpos, this.metaLeaves);
+                                    BlockPos fruitBlockPos = new BlockPos(k1, i3 - 1, i2);
+                                    BlockPos blockBelowFruitPos = new BlockPos(k1, i3 - 2, i2);
+                                    if (worldIn.isAirBlock(fruitBlockPos))
+                                        if (worldIn.isAirBlock(blockBelowFruitPos) && i3 > 2)
+                                            if (rand.nextInt(4) == 0)
+                                                this.setBlockAndNotifyAdequately(worldIn, fruitBlockPos, BlockLoader.CHESTNUTBURR.getDefaultState());
+                                }
+                            }
+                        }
+                    }
+                }
 
-			    for (int j3 = 0; j3 < i; ++j3) {
-			        BlockPos upN = position.up(j3);
-			        state = worldIn.getBlockState(upN);
+                for (int j3 = 0; j3 < i; ++j3) {
+                    BlockPos upN = position.up(j3);
+                    state = worldIn.getBlockState(upN);
 
-			        if (state.getBlock().isAir(state, worldIn, upN) || this.isBurr(state, worldIn, upN) || state.getBlock().isLeaves(state, worldIn, upN) || state.getMaterial() == Material.VINE) {
-			            this.setBlockAndNotifyAdequately(worldIn, position.up(j3), this.metaWood);
+                    if (state.getBlock().isAir(state, worldIn, upN) || this.isBurr(state, worldIn, upN) || state.getBlock().isLeaves(state, worldIn, upN) || state.getMaterial() == Material.VINE) {
+                        this.setBlockAndNotifyAdequately(worldIn, position.up(j3), this.metaWood);
 
-			            if (this.generateSap && j3 == 1) {
-			                if (worldIn.getBlockState(position.add(0, j3, 0))==this.metaWood) {
-			                    this.addSapLog(worldIn, position.add(0, j3, 0));
-			                }
+                        if (this.generateSap && j3 == 1) {
+                            if (worldIn.getBlockState(position.add(0, j3, 0)) == this.metaWood) {
+                                this.addSapLog(worldIn, position.add(0, j3, 0));
+                            }
 
-			            }
-			        }
-			    }
-			    fallenLeaves(worldIn, position,4,2,4, this.metaFallenLeaves);
-			    
-			    return true;
-			}
-			return false;
+                        }
+                    }
+                }
+                fallenLeaves(worldIn, position, 4, 2, 4, this.metaFallenLeaves);
+
+                return true;
+            }
+            return false;
         }
-		return false;
+        return false;
     }
 
     /**
      * Fill the given area with the selected blocks
      */
-    private void fallenLeaves(World worldIn,BlockPos pos, int xADD, int yADD, int zADD, IBlockState insideBlockState){
-    	int xx = pos.getX();
+    private void fallenLeaves(World worldIn, BlockPos pos, int xADD, int yADD, int zADD, IBlockState insideBlockState) {
+        int xx = pos.getX();
         int yy = pos.getY();
         int zz = pos.getZ();
-        
+
         boolean setFlg = false;
         int YEND = 4;
         for (int xx1 = xx - xADD; xx1 <= xx + xADD; xx1++) {
-          for (int zz1 = zz - zADD; zz1 <= zz + zADD; zz1++) {
-            if (((xx1 != xx - xADD) || (zz1 != zz - zADD)) && ((xx1 != xx + xADD) || (zz1 != zz - zADD)) && ((xx1 != xx - xADD) || (zz1 != zz + zADD)) && ((xx1 != xx + xADD) || (zz1 != zz + zADD)) && (((xx1 >= xx - xADD + 1) && (xx1 <= xx + xADD - 1) && (zz1 >= zz - zADD + 1) && (zz1 <= zz + zADD - 1)) || (worldIn.rand.nextInt(2) != 0)))
-            {
-              setFlg = false;
-              int yy1 = yy + yADD;
-              Block cBl = worldIn.getBlockState(new BlockPos(xx1, yy + yADD, zz1)).getBlock();
-              
-              if ((cBl == Blocks.AIR) || (cBl instanceof BlockLeaves) || (cBl == BlockLoader.CHESTNUTBURR)) {
-                for (yy1 = yy + yADD; yy1 >= yy - YEND; yy1--)
-                {
-                  boolean cAir = worldIn.isAirBlock(new BlockPos(xx1, yy1, zz1));
-                  cBl = worldIn.getBlockState(new BlockPos(xx1, yy1 - 1, zz1)).getBlock();
-                  if ((cBl == Blocks.AIR) || ((cBl != Blocks.GRASS) && !(cBl instanceof BlockLeaves) && (!worldIn.getBlockState(new BlockPos(xx1, yy1 - 1, zz1)).isOpaqueCube())))
-                  {
-                    if (cBl != Blocks.AIR) {
-                      break;
+            for (int zz1 = zz - zADD; zz1 <= zz + zADD; zz1++) {
+                if (((xx1 != xx - xADD) || (zz1 != zz - zADD)) && ((xx1 != xx + xADD) || (zz1 != zz - zADD)) && ((xx1 != xx - xADD) || (zz1 != zz + zADD)) && ((xx1 != xx + xADD) || (zz1 != zz + zADD)) && (((xx1 >= xx - xADD + 1) && (xx1 <= xx + xADD - 1) && (zz1 >= zz - zADD + 1) && (zz1 <= zz + zADD - 1)) || (worldIn.rand.nextInt(2) != 0))) {
+                    setFlg = false;
+                    int yy1 = yy + yADD;
+                    Block cBl = worldIn.getBlockState(new BlockPos(xx1, yy + yADD, zz1)).getBlock();
+
+                    if ((cBl == Blocks.AIR) || (cBl instanceof BlockLeaves) || (cBl == BlockLoader.CHESTNUTBURR)) {
+                        for (yy1 = yy + yADD; yy1 >= yy - YEND; yy1--) {
+                            boolean cAir = worldIn.isAirBlock(new BlockPos(xx1, yy1, zz1));
+                            cBl = worldIn.getBlockState(new BlockPos(xx1, yy1 - 1, zz1)).getBlock();
+                            if ((cBl == Blocks.AIR) || ((cBl != Blocks.GRASS) && !(cBl instanceof BlockLeaves) && (!worldIn.getBlockState(new BlockPos(xx1, yy1 - 1, zz1)).isOpaqueCube()))) {
+                                if (cBl != Blocks.AIR) {
+                                    break;
+                                }
+                            } else if (cAir) {
+                                setFlg = true;
+                                break;
+                            }
+                        }
                     }
-                  }
-                  else if (cAir)
-                  {
-                    setFlg = true;
-                    break;
-                  }
+                    if (setFlg) {
+                        setBlockAndNotifyAdequately(worldIn, new BlockPos(xx1, yy1, zz1), insideBlockState);
+                    }
                 }
-              }
-              if (setFlg) {
-                setBlockAndNotifyAdequately(worldIn, new BlockPos(xx1, yy1, zz1), insideBlockState);
-              }
             }
-          }
         }
     }
-    
+
     public boolean isBurr(IBlockState state, IBlockAccess world, BlockPos pos) {
         return state.getBlock() == BlockLoader.CHESTNUTBURR;
     }

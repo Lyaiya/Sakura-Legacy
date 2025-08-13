@@ -62,7 +62,7 @@ public class ItemKatana extends Item {
         int k = EnchantmentHelper.getEnchantmentLevel(Enchantments.SWEEPING, stack);
 
         if (k > 0) {
-            //big sweep!!!
+            // big sweep!!!
             entityLiving.swingArm(entityLiving.getActiveHand());
 
             float f = (float) entityLiving.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
@@ -76,7 +76,7 @@ public class ItemKatana extends Item {
                 if (entitylivingbase != entityLiving && !entityLiving.isOnSameTeam(entitylivingbase)) {
                     if (entitylivingbase instanceof EntityLivingBase) {
                         if (entitylivingbase instanceof EntityPlayer && ((EntityPlayer) entitylivingbase).isActiveItemStackBlocking()) {
-                            //disable shield
+                            // disable shield
                             ((EntityPlayer) entitylivingbase).disableShield(false);
                         }
                         ((EntityLivingBase) entitylivingbase).knockBack(entityLiving, 0.4F + 0.4F * EnchantmentHelper.getSweepingDamageRatio(entityLiving), MathHelper.sin(entityLiving.rotationYaw * 0.017453292F), (-MathHelper.cos(entityLiving.rotationYaw * 0.017453292F)));
@@ -121,25 +121,25 @@ public class ItemKatana extends Item {
     public int getMaxItemUseDuration(ItemStack stack) {
         return 72000;
     }
-    
+
     @Override
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-    	super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
-    	if(worldIn.isRemote) return;
-    	if(entityIn instanceof EntityPlayer){
-    		EntityPlayer player = (EntityPlayer) entityIn;
-    		ItemStack mainhand =player.getHeldItem(EnumHand.MAIN_HAND);
-    		ItemStack offhand =player.getHeldItem(EnumHand.OFF_HAND);
-    		boolean flag1 =!(mainhand.isEmpty())&&!(offhand.isEmpty()),
-    				flag2 = mainhand.getItem() instanceof ItemKatana && offhand.getItem() instanceof ItemKatana;
-    		if(flag1&&flag2) {
+        super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
+        if (worldIn.isRemote) return;
+        if (entityIn instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) entityIn;
+            ItemStack mainhand = player.getHeldItem(EnumHand.MAIN_HAND);
+            ItemStack offhand = player.getHeldItem(EnumHand.OFF_HAND);
+            boolean flag1 = !(mainhand.isEmpty()) && !(offhand.isEmpty()),
+                    flag2 = mainhand.getItem() instanceof ItemKatana && offhand.getItem() instanceof ItemKatana;
+            if (flag1 && flag2) {
                 player.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
                 if (!player.inventory.addItemStackToInventory(offhand)) {
-                	player.dropItem(offhand, false);
+                    player.dropItem(offhand, false);
                 }
                 player.sendStatusMessage(new TextComponentTranslation("sakura.katana.wrong_duel", new Object()), false);
-    		}
-    	}
+            }
+        }
     }
 
     /**
@@ -155,8 +155,8 @@ public class ItemKatana extends Item {
         if (block == Blocks.WEB) {
             return 15.0F;
         }
-		Material material = state.getMaterial();
-		return material != Material.PLANTS && material != Material.VINE && material != Material.CORAL && material != Material.LEAVES && material != Material.GOURD ? 1.0F : 1.5F;
+        Material material = state.getMaterial();
+        return material != Material.PLANTS && material != Material.VINE && material != Material.CORAL && material != Material.LEAVES && material != Material.GOURD ? 1.0F : 1.5F;
     }
 
     /**

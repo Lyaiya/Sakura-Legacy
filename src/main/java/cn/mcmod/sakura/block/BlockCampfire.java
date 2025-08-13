@@ -44,7 +44,7 @@ public class BlockCampfire extends BlockContainer implements ITileEntityProvider
 
         if (isBurning) {
             this.setLightLevel(0.85F);
-        }else {
+        } else {
             this.setCreativeTab(CommonProxy.tab);
         }
     }
@@ -80,14 +80,12 @@ public class BlockCampfire extends BlockContainer implements ITileEntityProvider
     }
 
     @Override
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-    {
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
         IBlockState downState = worldIn.getBlockState(pos.down());
         return (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID) && super.canPlaceBlockAt(worldIn, pos);
     }
 
-    public boolean canBlockStay(World worldIn, BlockPos pos)
-    {
+    public boolean canBlockStay(World worldIn, BlockPos pos) {
         IBlockState downState = worldIn.getBlockState(pos.down());
         return downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID;
     }
@@ -104,51 +102,51 @@ public class BlockCampfire extends BlockContainer implements ITileEntityProvider
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote)
             return true;
-        
-		ItemStack stack = playerIn.getHeldItem(hand);
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if (hand == EnumHand.MAIN_HAND) {
-		    if (tile instanceof TileEntityCampfire) {
-		        TileEntityCampfire tileEntityCampfire = (TileEntityCampfire) tile;
 
-		        if(tileEntityCampfire.getInventory().isItemValid(0,stack)&& tileEntityCampfire.getInventory().getStackInSlot(0).getCount() < 16){
-		            ItemStack campfireStack=new ItemStack(stack.getItem(),1,stack.getMetadata());
-		            stack.shrink(1);
-		            tileEntityCampfire.getInventory().insertItem(0,campfireStack,false);
-		            return true;
-		        }
-		        if(stack.getItem()==ItemLoader.POT){
-					worldIn.setBlockToAir(pos);
-					worldIn.removeTileEntity(pos);
-					worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_IDLE.getDefaultState());
-					stack.shrink(1);
-			        return true;
-		        }
-		        
-		        if (WorldUtil.getInstance().isItemFuel(stack)) {
-		            tileEntityCampfire.setBurningTime(tileEntityCampfire.getBurningTime() + TileEntityFurnace.getItemBurnTime(stack));
-		            setState(true, worldIn, pos);
-					if(stack.getItem().hasContainerItem(stack)) stack = stack.getItem().getContainerItem(stack);
-						else stack.shrink(1);
-		            return true;
-		        }
+        ItemStack stack = playerIn.getHeldItem(hand);
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if (hand == EnumHand.MAIN_HAND) {
+            if (tile instanceof TileEntityCampfire) {
+                TileEntityCampfire tileEntityCampfire = (TileEntityCampfire) tile;
 
-		        if (stack.getItem() == Items.FLINT_AND_STEEL) {
-		            tileEntityCampfire.setBurningTime(tileEntityCampfire.getBurningTime() + 10000);
-		            setState(true, worldIn, pos);
-		            stack.damageItem(1, playerIn);
-		            return true;
-		        }
+                if (tileEntityCampfire.getInventory().isItemValid(0, stack) && tileEntityCampfire.getInventory().getStackInSlot(0).getCount() < 16) {
+                    ItemStack campfireStack = new ItemStack(stack.getItem(), 1, stack.getMetadata());
+                    stack.shrink(1);
+                    tileEntityCampfire.getInventory().insertItem(0, campfireStack, false);
+                    return true;
+                }
+                if (stack.getItem() == ItemLoader.POT) {
+                    worldIn.setBlockToAir(pos);
+                    worldIn.removeTileEntity(pos);
+                    worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_IDLE.getDefaultState());
+                    stack.shrink(1);
+                    return true;
+                }
 
-		        if(stack.isEmpty()){
-		            Block.spawnAsEntity(worldIn, pos, ((TileEntityCampfire) tile).getInventory().getStackInSlot(0));
-		            ((TileEntityCampfire) tile).getInventory().setStackInSlot(0, ItemStack.EMPTY);
-		            return true;
-		        }
-		    }
-		}
+                if (WorldUtil.getInstance().isItemFuel(stack)) {
+                    tileEntityCampfire.setBurningTime(tileEntityCampfire.getBurningTime() + TileEntityFurnace.getItemBurnTime(stack));
+                    setState(true, worldIn, pos);
+                    if (stack.getItem().hasContainerItem(stack)) stack = stack.getItem().getContainerItem(stack);
+                    else stack.shrink(1);
+                    return true;
+                }
 
-		return true;
+                if (stack.getItem() == Items.FLINT_AND_STEEL) {
+                    tileEntityCampfire.setBurningTime(tileEntityCampfire.getBurningTime() + 10000);
+                    setState(true, worldIn, pos);
+                    stack.damageItem(1, playerIn);
+                    return true;
+                }
+
+                if (stack.isEmpty()) {
+                    Block.spawnAsEntity(worldIn, pos, ((TileEntityCampfire) tile).getInventory().getStackInSlot(0));
+                    ((TileEntityCampfire) tile).getInventory().setStackInSlot(0, ItemStack.EMPTY);
+                    return true;
+                }
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -205,9 +203,9 @@ public class BlockCampfire extends BlockContainer implements ITileEntityProvider
 
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
-    	return new ItemStack(BlockLoader.CAMPFIRE_IDLE);
+        return new ItemStack(BlockLoader.CAMPFIRE_IDLE);
     }
-    
+
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityCampfire();

@@ -46,22 +46,25 @@ public class BlockBambooShoot extends BlockBush implements IPlantable, IGrowable
         BlockPos blockpos = pos.up();
 
         if (worldIn.isAirBlock(blockpos)) {
-        	if(worldIn.getLightFor(EnumSkyBlock.BLOCK, pos) > 6 + worldIn.rand.nextInt(6)){
-            int j = state.getValue(AGE).intValue();
-            if (net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, blockpos, state, true)) {
-                if (j == 6) {
-                    if(rand.nextInt() ==0){
-                    	if(worldIn.isAirBlock(blockpos.up(2)))worldIn.setBlockState(blockpos.up(2), BlockLoader.BAMBOO.getDefaultState());
+            if (worldIn.getLightFor(EnumSkyBlock.BLOCK, pos) > 6 + worldIn.rand.nextInt(6)) {
+                int j = state.getValue(AGE).intValue();
+                if (net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, blockpos, state, true)) {
+                    if (j == 6) {
+                        if (rand.nextInt() == 0) {
+                            if (worldIn.isAirBlock(blockpos.up(2)))
+                                worldIn.setBlockState(blockpos.up(2), BlockLoader.BAMBOO.getDefaultState());
+                        }
+                        if (worldIn.isAirBlock(blockpos.up()))
+                            worldIn.setBlockState(blockpos.up(), BlockLoader.BAMBOO.getDefaultState());
+                        if (worldIn.isAirBlock(blockpos))
+                            worldIn.setBlockState(blockpos, BlockLoader.BAMBOO.getDefaultState());
+                        worldIn.setBlockState(pos, BlockLoader.BAMBOO.getDefaultState());
+                    } else {
+                        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
                     }
-                	if(worldIn.isAirBlock(blockpos.up()))worldIn.setBlockState(blockpos.up(), BlockLoader.BAMBOO.getDefaultState());
-                	if(worldIn.isAirBlock(blockpos)) worldIn.setBlockState(blockpos, BlockLoader.BAMBOO.getDefaultState());
-                    worldIn.setBlockState(pos, BlockLoader.BAMBOO.getDefaultState());
-                } else {
-                    worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
+                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
                 }
-                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
             }
-        	}
         }
     }
 
@@ -92,7 +95,7 @@ public class BlockBambooShoot extends BlockBush implements IPlantable, IGrowable
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
         IBlockState state = worldIn.getBlockState(pos.down());
-        if (this.canBlockStay(worldIn, pos) && state.getBlock() != BlockLoader.BAMBOO ) {
+        if (this.canBlockStay(worldIn, pos) && state.getBlock() != BlockLoader.BAMBOO) {
             return super.canPlaceBlockAt(worldIn, pos);
         }
         return false;
@@ -112,7 +115,7 @@ public class BlockBambooShoot extends BlockBush implements IPlantable, IGrowable
 
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
         if (!worldIn.isRemote && stack.getItem() instanceof ItemHoe) {
-            super.harvestBlock(worldIn,player,pos,state,te,stack);
+            super.harvestBlock(worldIn, player, pos, state, te, stack);
         }
     }
 
@@ -166,11 +169,11 @@ public class BlockBambooShoot extends BlockBush implements IPlantable, IGrowable
     @Override
     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state) {
 
-        if(rand.nextInt() ==0){
+        if (rand.nextInt() == 0) {
             worldIn.setBlockState(pos.up(3), BlockLoader.BAMBOO.getDefaultState());
         }
-    	if(worldIn.isAirBlock(pos.up()))worldIn.setBlockState(pos.up(), BlockLoader.BAMBOO.getDefaultState());
-    	if(worldIn.isAirBlock(pos.up(2))) worldIn.setBlockState(pos.up(2), BlockLoader.BAMBOO.getDefaultState());
-    	worldIn.setBlockState(pos, BlockLoader.BAMBOO.getDefaultState());
+        if (worldIn.isAirBlock(pos.up())) worldIn.setBlockState(pos.up(), BlockLoader.BAMBOO.getDefaultState());
+        if (worldIn.isAirBlock(pos.up(2))) worldIn.setBlockState(pos.up(2), BlockLoader.BAMBOO.getDefaultState());
+        worldIn.setBlockState(pos, BlockLoader.BAMBOO.getDefaultState());
     }
 }

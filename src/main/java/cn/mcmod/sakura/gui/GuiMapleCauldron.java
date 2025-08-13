@@ -16,7 +16,7 @@ public class GuiMapleCauldron extends GuiContainer {
 
     private static final ResourceLocation GuiTextures = new ResourceLocation("sakura:textures/gui/maple_pot.png");
 
-    private TileEntityMapleCauldron tilePot;
+    private final TileEntityMapleCauldron tilePot;
 
     public GuiMapleCauldron(InventoryPlayer inventory, TileEntityMapleCauldron tile) {
         super(new ContainerMapleCauldron(inventory, tile));
@@ -33,19 +33,19 @@ public class GuiMapleCauldron extends GuiContainer {
         int l = (this.height - this.ySize) / 2;
 
         this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
-        
-        if(this.tilePot.isBurning()){
-        	this.drawTexturedModalRect(k + 71, l + 59, 176, 17, 14, 14);
+
+        if (this.tilePot.isBurning()) {
+            this.drawTexturedModalRect(k + 71, l + 59, 176, 17, 14, 14);
         }
-        
+
         int l2 = this.getProgressScaled(44);
         this.drawTexturedModalRect(k + 59, l + 36, 176, 0, l2 + 1, 17);
-        
+
         if (this.tilePot.getTank().getFluid() != null) {
             FluidTank fluidTank = this.tilePot.getTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
             if (heightInd > 0) {
-                ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 35, l + 78 - heightInd , 16f, heightInd);
+                ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 35, l + 78 - heightInd, 16f, heightInd);
             }
         }
     }

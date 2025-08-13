@@ -9,7 +9,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class ContainerFluidOut extends Container {
-    private TileEntityFluidOut tileBarrel;
+    private final TileEntityFluidOut tileBarrel;
 
     public ContainerFluidOut(InventoryPlayer inventory, TileEntityFluidOut tile) {
         tileBarrel = tile;
@@ -52,8 +52,7 @@ public class ContainerFluidOut extends Container {
      * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
      */
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int index)
-    {
+    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int index) {
         // 0-1: Contain inventory
         // 2-28: Player inventory
         // 29-38: Hot bar in the player inventory
@@ -61,47 +60,35 @@ public class ContainerFluidOut extends Container {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
 
-        if (slot != null && slot.getHasStack())
-        {
+        if (slot != null && slot.getHasStack()) {
             ItemStack itemStack1 = slot.getStack();
             itemStack = itemStack1.copy();
 
-            if (index >= 0 && index <= 4){
-                if (!this.mergeItemStack(itemStack1, 2, 38, true))
-                {
+            if (index >= 0 && index <= 4) {
+                if (!this.mergeItemStack(itemStack1, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
 
                 slot.onSlotChange(itemStack1, itemStack);
-            }
-            else if (index >= 5){
-            	if (index >= 5 && index < 32){
-                    if (!this.mergeItemStack(itemStack1, 29, 38, false))
-                    {
+            } else if (index >= 5) {
+                if (index >= 5 && index < 32) {
+                    if (!this.mergeItemStack(itemStack1, 29, 38, false)) {
                         return ItemStack.EMPTY;
                     }
-                }
-                else if (index >= 29 && index < 38 && !this.mergeItemStack(itemStack1, 2, 29, false))
-                {
+                } else if (index >= 29 && index < 38 && !this.mergeItemStack(itemStack1, 2, 29, false)) {
                     return ItemStack.EMPTY;
                 }
-            }
-            else if (!this.mergeItemStack(itemStack1, 2, 38, false))
-            {
+            } else if (!this.mergeItemStack(itemStack1, 2, 38, false)) {
                 return ItemStack.EMPTY;
             }
 
-            if (itemStack1.getCount() == 0)
-            {
+            if (itemStack1.getCount() == 0) {
                 slot.putStack(ItemStack.EMPTY);
-            }
-            else
-            {
+            } else {
                 slot.onSlotChanged();
             }
 
-            if (itemStack1.getCount() == itemStack.getCount())
-            {
+            if (itemStack1.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
 

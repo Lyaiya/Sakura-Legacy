@@ -49,7 +49,7 @@ public class BlockSakuraDiamondOre extends BlockOre {
 
             return this.quantityDropped(random) * (i + 1);
         }
-		return this.quantityDropped(random);
+        return this.quantityDropped(random);
     }
 
     /**

@@ -109,38 +109,38 @@ public class BlockCampfirePot extends BlockContainer implements ITileEntityProvi
         if (worldIn.isRemote) {
             return true;
         }
-		ItemStack stack = playerIn.getHeldItem(hand);
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if (hand == EnumHand.MAIN_HAND) {
-		    if (tile instanceof TileEntityCampfirePot) {
-		        TileEntityCampfirePot tileEntityCampfire = (TileEntityCampfirePot) tile;
-		        IFluidHandlerItem handler = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(stack, 1));
-		        if (handler != null) {
-		            FluidUtil.interactWithFluidHandler(playerIn, hand, tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing));
-		            return true;
-		        }
-		        
-		        if (WorldUtil.getInstance().isItemFuel(stack)) {
-		            tileEntityCampfire.setField(0, (tileEntityCampfire.getField(0) + TileEntityFurnace.getItemBurnTime(stack)));
-		            setState(true, worldIn, pos);
-					if(stack.getItem().hasContainerItem(stack)) stack = stack.getItem().getContainerItem(stack);
-						else stack.shrink(1);
-		            return true;
-		        }
+        ItemStack stack = playerIn.getHeldItem(hand);
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if (hand == EnumHand.MAIN_HAND) {
+            if (tile instanceof TileEntityCampfirePot) {
+                TileEntityCampfirePot tileEntityCampfire = (TileEntityCampfirePot) tile;
+                IFluidHandlerItem handler = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(stack, 1));
+                if (handler != null) {
+                    FluidUtil.interactWithFluidHandler(playerIn, hand, tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing));
+                    return true;
+                }
 
-		        if (stack.getItem() == Items.FLINT_AND_STEEL) {
-		        	tileEntityCampfire.setField(0, (tileEntityCampfire.getField(0) + 10000));
-		        	setState(true, worldIn, pos);
-		            stack.damageItem(1, playerIn);
-		            return true;
-		        }
+                if (WorldUtil.getInstance().isItemFuel(stack)) {
+                    tileEntityCampfire.setField(0, (tileEntityCampfire.getField(0) + TileEntityFurnace.getItemBurnTime(stack)));
+                    setState(true, worldIn, pos);
+                    if (stack.getItem().hasContainerItem(stack)) stack = stack.getItem().getContainerItem(stack);
+                    else stack.shrink(1);
+                    return true;
+                }
 
-		        playerIn.openGui(SakuraMain.instance, SakuraGuiHandler.ID_CAMPFIREPOT, worldIn, pos.getX(), pos.getY(), pos.getZ());
-		        return true;
-		    }
-		}
+                if (stack.getItem() == Items.FLINT_AND_STEEL) {
+                    tileEntityCampfire.setField(0, (tileEntityCampfire.getField(0) + 10000));
+                    setState(true, worldIn, pos);
+                    stack.damageItem(1, playerIn);
+                    return true;
+                }
 
-		return true;
+                playerIn.openGui(SakuraMain.instance, SakuraGuiHandler.ID_CAMPFIREPOT, worldIn, pos.getX(), pos.getY(), pos.getZ());
+                return true;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -155,7 +155,7 @@ public class BlockCampfirePot extends BlockContainer implements ITileEntityProvi
             worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_LIT.getDefaultState());
             worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_LIT.getDefaultState());
         } else {
-        	worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_IDLE.getDefaultState());
+            worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_IDLE.getDefaultState());
             worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_IDLE.getDefaultState());
         }
         keepInventory = false;
@@ -188,7 +188,7 @@ public class BlockCampfirePot extends BlockContainer implements ITileEntityProvi
         if (!keepInventory) {
             TileEntity te = worldIn.getTileEntity(pos);
             if (te instanceof TileEntityCampfirePot) {
-                InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityCampfirePot)te);
+                InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityCampfirePot) te);
                 worldIn.updateComparatorOutputLevel(pos, this);
             }
 
@@ -205,9 +205,9 @@ public class BlockCampfirePot extends BlockContainer implements ITileEntityProvi
 
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
-    	return new ItemStack(ItemLoader.POT);
+        return new ItemStack(ItemLoader.POT);
     }
-    
+
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityCampfirePot();

@@ -16,81 +16,83 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 
 public class TileEntityOben extends TileEntity implements ITickable {
-    private ItemStackHandler inventory = new ItemStackHandler() {
+    private final ItemStackHandler inventory = new ItemStackHandler() {
         @Override
         protected void onContentsChanged(int slot) {
             TileEntityOben.this.refresh();
         }
     };
-    
+
     public ItemStackHandler getInventory() {
         return this.inventory;
     }
+
     protected void refresh() {
         if (hasWorld() && !world.isRemote) {
             IBlockState state = world.getBlockState(pos);
             world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
         }
     }
+
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) inventory : super.getCapability(capability, facing);
     }
-    
-	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
-		return oldState.getBlock() != newState.getBlock();
-	}
 
-	@Nonnull
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
-		NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
-		writePacketNBT(ret);
-		return ret;
-	}
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
+        return oldState.getBlock() != newState.getBlock();
+    }
 
-	@Nonnull
-	@Override
-	public final NBTTagCompound getUpdateTag() {
-		return writeToNBT(new NBTTagCompound());
-	}
+    @Nonnull
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
+        NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
+        writePacketNBT(ret);
+        return ret;
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-		super.readFromNBT(par1nbtTagCompound);
-		readPacketNBT(par1nbtTagCompound);
-	}
+    @Nonnull
+    @Override
+    public final NBTTagCompound getUpdateTag() {
+        return writeToNBT(new NBTTagCompound());
+    }
 
-	public void writePacketNBT(NBTTagCompound cmp) {
+    @Override
+    public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
+        super.readFromNBT(par1nbtTagCompound);
+        readPacketNBT(par1nbtTagCompound);
+    }
+
+    public void writePacketNBT(NBTTagCompound cmp) {
         cmp.setTag("Inventory", inventory.serializeNBT());
-	}
+    }
 
-	public void readPacketNBT(NBTTagCompound cmp) {
+    public void readPacketNBT(NBTTagCompound cmp) {
         inventory.deserializeNBT(cmp.getCompoundTag("Inventory"));
-	}
+    }
 
-	@Override
-	public final SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound tag = new NBTTagCompound();
-		writePacketNBT(tag);
-		return new SPacketUpdateTileEntity(pos, -999, tag);
-	}
+    @Override
+    public final SPacketUpdateTileEntity getUpdatePacket() {
+        NBTTagCompound tag = new NBTTagCompound();
+        writePacketNBT(tag);
+        return new SPacketUpdateTileEntity(pos, -999, tag);
+    }
 
-	@Override
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-		super.onDataPacket(net, packet);
-		readPacketNBT(packet.getNbtCompound());
-	}
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+        super.onDataPacket(net, packet);
+        readPacketNBT(packet.getNbtCompound());
+    }
 
-	@Override
-	public void update() {
-		
-	}
+    @Override
+    public void update() {
+
+    }
 }

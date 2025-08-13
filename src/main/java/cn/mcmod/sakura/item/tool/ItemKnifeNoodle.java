@@ -6,35 +6,35 @@ import net.minecraft.item.ItemSword;
 
 public class ItemKnifeNoodle extends ItemSword {
 
-	public ItemKnifeNoodle(ToolMaterial material) {
+    public ItemKnifeNoodle(ToolMaterial material) {
 //		ToolMaterial.IRON
-		super(material);
-		this.setTranslationKey(SakuraMain.MODID+"."+"knife_noodle");
-		this.setMaxDamage(material.getMaxUses());
-	}
+        super(material);
+        this.setTranslationKey(SakuraMain.MODID + "." + "knife_noodle");
+        this.setMaxDamage(material.getMaxUses());
+    }
+
     @Override
     public ItemStack getContainerItem(ItemStack itemStack) {
         int dmg = itemStack.getItemDamage();
-        if (dmg < this.getMaxDamage(itemStack))
-        {
+        if (dmg < this.getMaxDamage(itemStack)) {
             ItemStack stack = itemStack.copy();
-            stack.setItemDamage(dmg +1);
+            stack.setItemDamage(dmg + 1);
             return stack;
         }
-		return super.getContainerItem(itemStack);
+        return super.getContainerItem(itemStack);
     }
 
     @Override
     public boolean hasContainerItem(ItemStack stack) {
         int dmg = stack.getItemDamage();
-        if (dmg < this.getMaxDamage(stack))
-        {
+        if (dmg < this.getMaxDamage(stack)) {
             return true;
         }
-		return super.hasContainerItem(stack);
+        return super.hasContainerItem(stack);
     }
+
     @Override
     public float getAttackDamage() {
-    	return super.getAttackDamage()+2F;
+        return super.getAttackDamage() + 2F;
     }
 }

@@ -3,13 +3,7 @@ package cn.mcmod.sakura.tileentity;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.client.TileEntityRenderHelper;
-import cn.mcmod.sakura.client.render.tileentity.RenderTileEntityCampfire;
-import cn.mcmod.sakura.client.render.tileentity.RenderTileEntityCampfirePot;
-import cn.mcmod.sakura.client.render.tileentity.RenderTileEntityMapleCauldron;
-import cn.mcmod.sakura.client.render.tileentity.RenderTileEntityOben;
-import cn.mcmod.sakura.client.render.tileentity.RenderTileEntityStoneMortar;
-import cn.mcmod.sakura.client.render.tileentity.RenderTileEntityWeb;
-import cn.mcmod.sakura.client.render.tileentity.ShojiRender;
+import cn.mcmod.sakura.client.render.tileentity.*;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -20,9 +14,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntityRegistry {
-	private static final TileEntityRegistry instance = new TileEntityRegistry();
-	private TileEntityRegistry() {
-	}
+    private static final TileEntityRegistry instance = new TileEntityRegistry();
+
+    private TileEntityRegistry() {
+    }
+
     public void init() {
         registerTileEntity(TileEntityCampfire.class, "campfire");
         registerTileEntity(TileEntityCampfirePot.class, "campfirepot");
@@ -55,8 +51,9 @@ public class TileEntityRegistry {
     private Item getItem(final Block block) {
         return Item.getItemFromBlock(block);
     }
-	public static TileEntityRegistry getInstance() {
-		return instance;
-	}
+
+    public static TileEntityRegistry getInstance() {
+        return instance;
+    }
 
 }

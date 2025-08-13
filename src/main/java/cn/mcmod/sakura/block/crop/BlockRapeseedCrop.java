@@ -6,12 +6,13 @@ import net.minecraft.item.Item;
 
 public class BlockRapeseedCrop extends BlockCrops {
 
-	@Override
-	protected Item getCrop() {
-		return ItemLoader.RAPESEED;
-	}
-	@Override
-	protected Item getSeed() {
-		return ItemLoader.RAPESEED;
-	}
+    @Override
+    protected Item getCrop() {
+        return ItemLoader.RAPESEED;
+    }
+
+    @Override
+    protected Item getSeed() {
+        return ItemLoader.RAPESEED;
+    }
 }

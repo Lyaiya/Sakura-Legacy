@@ -29,7 +29,7 @@ public class ParticleMapleYellowLeaf extends Particle {
         this.particleScale = 0.96F + 0.02F * world.rand.nextInt(8);
 
         this.particleMaxAge = world.rand.nextInt(30) + 120;
-        
+
         this.particleAlpha = 1.0F;
         this.particleGravity = 0.02F;
         this.canCollide = true;

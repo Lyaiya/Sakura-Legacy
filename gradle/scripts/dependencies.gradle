@@ -94,7 +94,7 @@ dependencies {
     // }
 
     // MMLib v2.3.0
-    api rfg.deobf("curse.maven:MMLib-368098:3254750")
+    api rfg.deobf("curse.maven:mm_lib-368098:3254750")
 
     compileOnly "vazkii.patchouli:Patchouli:1.0-23.6"
     compileOnly "blusunrize:ImmersiveEngineering:0.12-92-559"

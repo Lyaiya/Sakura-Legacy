@@ -5,10 +5,10 @@ import net.minecraft.block.state.IBlockState;
 
 public class BlockStairBasic extends BlockStairs {
 
-	protected BlockStairBasic(IBlockState modelState) {
-		super(modelState);
-		  this.useNeighborBrightness = true;
-		    this.setCreativeTab(modelState.getBlock().getCreativeTab());
-	}
+    protected BlockStairBasic(IBlockState modelState) {
+        super(modelState);
+        this.useNeighborBrightness = true;
+        this.setCreativeTab(modelState.getBlock().getCreativeTab());
+    }
 
 }

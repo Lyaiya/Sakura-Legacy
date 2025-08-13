@@ -34,14 +34,16 @@ import net.minecraftforge.fml.relauncher.Side;
 
 @EventBusSubscriber
 public class CommonProxy {
-	public static final SoundEvent TAIKO = new SoundEvent(new ResourceLocation(SakuraMain.MODID, "taiko"));
+    public static final SoundEvent TAIKO = new SoundEvent(new ResourceLocation(SakuraMain.MODID, "taiko"));
     public static CreativeTabs tab = new CreativeTabsSakura();
     private static SimpleNetworkWrapper network;
+
     public static SimpleNetworkWrapper getNetwork() {
         return network;
     }
+
     public void preInit(FMLPreInitializationEvent event) {
-    	
+
         new PotionLoader(event);
         BlockLoader.getInstance().registerBlock();
         ItemLoader.getInstance().registerItem();
@@ -51,26 +53,26 @@ public class CommonProxy {
         SakuraOreDictLoader.getInstance().registerOre();
         ArmorLoader.getInstance().Init();
         VillagerCreationWA.registerComponents();
-		VillagerCreationWA villageHandler = new VillagerCreationWA();
-		VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
+        VillagerCreationWA villageHandler = new VillagerCreationWA();
+        VillagerRegistry.instance().registerVillageCreationHandler(villageHandler);
     }
 
     public void init(FMLInitializationEvent event) {
-    	MinecraftForge.ORE_GEN_BUS.register(WorldGenLoader.getInstance());
-    	MinecraftForge.TERRAIN_GEN_BUS.register(WorldGenLoader.getInstance());
-    	WorldGenLoader.getInstance().WorldGenRegister();
+        MinecraftForge.ORE_GEN_BUS.register(WorldGenLoader.getInstance());
+        MinecraftForge.TERRAIN_GEN_BUS.register(WorldGenLoader.getInstance());
+        WorldGenLoader.getInstance().WorldGenRegister();
         TileEntityRegistry.getInstance().init();
 
         SakuraRecipeRegister.getInstance().Init();
-        if(Loader.isModLoaded("tfc")){
-        	TFCCompat.registerTFCFuel();
+        if (Loader.isModLoaded("tfc")) {
+            TFCCompat.registerTFCFuel();
         }
-        if (Loader.isModLoaded("waila")){
+        if (Loader.isModLoaded("waila")) {
             FMLInterModComms.sendMessage("waila", "register", "cn.mcmod.sakura.compat.waila.CampfirePlugin.register");
             FMLInterModComms.sendMessage("waila", "register", "cn.mcmod.sakura.compat.waila.CampfirePotPlugin.register");
         }
         network = NetworkRegistry.INSTANCE.newSimpleChannel(SakuraMain.MODID);
-    	network.registerMessage(new PacketKeyMessageHandler(),PacketKeyMessage.class,0,Side.SERVER);
+        network.registerMessage(new PacketKeyMessageHandler(), PacketKeyMessage.class, 0, Side.SERVER);
     }
 
     public void postInit(FMLPostInitializationEvent event) {
@@ -84,6 +86,7 @@ public class CommonProxy {
     public void spawnParticle(SakuraParticleType particleType, double x, double y, double z, double velX, double velY, double velZ) {
 
     }
+
     @SubscribeEvent
     public static void onSoundEvenrRegistration(RegistryEvent.Register<SoundEvent> event) {
         event.getRegistry().register(TAIKO.setRegistryName(new ResourceLocation(SakuraMain.MODID, "taiko")));

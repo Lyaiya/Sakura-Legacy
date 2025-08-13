@@ -21,11 +21,11 @@ public class WorldGenBamboo extends WorldGenAbstractTree {
 
         for (int i2 = 0; i2 < i; ++i2) {
             BlockPos blockpos = position.up(i2);
-            if ((BlockLoader.BAMBOOSHOOT.canBlockStay(worldIn, blockpos)||
-            		worldIn.getBlockState(blockpos.down()).getBlock() instanceof BlockPlantBamboo) && 
-            (worldIn.isAirBlock(blockpos) || 
-            		worldIn.getBlockState(blockpos).getMaterial() == Material.PLANTS
-            		&& !(worldIn.getBlockState(blockpos).getBlock() instanceof BlockLeaves))) {
+            if ((BlockLoader.BAMBOOSHOOT.canBlockStay(worldIn, blockpos) ||
+                    worldIn.getBlockState(blockpos.down()).getBlock() instanceof BlockPlantBamboo) &&
+                    (worldIn.isAirBlock(blockpos) ||
+                            worldIn.getBlockState(blockpos).getMaterial() == Material.PLANTS
+                                    && !(worldIn.getBlockState(blockpos).getBlock() instanceof BlockLeaves))) {
                 worldIn.setBlockState(blockpos, BlockLoader.BAMBOO.getDefaultState(), 2);
             }
         }

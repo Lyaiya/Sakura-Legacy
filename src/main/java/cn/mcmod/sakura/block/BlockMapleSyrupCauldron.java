@@ -16,7 +16,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -25,6 +28,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockMapleSyrupCauldron extends BlockContainer implements ITileEntityProvider {
     private static boolean keepInventory;
+
     public BlockMapleSyrupCauldron() {
         super(Material.IRON);
         this.setHardness(0.5F);
@@ -89,13 +93,13 @@ public class BlockMapleSyrupCauldron extends BlockContainer implements ITileEnti
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         worldIn.getBlockState(pos.up()).getBlock().onNeighborChange(worldIn, pos.up(), pos);
     }
-  
+
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         if (!keepInventory) {
             TileEntity te = worldIn.getTileEntity(pos);
             if (te instanceof TileEntityMapleCauldron) {
-                InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityMapleCauldron)te);
+                InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityMapleCauldron) te);
                 worldIn.updateComparatorOutputLevel(pos, this);
             }
         }

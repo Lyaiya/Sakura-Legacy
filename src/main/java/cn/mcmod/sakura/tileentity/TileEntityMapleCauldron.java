@@ -1,5 +1,9 @@
 package cn.mcmod.sakura.tileentity;
 
+import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.block.BlockMapleSpile;
+import cn.mcmod.sakura.item.ItemLoader;
+import cn.mcmod.sakura.util.HeatUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -20,13 +24,9 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import cn.mcmod.sakura.block.BlockLoader;
-import cn.mcmod.sakura.block.BlockMapleSpile;
-import cn.mcmod.sakura.item.ItemLoader;
-import cn.mcmod.sakura.util.HeatUtil;
 
 public class TileEntityMapleCauldron extends TileEntity implements ITickable, IInventory {
 
@@ -48,7 +48,7 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
         return this.tank;
     }
 
-    //Render only
+    // Render only
     @SideOnly(Side.CLIENT)
     public FluidStack getFluidForRendering(float partialTicks) {
         final FluidStack actual = tank.getFluid();
@@ -80,22 +80,21 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
 
     public boolean isBurning() {
         return this.getTank().canDrainFluidType(new FluidStack(BlockLoader.MAPLE_SYRUP_FLUID, 500))
-        		&&this.getTank().getFluidAmount()>=500
-        		&&HeatUtil.getHeatStrength(getWorld(), getPos()) > 0;
+                && this.getTank().getFluidAmount() >= 500
+                && HeatUtil.getHeatStrength(getWorld(), getPos()) > 0;
     }
 
     public boolean canDraw() {
-		if(getWorld().getBlockState(getPos().up()).getBlock() instanceof BlockMapleSpile){
-			if(BlockMapleSpile.canWork(getWorld(), getPos().up(), getWorld().getBlockState(getPos().up())))
-				return true;
-		}
-		return false;
-	}
-    
+        if (getWorld().getBlockState(getPos().up()).getBlock() instanceof BlockMapleSpile) {
+            return BlockMapleSpile.canWork(getWorld(), getPos().up(), getWorld().getBlockState(getPos().up()));
+        }
+        return false;
+    }
+
     public int getCookTime() {
         return this.cookTime;
     }
-    
+
     public int getMapleTime() {
         return this.mapleTime;
     }
@@ -109,57 +108,57 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
 
     @Override
     public void update() {
-        //check can cook
-    	if (!this.world.isRemote) {
-	    	this.drawing();
-	    	this.cooking();
-    	}
+        // check can cook
+        if (!this.world.isRemote) {
+            this.drawing();
+            this.cooking();
+        }
     }
 
     private void drawing() {
-    	boolean flag = this.canDraw();
+        boolean flag = this.canDraw();
         boolean flag1 = false;
-        
-    	if (canDraw()) {
-            mapleTime += getWorld().rand.nextInt(9)+1;
-    	}
-	    if (mapleTime >= 20) {
-	    	mapleTime = 0;
-	    	if(this.getTank().canFill())
-	    		this.getTank().fill(new FluidStack(BlockLoader.MAPLE_SYRUP_FLUID, 10), true);
-	        flag1 = true;
-	    }
-	    if (flag != this.canDraw()) {
-	       flag1 = true;
-	    }
-	    if (flag1)
-	    	this.markDirty();
-	}
-    
+
+        if (canDraw()) {
+            mapleTime += getWorld().rand.nextInt(9) + 1;
+        }
+        if (mapleTime >= 20) {
+            mapleTime = 0;
+            if (this.getTank().canFill())
+                this.getTank().fill(new FluidStack(BlockLoader.MAPLE_SYRUP_FLUID, 10), true);
+            flag1 = true;
+        }
+        if (flag != this.canDraw()) {
+            flag1 = true;
+        }
+        if (flag1)
+            this.markDirty();
+    }
+
     private void cooking() {
-    	boolean flag = this.isBurning();
+        boolean flag = this.isBurning();
         boolean flag1 = false;
         ItemStack itemstack = this.inventory.get(0);
-    	if (isBurning()&&(itemstack.getCount()<itemstack.getMaxStackSize())) {
+        if (isBurning() && (itemstack.getCount() < itemstack.getMaxStackSize())) {
             cookTime += 1;
-    	}
-	    if (cookTime >= 1200) {
-	        cookTime = 0;
+        }
+        if (cookTime >= 1200) {
+            cookTime = 0;
 
             if (itemstack.isEmpty()) {
                 this.inventory.set(0, new ItemStack(ItemLoader.MATERIAL, 8, 49).copy());
             } else {
-            	itemstack.grow(8);
+                itemstack.grow(8);
             }
             this.tank.drainInternal(500, true);
-	        flag1 = true;
-	    }
-	    if (flag != this.isBurning()) {
-	       flag1 = true;
-	    }
-	    if (flag1)
-	    	this.markDirty();
-	}
+            flag1 = true;
+        }
+        if (flag != this.isBurning()) {
+            flag1 = true;
+        }
+        if (flag1)
+            this.markDirty();
+    }
 
     @Override
     public void markDirty() {
@@ -168,7 +167,7 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
     }
 
     protected NonNullList<ItemStack> inventory =
-            NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
+            NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
     @Override
     public String getName() {
@@ -235,7 +234,7 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
         if (this.world.getTileEntity(this.pos) != this) {
             return false;
         }
-		return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+        return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
@@ -342,7 +341,7 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
 
     public void readPacketNBT(NBTTagCompound cmp) {
         this.inventory =
-                NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
+                NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(cmp, this.inventory);
         this.mapleTime = cmp.getInteger("MapleTime");
         this.cookTime = cmp.getInteger("CookTime");

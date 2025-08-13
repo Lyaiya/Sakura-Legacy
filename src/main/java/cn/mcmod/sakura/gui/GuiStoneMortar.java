@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiStoneMortar extends GuiContainer {
     private static final ResourceLocation mortarGuiTextures = new ResourceLocation("sakura:textures/gui/stonemortar.png");
 
-    private TileEntityStoneMortar tileMortar;
+    private final TileEntityStoneMortar tileMortar;
     private final IInventory playerInventory;
 
     public GuiStoneMortar(InventoryPlayer inventory, TileEntityStoneMortar tile) {

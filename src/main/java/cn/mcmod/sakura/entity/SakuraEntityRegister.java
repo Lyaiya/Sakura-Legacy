@@ -29,6 +29,6 @@ public class SakuraEntityRegister {
     }
 
     public static void entitySpawn() {
-    	EntityRegistry.addSpawn(EntitySamuraiIllager.class, 105, 5, 10, EnumCreatureType.MONSTER, new Biome[]{SakuraBiomes.BAMBOOFOREST,SakuraBiomes.MAPLEFOREST});
+        EntityRegistry.addSpawn(EntitySamuraiIllager.class, 105, 5, 10, EnumCreatureType.MONSTER, SakuraBiomes.BAMBOOFOREST, SakuraBiomes.MAPLEFOREST);
     }
 }

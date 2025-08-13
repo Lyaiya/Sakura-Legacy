@@ -47,7 +47,7 @@ public class BlockRiceCrop extends BlockCrops {
             }
             return ret;
         }
-		return 1;
+        return 1;
     }
 
     @Override

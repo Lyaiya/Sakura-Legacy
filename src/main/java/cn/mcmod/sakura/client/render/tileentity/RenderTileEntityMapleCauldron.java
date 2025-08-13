@@ -1,5 +1,6 @@
 package cn.mcmod.sakura.client.render.tileentity;
 
+import cn.mcmod.sakura.tileentity.TileEntityMapleCauldron;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,13 +17,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
-import cn.mcmod.sakura.tileentity.TileEntityMapleCauldron;
-
 @SideOnly(Side.CLIENT)
 public class RenderTileEntityMapleCauldron extends TileEntitySpecialRenderer<TileEntityMapleCauldron> {
 
     protected ItemStack renderItemStack = ItemStack.EMPTY;
     protected EntityItem renderItemEntity = null;
+
     @Override
     public void render(TileEntityMapleCauldron te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         super.render(te, x, y, z, partialTicks, destroyStage, alpha);

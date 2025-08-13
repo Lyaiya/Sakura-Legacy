@@ -20,52 +20,53 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockGrapeSplintStand extends Block {
 
-	public BlockGrapeSplintStand() {
-		super(Material.WOOD);
+    public BlockGrapeSplintStand() {
+        super(Material.WOOD);
         this.setHardness(2.0F);
         this.setSoundType(SoundType.WOOD);
-	}
-	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return new AxisAlignedBB(0.25F, 0.0F, 0.25F, 0.75F, 1.0F, 0.75F);
-	}
-	@Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
-    {
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         return new AxisAlignedBB(0.25F, 0.0F, 0.25F, 0.75F, 1.0F, 0.75F);
     }
-	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		ItemStack heldSeed = playerIn.getHeldItem(hand);
-		if(worldIn.isRemote) return true;
-		if(ItemStack.areItemsEqual(heldSeed, new ItemStack(ItemLoader.MATERIAL, 1, 23))){
-			worldIn.setBlockState(pos, BlockLoader.GRAPE_VINE.getDefaultState().withProperty(BlockVanillaCrop.AGE, 0));
-			if(!playerIn.isCreative())heldSeed.shrink(1);
-			return true;
-		}
-		if(ItemStack.areItemsEqual(heldSeed, new ItemStack(ItemLoader.MATERIAL, 1, 37))){
-			worldIn.setBlockState(pos, BlockLoader.HOPS.getDefaultState().withProperty(BlockVanillaCrop.AGE, 0));
-			if(!playerIn.isCreative())heldSeed.shrink(1);
-			return true;
-		}
-		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
-	}
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+        return new AxisAlignedBB(0.25F, 0.0F, 0.25F, 0.75F, 1.0F, 0.75F);
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+                                    EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        ItemStack heldSeed = playerIn.getHeldItem(hand);
+        if (worldIn.isRemote) return true;
+        if (ItemStack.areItemsEqual(heldSeed, new ItemStack(ItemLoader.MATERIAL, 1, 23))) {
+            worldIn.setBlockState(pos, BlockLoader.GRAPE_VINE.getDefaultState().withProperty(BlockVanillaCrop.AGE, 0));
+            if (!playerIn.isCreative()) heldSeed.shrink(1);
+            return true;
+        }
+        if (ItemStack.areItemsEqual(heldSeed, new ItemStack(ItemLoader.MATERIAL, 1, 37))) {
+            worldIn.setBlockState(pos, BlockLoader.HOPS.getDefaultState().withProperty(BlockVanillaCrop.AGE, 0));
+            if (!playerIn.isCreative()) heldSeed.shrink(1);
+            return true;
+        }
+        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
+
     /**
      * Used to determine ambient occlusion and culling when rebuilding chunks for render
      */
-    public boolean isOpaqueCube(IBlockState state)
-    {
+    public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
-    public boolean isFullCube(IBlockState state)
-    {
+    public boolean isFullCube(IBlockState state) {
         return false;
     }
+
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getRenderLayer()
-    {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

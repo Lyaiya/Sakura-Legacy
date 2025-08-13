@@ -20,35 +20,38 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
-public class BlockOben extends BlockFacing implements ITileEntityProvider  {
-	protected static final AxisAlignedBB CARPET_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D);
-	public BlockOben() {
-		super(Material.WOOD, false);
-		this.setSoundType(SoundType.WOOD);
-	}
+public class BlockOben extends BlockFacing implements ITileEntityProvider {
+    protected static final AxisAlignedBB CARPET_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D);
+
+    public BlockOben() {
+        super(Material.WOOD, false);
+        this.setSoundType(SoundType.WOOD);
+    }
+
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
-    
+
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
     }
 
-	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return CARPET_AABB;
-	}
-	@Override
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        return CARPET_AABB;
+    }
+
+    @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		TileEntityOben te = (TileEntityOben) worldIn.getTileEntity(pos);
-	    IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
-	
-	    if (inventory != null && inventory.getStackInSlot(0) != ItemStack.EMPTY) {
-	        Block.spawnAsEntity(worldIn, pos, inventory.getStackInSlot(0));
-	        ((IItemHandlerModifiable) inventory).setStackInSlot(0, ItemStack.EMPTY);
-	    }
+        TileEntityOben te = (TileEntityOben) worldIn.getTileEntity(pos);
+        IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
+
+        if (inventory != null && inventory.getStackInSlot(0) != ItemStack.EMPTY) {
+            Block.spawnAsEntity(worldIn, pos, inventory.getStackInSlot(0));
+            ((IItemHandlerModifiable) inventory).setStackInSlot(0, ItemStack.EMPTY);
+        }
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -56,31 +59,32 @@ public class BlockOben extends BlockFacing implements ITileEntityProvider  {
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityOben();
     }
+
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote)
             return true;
-        
-		ItemStack stack = playerIn.getHeldItem(hand);
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if (hand == EnumHand.MAIN_HAND) {
-		    if (tile instanceof TileEntityOben) {
-		    	TileEntityOben tileEntity = (TileEntityOben) tile;
-		        if(!(tileEntity.getInventory().getStackInSlot(0)).isEmpty()&&!(stack.equals(tileEntity.getInventory().getStackInSlot(0)))){
-		            Block.spawnAsEntity(worldIn, pos, tileEntity.getInventory().getStackInSlot(0));
-		            tileEntity.getInventory().setStackInSlot(0, ItemStack.EMPTY);
-		            tileEntity.markDirty();
-		            return true;
-		        }
-				ItemStack campfireStack=stack.copy();
-				campfireStack.setCount(1);
-				stack.shrink(1);
-				tileEntity.getInventory().insertItem(0,campfireStack,false);
-				tileEntity.markDirty();
-				return true;
-		    }
-		}
 
-		return true;
+        ItemStack stack = playerIn.getHeldItem(hand);
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if (hand == EnumHand.MAIN_HAND) {
+            if (tile instanceof TileEntityOben) {
+                TileEntityOben tileEntity = (TileEntityOben) tile;
+                if (!(tileEntity.getInventory().getStackInSlot(0)).isEmpty() && !(stack.equals(tileEntity.getInventory().getStackInSlot(0)))) {
+                    Block.spawnAsEntity(worldIn, pos, tileEntity.getInventory().getStackInSlot(0));
+                    tileEntity.getInventory().setStackInSlot(0, ItemStack.EMPTY);
+                    tileEntity.markDirty();
+                    return true;
+                }
+                ItemStack campfireStack = stack.copy();
+                campfireStack.setCount(1);
+                stack.shrink(1);
+                tileEntity.getInventory().insertItem(0, campfireStack, false);
+                tileEntity.markDirty();
+                return true;
+            }
+        }
+
+        return true;
     }
 }

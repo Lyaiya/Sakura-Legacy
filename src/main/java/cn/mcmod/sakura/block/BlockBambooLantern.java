@@ -43,14 +43,12 @@ public class BlockBambooLantern extends Block {
     }
 
     @Override
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-    {
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
         IBlockState downState = worldIn.getBlockState(pos.down());
         return (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID) && super.canPlaceBlockAt(worldIn, pos);
     }
 
-    public boolean canBlockStay(World worldIn, BlockPos pos)
-    {
+    public boolean canBlockStay(World worldIn, BlockPos pos) {
         IBlockState downState = worldIn.getBlockState(pos.down());
         return downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID;
     }

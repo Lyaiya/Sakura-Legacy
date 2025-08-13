@@ -11,17 +11,19 @@ import net.minecraft.world.IBlockAccess;
 
 public class BlockPaperLantern extends BlockBase {
 
-	public BlockPaperLantern() {
-		super(Material.WOOD,false);
-		setSoundType(SoundType.CLOTH);
-		setHardness(0.25F);
-		setResistance(0.1F);
-		setLightLevel(1F);
-	}
-	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 1.0D, 0.8125D);
-	}
+    public BlockPaperLantern() {
+        super(Material.WOOD, false);
+        setSoundType(SoundType.CLOTH);
+        setHardness(0.25F);
+        setResistance(0.1F);
+        setLightLevel(1F);
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        return new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 1.0D, 0.8125D);
+    }
+
     @Override
     public boolean isFlammable(IBlockAccess world, BlockPos pos, EnumFacing face) {
         return true;

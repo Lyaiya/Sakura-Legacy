@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiFluidOut extends GuiContainer {
     private static final ResourceLocation mortarGuiTextures = new ResourceLocation("sakura:textures/gui/barrel_out.png");
 
-    private TileEntityFluidOut tilePot;
+    private final TileEntityFluidOut tilePot;
 
     public GuiFluidOut(InventoryPlayer inventory, TileEntityFluidOut tile) {
         super(new ContainerFluidOut(inventory, tile));
@@ -36,7 +36,7 @@ public class GuiFluidOut extends GuiContainer {
             FluidTank fluidTank = this.tilePot.getTank();
             int heightInd = (int) (162 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
             if (heightInd > 0) {
-            	ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 168 - heightInd, l + 60, heightInd, 16F);
+                ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 168 - heightInd, l + 60, heightInd, 16F);
             }
         }
     }

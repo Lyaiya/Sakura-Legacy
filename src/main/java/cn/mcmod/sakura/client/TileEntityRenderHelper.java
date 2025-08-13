@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class TileEntityRenderHelper extends TileEntityItemStackRenderer {
 
-    private TileEntityStoneMortar mortarRender = new TileEntityStoneMortar();
+    private final TileEntityStoneMortar mortarRender = new TileEntityStoneMortar();
 
     @Override
     public void renderByItem(ItemStack itemStack) {

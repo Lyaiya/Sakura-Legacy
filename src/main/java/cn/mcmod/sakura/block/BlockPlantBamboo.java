@@ -139,7 +139,7 @@ public class BlockPlantBamboo extends Block implements IPlantable {
         if (plant.getBlock() == BlockLoader.BAMBOO) {
             return this == BlockLoader.BAMBOO;
         }
-		return super.canSustainPlant(state, world, pos, direction, plantable);
+        return super.canSustainPlant(state, world, pos, direction, plantable);
     }
 
     @Override
