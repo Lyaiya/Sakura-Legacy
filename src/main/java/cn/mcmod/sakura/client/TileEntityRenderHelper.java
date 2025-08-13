@@ -11,18 +11,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class TileEntityRenderHelper extends TileEntityItemStackRenderer {
-
     private final TileEntityStoneMortar mortarRender = new TileEntityStoneMortar();
 
     @Override
     public void renderByItem(ItemStack itemStack) {
-        Block block = Block.getBlockFromItem(itemStack.getItem());
+        final Block block = Block.getBlockFromItem(itemStack.getItem());
         if (block == BlockLoader.STONEMORTAR) {
             TileEntityRendererDispatcher.instance.render(this.mortarRender, 0.0D, 0.0D, 0.0D, 0.0F);
         } else {
             super.renderByItem(itemStack);
         }
-
     }
 
 }

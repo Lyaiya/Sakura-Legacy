@@ -1,8 +1,8 @@
 package cn.mcmod.sakura.client.render.tileentity;
 
-import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.client.model.tileentity.ModelMortar;
 import cn.mcmod.sakura.tileentity.TileEntityStoneMortar;
+import cn.mcmod.sakura.util.RLUtil;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -11,8 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderTileEntityStoneMortar extends TileEntitySpecialRenderer<TileEntityStoneMortar> {
-
-    private static final ResourceLocation TEXTURES = new ResourceLocation(SakuraMain.MODID, "textures/entity/tileentity/mortar.png");
+    private static final ResourceLocation TEXTURES = RLUtil.of("textures/entity/tileentity/mortar.png");
 
     private final ModelMortar model = new ModelMortar();
 

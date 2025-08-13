@@ -32,6 +32,7 @@ public class BlockRiceCrop extends BlockCrops {
         super();
     }
 
+    @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         return RICE_AABB[state.getValue(this.getAgeProperty()).intValue()];
     }
@@ -55,10 +56,12 @@ public class BlockRiceCrop extends BlockCrops {
         return state.getMaterial() == Material.WATER;
     }
 
+    @Override
     public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, net.minecraftforge.common.IPlantable plantable) {
         return state.getMaterial() == Material.WATER;
     }
 
+    @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         this.checkAndDropBlock(worldIn, pos, state);
 

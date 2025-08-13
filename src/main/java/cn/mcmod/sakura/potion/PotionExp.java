@@ -32,13 +32,13 @@ public class PotionExp extends Potion {
 
     @SideOnly(Side.CLIENT)
     public void renderInventoryEffect(int x, int y, PotionEffect effect, Minecraft mc) {
-        mc.getTextureManager().bindTexture(PotionLoader.res);
+        mc.getTextureManager().bindTexture(PotionLoader.RES);
         mc.currentScreen.drawTexturedModalRect(x + 6, y + 7, 0, 0, 18, 18);
     }
 
     @SideOnly(Side.CLIENT)
     public void renderHUDEffect(int x, int y, PotionEffect effect, Minecraft mc, float alpha) {
-        mc.getTextureManager().bindTexture(PotionLoader.res);
+        mc.getTextureManager().bindTexture(PotionLoader.RES);
         Gui.drawModalRectWithCustomSizedTexture(x + 3, y + 3, 0, 0, 18, 18, 256.0F, 256.0F);
     }
 

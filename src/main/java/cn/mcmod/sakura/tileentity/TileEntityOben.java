@@ -12,22 +12,26 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.Nullable;
 
 public class TileEntityOben extends TileEntity implements ITickable {
+    private static final String KEY_INVENTORY = "Inventory";
+
     private final ItemStackHandler inventory = new ItemStackHandler() {
         @Override
         protected void onContentsChanged(int slot) {
-            TileEntityOben.this.refresh();
+            refresh();
         }
     };
 
-    public ItemStackHandler getInventory() {
-        return this.inventory;
+    public TileEntityOben() {
     }
 
-    protected void refresh() {
+    public ItemStackHandler getInventory() {
+        return inventory;
+    }
+
+    private void refresh() {
         if (hasWorld() && !world.isRemote) {
             IBlockState state = world.getBlockState(pos);
             world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
@@ -35,22 +39,21 @@ public class TileEntityOben extends TileEntity implements ITickable {
     }
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) inventory : super.getCapability(capability, facing);
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 
-    @Nonnull
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
         NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
@@ -58,24 +61,23 @@ public class TileEntityOben extends TileEntity implements ITickable {
         return ret;
     }
 
-    @Nonnull
     @Override
     public final NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-        super.readFromNBT(par1nbtTagCompound);
-        readPacketNBT(par1nbtTagCompound);
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        readPacketNBT(compound);
     }
 
-    public void writePacketNBT(NBTTagCompound cmp) {
-        cmp.setTag("Inventory", inventory.serializeNBT());
+    private void writePacketNBT(NBTTagCompound cmp) {
+        cmp.setTag(KEY_INVENTORY, inventory.serializeNBT());
     }
 
-    public void readPacketNBT(NBTTagCompound cmp) {
-        inventory.deserializeNBT(cmp.getCompoundTag("Inventory"));
+    private void readPacketNBT(NBTTagCompound cmp) {
+        inventory.deserializeNBT(cmp.getCompoundTag(KEY_INVENTORY));
     }
 
     @Override
@@ -93,6 +95,5 @@ public class TileEntityOben extends TileEntity implements ITickable {
 
     @Override
     public void update() {
-
     }
 }

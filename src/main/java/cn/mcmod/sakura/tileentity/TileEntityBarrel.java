@@ -4,8 +4,9 @@ import cn.mcmod.sakura.api.recipes.BarrelRecipes;
 import cn.mcmod.sakura.api.recipes.LiquidToItemRecipe;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -20,16 +21,26 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+public class TileEntityBarrel extends TileEntity implements ITickable, ISidedInventory {
+    private static final String KEY_TANK = "Tank";
+    private static final String KEY_RESULT_TANK = "ResultTank";
+    private static final String KEY_PROCESS_TIMER = "processTimer";
 
-public class TileEntityBarrel extends TileEntity implements ITickable, IInventory {
-    private static final String TAG_PROCESS = "processTimer";
-    public FluidTank tank = new FluidTank(3000) {
+    public static final int ID_PROCESS_TIMER = 1;
+
+    private final int[] SLOTS_INPUTS = {0, 1, 2, 3};
+    private final int[] SLOTS_OUTPUTS = {4};
+
+    private final NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+
+    private int processTimer = 0;
+
+    private final FluidTank inputTank = new FluidTank(3000) {
         @Override
         protected void onContentsChanged() {
-            TileEntityBarrel.this.refresh();
+            refresh();
         }
 
         @Override
@@ -40,16 +51,13 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
             return fluid.getFluid().getTemperature(fluid) < 500;
         }
     };
-    // This is a tank that accumulates liquid when the process is over
-    public FluidTank resultTank = new FluidTank(3000) {
+
+    private final FluidTank outputTank = new FluidTank(3000) {
         @Override
         protected void onContentsChanged() {
-            TileEntityBarrel.this.refresh();
+            refresh();
         }
     };
-    protected NonNullList<ItemStack> inventory = NonNullList.withSize(this.getSizeInventory(),
-            ItemStack.EMPTY);
-    private int processTimer = 0;
 
     public TileEntityBarrel() {
     }
@@ -58,15 +66,15 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
         return processTimer;
     }
 
-    public FluidTank getTank() {
-        return this.tank;
+    public FluidTank getInputTank() {
+        return inputTank;
     }
 
-    public FluidTank getResultTank() {
-        return this.resultTank;
+    public FluidTank getOutputTank() {
+        return outputTank;
     }
 
-    protected void refresh() {
+    private void refresh() {
         if (hasWorld() && !world.isRemote) {
             IBlockState state = world.getBlockState(pos);
             world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
@@ -75,54 +83,52 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
 
     @Override
     public void update() {
-        if (!world.isRemote) {
-            DrainInput();
-            if (this.getTank() != null) {
-                ItemStack[] iteminput = new ItemStack[]{this.inventory.get(0), this.inventory.get(1),
-                        this.inventory.get(2)};
-                if (isRecipes(this.getTank().getFluid(), iteminput)) {
-                    FluidStack result = BarrelRecipes.getInstance().getResultFluidStack(this.getTank().getFluid(),
-                            iteminput);
-                    FluidStack fluidStack = BarrelRecipes.getInstance().getFluidStack(this.getTank().getFluid());
-                    if ((resultTank.getFluid() == null || resultTank.canFill() && result.getFluid().equals(resultTank.getFluid().getFluid()))) {
-                        processTimer += 1;
-                    } else
-                        processTimer = 0;
+        if (world.isRemote) return;
+        drainInput();
 
-                    if (processTimer >= 1200) {
-                        processTimer = 0;
-                        this.resultTank.fill(result, true);
+        FluidStack inputFluidStack = inputTank.getFluid();
+        if (inputFluidStack == null) return;
 
-                        // If pot is a recipe that uses a liquid, it consumes
-                        // only that amount of liquid
-                        if (fluidStack != null && fluidStack.amount > 0) {
-                            this.tank.drain(fluidStack, true);
-                        }
+        ItemStack[] inputItemStacks = new ItemStack[]{inventory.get(0), inventory.get(1), inventory.get(2)};
 
-                        for (int i = 0; i < 3; i++) {
-                            if (this.inventory.get(i).getCount() == 1
-                                    && this.inventory.get(i).getItem().getContainerItem(this.inventory.get(i)) != null)
-                                this.inventory.set(i,
-                                        this.inventory.get(i).getItem().getContainerItem(this.inventory.get(i)).copy());
-                            else
-                                this.decrStackSize(i, 1);
-                        }
-                        this.markDirty();
-                    }
+        FluidStack result = BarrelRecipes.INSTANCE.getResultFluidStack(inputFluidStack, inputItemStacks);
+        if (result == null) return;
+        FluidStack fluidStack = BarrelRecipes.INSTANCE.getFluidStack(inputFluidStack);
+        final FluidStack outputFluidStack = outputTank.getFluid();
+        if (outputFluidStack == null
+                || outputTank.canFill()
+                && result.getFluid().equals(outputFluidStack.getFluid())
+        ) {
+            processTimer += 1;
+        } else {
+            processTimer = 0;
+        }
+        if (processTimer >= 1200) {
+            processTimer = 0;
+            outputTank.fill(result, true);
+
+            // If pot is a recipe that uses a liquid, it consumes
+            // only that amount of liquid
+            if (fluidStack != null && fluidStack.amount > 0) {
+                inputTank.drain(fluidStack, true);
+            }
+
+            ItemStack itemStack;
+            for (int i = 0; i < 3; i++) {
+                itemStack = inventory.get(i);
+                if (itemStack.getCount() == 1) {
+                    inventory.set(i, itemStack.getItem().getContainerItem(itemStack).copy());
+                } else {
+                    decrStackSize(i, 1);
                 }
             }
+            markDirty();
         }
-    }
-
-    protected boolean isRecipes(FluidStack fluid, ItemStack[] items) {
-        FluidStack result = BarrelRecipes.getInstance().getResultFluidStack(fluid, items);
-        return result != null;
     }
 
     @Override
     public void markDirty() {
         super.markDirty();
-
     }
 
     @Override
@@ -142,7 +148,7 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
 
     @Override
     public boolean isEmpty() {
-        for (ItemStack itemstack : this.inventory) {
+        for (ItemStack itemstack : inventory) {
             if (!itemstack.isEmpty()) {
                 return false;
             }
@@ -160,7 +166,7 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
         ItemStack itemstack = ItemStackHelper.getAndSplit(inventory, index, count);
 
         if (!itemstack.isEmpty()) {
-            this.markDirty();
+            markDirty();
         }
 
         return itemstack;
@@ -174,10 +180,10 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
         inventory.set(index, stack);
-        if (stack.getCount() > this.getInventoryStackLimit()) {
-            stack.setCount(this.getInventoryStackLimit());
+        if (stack.getCount() > getInventoryStackLimit()) {
+            stack.setCount(getInventoryStackLimit());
         }
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -187,20 +193,20 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
 
     @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        if (this.world.getTileEntity(this.pos) != this) {
+        if (world.getTileEntity(pos) != this) {
             return false;
         }
-        return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+        return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
     public void openInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
     public void closeInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -208,23 +214,22 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
         return index < 3;
     }
 
+    @Override
     public int getField(int id) {
-        switch (id) {
-            case 0:
-                return this.processTimer;
-            default:
-                return 0;
+        if (id == ID_PROCESS_TIMER) {
+            return processTimer;
         }
+        return 0;
     }
 
+    @Override
     public void setField(int id, int value) {
-        switch (id) {
-            case 0:
-                this.processTimer = value;
-                break;
+        if (id == ID_PROCESS_TIMER) {
+            processTimer = value;
         }
     }
 
+    @Override
     public int getFieldCount() {
         return 1;
     }
@@ -234,76 +239,94 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
         inventory.clear();
     }
 
+    @Override
+    public int[] getSlotsForFace(EnumFacing side) {
+        return switch (side) {
+            case DOWN -> SLOTS_OUTPUTS;
+            case UP -> SLOTS_INPUTS;
+            default -> new int[0];
+        };
+    }
+
+    @Override
+    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+        switch (index) {
+            case 0, 1, 2, 3:
+                return true;
+            case 4:
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+        return true;
+    }
+
     public NonNullList<ItemStack> getInventory() {
         return inventory;
     }
 
-    /**
-     * @return
-     */
-
     @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-    @Override
     @Nullable
+    @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(inputTank);
         }
         return super.getCapability(capability, facing);
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState,
-                                 @Nonnull IBlockState newState) {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 
-    @Nonnull
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
-        NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        NBTTagCompound ret = super.writeToNBT(compound);
         writePacketNBT(ret);
         return ret;
     }
 
-    @Nonnull
     @Override
     public final NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-        super.readFromNBT(par1nbtTagCompound);
-        readPacketNBT(par1nbtTagCompound);
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        readPacketNBT(compound);
     }
 
-    public void writePacketNBT(NBTTagCompound cmp) {
-        NBTTagCompound tankTag = this.tank.writeToNBT(new NBTTagCompound());
-        ItemStackHelper.saveAllItems(cmp, this.inventory);
+    private void writePacketNBT(NBTTagCompound compound) {
+        NBTTagCompound tankTag = inputTank.writeToNBT(new NBTTagCompound());
+        ItemStackHelper.saveAllItems(compound, inventory);
 
-        cmp.setTag("Tank", tankTag);
-        NBTTagCompound resultTankTag = this.resultTank.writeToNBT(new NBTTagCompound());
-        cmp.setTag("ResultTank", resultTankTag);
-        cmp.setInteger(TAG_PROCESS, processTimer);
+        compound.setTag(KEY_TANK, tankTag);
+        NBTTagCompound resultTankTag = outputTank.writeToNBT(new NBTTagCompound());
+        compound.setTag(KEY_RESULT_TANK, resultTankTag);
+        compound.setInteger(KEY_PROCESS_TIMER, processTimer);
     }
 
-    public void readPacketNBT(NBTTagCompound cmp) {
-        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(cmp, this.inventory);
+    private void readPacketNBT(NBTTagCompound compound) {
+        inventory.clear();
+        ItemStackHelper.loadAllItems(compound, inventory);
 
-        processTimer = cmp.getInteger(TAG_PROCESS);
+        processTimer = compound.getInteger(KEY_PROCESS_TIMER);
 
-        this.tank.readFromNBT(cmp.getCompoundTag("Tank"));
-        this.resultTank.readFromNBT(cmp.getCompoundTag("ResultTank"));
+        inputTank.readFromNBT(compound.getCompoundTag(KEY_TANK));
+        outputTank.readFromNBT(compound.getCompoundTag(KEY_RESULT_TANK));
     }
 
     @Override
-    public final SPacketUpdateTileEntity getUpdatePacket() {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound tag = new NBTTagCompound();
         writePacketNBT(tag);
         return new SPacketUpdateTileEntity(pos, -999, tag);
@@ -315,36 +338,38 @@ public class TileEntityBarrel extends TileEntity implements ITickable, IInventor
         readPacketNBT(packet.getNbtCompound());
     }
 
-    private void DrainInput() {
-        ItemStack itemstack = this.inventory.get(3);
-        ItemStack itemstack2 = this.inventory.get(4);
-        if (this.getResultTank() != null) {
-            FluidStack fluid = LiquidToItemRecipe.instance().getResultFluid(this.getResultTank().getFluid());
-            if (fluid != null) {
-                ItemStack itemstack1 = LiquidToItemRecipe.instance().getResultItemStack(this.getResultTank().getFluid(),
-                        itemstack);
-                if (itemstack1.isEmpty())
-                    return;
-                if (this.getResultTank().getFluid().amount < fluid.amount)
-                    return;
-                boolean not_full = (itemstack2.getCount() + itemstack1.getCount() <= this.getInventoryStackLimit()
-                        && itemstack2.getCount() + itemstack1.getCount() <= itemstack2.getMaxStackSize());
-                if (!not_full)
-                    return;
-                if (itemstack2.isEmpty()) {
-                    this.inventory.set(4, itemstack1.copy());
-                } else if (itemstack2.getItem() == itemstack1.getItem()) {
-                    itemstack2.grow(itemstack1.getCount());
-                }
+    private void drainInput() {
+        final FluidStack resultTankFluid = outputTank.getFluid();
+        if (resultTankFluid == null) return;
 
-                if (!itemstack.getItem().hasContainerItem(itemstack))
-                    itemstack.shrink(1);
-                else
-                    this.inventory.set(3, new ItemStack(itemstack.getItem().getContainerItem()));
+        ItemStack itemStack3 = inventory.get(3);
+        ItemStack itemStack4 = inventory.get(4);
 
-                this.getResultTank().drain(fluid, true);
-            }
+        FluidStack resultFluid = LiquidToItemRecipe.INSTANCE.getResultFluid(resultTankFluid);
+        if (resultFluid == null) return;
+
+        ItemStack resultItemStack = LiquidToItemRecipe.INSTANCE.getResultItemStack(resultTankFluid, itemStack3);
+        if (resultItemStack.isEmpty()) return;
+        if (resultTankFluid.amount < resultFluid.amount) return;
+
+        boolean notFull = (itemStack4.getCount() + resultItemStack.getCount() <= getInventoryStackLimit()
+                && itemStack4.getCount() + resultItemStack.getCount() <= itemStack4.getMaxStackSize());
+        if (!notFull) return;
+
+        if (itemStack4.isEmpty()) {
+            inventory.set(4, resultItemStack.copy());
+        } else if (itemStack4.getItem() == resultItemStack.getItem()) {
+            itemStack4.grow(resultItemStack.getCount());
         }
+
+        final Item item3 = itemStack3.getItem();
+        if (item3.hasContainerItem(itemStack3)) {
+            inventory.set(3, new ItemStack(item3.getContainerItem()));
+        } else {
+            itemStack3.shrink(1);
+        }
+
+        outputTank.drain(resultFluid, true);
     }
 
 }

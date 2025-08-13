@@ -1,7 +1,7 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.item.ItemLoader;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
@@ -18,13 +18,14 @@ public class BlockSakuraDiamondOre extends BlockOre {
     public BlockSakuraDiamondOre() {
         super(MapColor.STONE);
 
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
         this.setHardness(3.0F);
         this.setResistance(5.0F);
         this.setHarvestLevel("pickaxe", 1);
         this.setSoundType(SoundType.STONE);
     }
 
+    @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return ItemLoader.SAKURA_DIAMOND;
     }
@@ -32,6 +33,7 @@ public class BlockSakuraDiamondOre extends BlockOre {
     /**
      * Returns the quantity of items to drop on block destruction.
      */
+    @Override
     public int quantityDropped(Random random) {
         return 1;
     }
@@ -39,6 +41,7 @@ public class BlockSakuraDiamondOre extends BlockOre {
     /**
      * Get the quantity dropped based on the given fortune level
      */
+    @Override
     public int quantityDroppedWithBonus(int fortune, Random random) {
         if (fortune > 0 && Item.getItemFromBlock(this) != this.getItemDropped(this.getBlockState().getValidStates().iterator().next(), random, fortune)) {
             int i = random.nextInt(fortune + 2) - 1;
@@ -55,6 +58,7 @@ public class BlockSakuraDiamondOre extends BlockOre {
     /**
      * Spawns this Block's drops into the World as EntityItems.
      */
+    @Override
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
     }
@@ -68,7 +72,8 @@ public class BlockSakuraDiamondOre extends BlockOre {
         return 0;
     }
 
+    @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
-        return new ItemStack(this);
+        return super.getItem(worldIn, pos, state);
     }
 }

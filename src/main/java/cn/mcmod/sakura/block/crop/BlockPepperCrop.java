@@ -7,12 +7,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemShears;
@@ -56,15 +54,15 @@ public class BlockPepperCrop extends BlockBase implements IPlantable, IGrowable,
     }
 
     protected int getAge(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue();
+        return state.getValue(this.getAgeProperty());
     }
 
     public IBlockState withAge(int age) {
-        return this.getDefaultState().withProperty(this.getAgeProperty(), Integer.valueOf(age));
+        return this.getDefaultState().withProperty(this.getAgeProperty(), age);
     }
 
     public boolean isMaxAge(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue() >= this.getMaxAge();
+        return state.getValue(this.getAgeProperty()) >= this.getMaxAge();
     }
 
     /**
@@ -88,6 +86,7 @@ public class BlockPepperCrop extends BlockBase implements IPlantable, IGrowable,
     /**
      * Convert the given metadata into a BlockState for this Block
      */
+    @Override
     public IBlockState getStateFromMeta(int meta) {
         return this.withAge(meta);
     }
@@ -95,6 +94,7 @@ public class BlockPepperCrop extends BlockBase implements IPlantable, IGrowable,
     /**
      * Convert the BlockState into the correct metadata value
      */
+    @Override
     public int getMetaFromState(IBlockState state) {
         return this.getAge(state);
     }
@@ -156,6 +156,7 @@ public class BlockPepperCrop extends BlockBase implements IPlantable, IGrowable,
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return Item.getItemFromBlock(BlockLoader.PEPPER_SPLINT);
     }
@@ -178,6 +179,7 @@ public class BlockPepperCrop extends BlockBase implements IPlantable, IGrowable,
     /**
      * Spawns this Block's drops into the World as EntityItems.
      */
+    @Override
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
         if (!worldIn.isRemote) {
             spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(BlockLoader.PEPPER_SPLINT)));
@@ -192,6 +194,7 @@ public class BlockPepperCrop extends BlockBase implements IPlantable, IGrowable,
         }
     }
 
+    @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
         return new ItemStack(BlockLoader.PEPPER_SPLINT);
     }
@@ -204,12 +207,10 @@ public class BlockPepperCrop extends BlockBase implements IPlantable, IGrowable,
     @Override
     public List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
         int i = this.getAge(world.getBlockState(pos));
-        List<ItemStack> list = new ArrayList<ItemStack>();
+        List<ItemStack> list = new ArrayList<>();
         if (i == 6) {
-            list.clear();
             list.add(new ItemStack(ItemLoader.MATERIAL, 1 + fortune, 18));
         } else if (i == 7) {
-            list.clear();
             list.add(new ItemStack(ItemLoader.MATERIAL, 1 + fortune, 19));
         }
         return list;

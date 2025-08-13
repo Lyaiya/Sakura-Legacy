@@ -30,8 +30,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class ItemKotachi extends Item {
     private final float attackDamage;
@@ -51,10 +50,11 @@ public class ItemKotachi extends Item {
         });
     }
 
+    @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
         playerIn.setActiveHand(handIn);
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
     @Override
@@ -118,6 +118,7 @@ public class ItemKotachi extends Item {
         return EnumAction.BLOCK;
     }
 
+    @Override
     public int getMaxItemUseDuration(ItemStack stack) {
         return 72000;
     }
@@ -126,8 +127,7 @@ public class ItemKotachi extends Item {
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
         if (worldIn.isRemote) return;
-        if (entityIn instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) entityIn;
+        if (entityIn instanceof EntityPlayer player) {
             ItemStack mainhand = player.getHeldItem(EnumHand.MAIN_HAND);
             ItemStack offhand = player.getHeldItem(EnumHand.OFF_HAND);
             boolean flag1 = !(mainhand.isEmpty()) && !(offhand.isEmpty()),
@@ -149,6 +149,7 @@ public class ItemKotachi extends Item {
         return this.material.getAttackDamage();
     }
 
+    @Override
     public float getDestroySpeed(ItemStack stack, IBlockState state) {
         Block block = state.getBlock();
 
@@ -163,6 +164,7 @@ public class ItemKotachi extends Item {
      * Current implementations of this method in child classes do not use the entry argument beside ev. They just raise
      * the damage on the stack.
      */
+    @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
         stack.damageItem(1, attacker);
         return true;
@@ -171,6 +173,7 @@ public class ItemKotachi extends Item {
     /**
      * Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
      */
+    @Override
     public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
         if (state.getBlockHardness(worldIn, pos) != 0.0D) {
             stack.damageItem(2, entityLiving);
@@ -182,6 +185,7 @@ public class ItemKotachi extends Item {
     /**
      * Check whether this Item can harvest the given Block
      */
+    @Override
     public boolean canHarvestBlock(IBlockState blockIn) {
         return blockIn.getBlock() == Blocks.WEB;
     }
@@ -190,6 +194,7 @@ public class ItemKotachi extends Item {
      * Returns True is the item is renderer in full 3D when hold.
      */
     @SideOnly(Side.CLIENT)
+    @Override
     public boolean isFull3D() {
         return true;
     }
@@ -197,6 +202,7 @@ public class ItemKotachi extends Item {
     /**
      * Return the enchantability factor of the item, most of the time is based on material.
      */
+    @Override
     public int getItemEnchantability() {
         return this.material.getEnchantability();
     }
@@ -214,6 +220,7 @@ public class ItemKotachi extends Item {
      * @param toRepair the {@code ItemStack} being repaired
      * @param repair   the {@code ItemStack} being used to perform the repair
      */
+    @Override
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
         ItemStack mat = this.material.getRepairItemStack();
         if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) return true;
@@ -223,6 +230,7 @@ public class ItemKotachi extends Item {
     /**
      * Gets a map of item attribute modifiers, used by ItemSword to increase hit damage.
      */
+    @Override
     public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {
         Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
 

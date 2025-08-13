@@ -13,33 +13,35 @@ import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
-
 @ZenClass("mods.sakura.Barrel")
 @ZenRegister
 public class CTSakuraBarrel {
     @ZenMethod
     public static void RemoveRecipe(ILiquidStack input) {
-        SakuraRecipeRegister.getInstance().actions.add(new Removal(CraftTweakerMC.getLiquidStack(input)));
+        SakuraRecipeRegister.INSTANCE.addAction(new Removal(CraftTweakerMC.getLiquidStack(input)));
     }
 
     @ZenMethod
     public static void AddRecipe(ILiquidStack input_fluid, IIngredient[] input, ILiquidStack output) {
-        if (input.length > 0) {
-            Object[] array = new Object[input.length];
-            for (int i = 0; i < input.length; i++) {
-                if (input[i] instanceof IItemStack)
-                    array[i] = CraftTweakerMC.getItemStack(input[i]);
-                else if (input[i] instanceof IOreDictEntry)
-                    array[i] = ((IOreDictEntry) input[i]).getName();
-            }
+        if (input.length == 0) return;
 
-            SakuraRecipeRegister.getInstance().actions.add(new Addition(array, CraftTweakerMC.getLiquidStack(output), CraftTweakerMC.getLiquidStack(input_fluid)));
+        final Object[] array = new Object[input.length];
+        IIngredient ingredient;
+        for (int i = 0; i < input.length; i++) {
+            ingredient = input[i];
+            if (ingredient instanceof IItemStack) {
+                array[i] = CraftTweakerMC.getItemStack(ingredient);
+            } else if (ingredient instanceof IOreDictEntry oreDictEntry) {
+                array[i] = oreDictEntry.getName();
+            }
         }
+
+        SakuraRecipeRegister.INSTANCE.addAction(new Addition(array, CraftTweakerMC.getLiquidStack(output), CraftTweakerMC.getLiquidStack(input_fluid)));
     }
 
     @ZenMethod
     public static void ClearAllRecipe() {
-        SakuraRecipeRegister.getInstance().actions.add(new ClearAllRecipe());
+        SakuraRecipeRegister.INSTANCE.addAction(new ClearAllRecipe());
     }
 
     private static final class Removal implements IAction {
@@ -51,7 +53,7 @@ public class CTSakuraBarrel {
 
         @Override
         public void apply() {
-            BarrelRecipes.getInstance().ClearRecipe(itemInput);
+            BarrelRecipes.INSTANCE.clearRecipe(itemInput);
         }
 
         @Override
@@ -73,7 +75,7 @@ public class CTSakuraBarrel {
 
         @Override
         public void apply() {
-            BarrelRecipes.getInstance().register(fluidInput, fluidOutput, itemInput);
+            BarrelRecipes.INSTANCE.register(fluidInput, fluidOutput, itemInput);
         }
 
         @Override
@@ -82,11 +84,10 @@ public class CTSakuraBarrel {
         }
     }
 
-
     private static final class ClearAllRecipe implements IAction {
         @Override
         public void apply() {
-            BarrelRecipes.getInstance().ClearAllRecipe();
+            BarrelRecipes.INSTANCE.clearAllRecipe();
         }
 
         @Override

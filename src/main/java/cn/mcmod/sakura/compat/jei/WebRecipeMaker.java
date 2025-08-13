@@ -15,7 +15,7 @@ public final class WebRecipeMaker {
         IStackHelper stackHelper = helpers.getStackHelper();
         List<SimpleRecipe> recipes = new ArrayList<SimpleRecipe>();
 
-        for (Entry<Object, ItemStack> entry : WebRecipe.getInstance().RecipesList.entrySet()) {
+        for (Entry<Object, ItemStack> entry : WebRecipe.INSTANCE.RecipesList.entrySet()) {
 
             List<ItemStack> inputs = stackHelper.toItemStackList(entry.getKey());
 

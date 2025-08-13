@@ -1,9 +1,9 @@
 package cn.mcmod.sakura.block.tree;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.client.SakuraParticleType;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.state.BlockStateContainer;
@@ -31,11 +31,12 @@ public class BlockMapleLeaveOrange extends BlockLeaves {
     public BlockMapleLeaveOrange() {
         this.setHardness(0.2F);
         this.setLightOpacity(1);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
         this.setDefaultState(blockState.getBaseState().withProperty(CHECK_DECAY, false).withProperty(DECAYABLE, false));
     }
 
     @SideOnly(Side.CLIENT)
+    @Override
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
         Blocks.LEAVES.randomDisplayTick(stateIn, worldIn, pos, rand);
         if (rand.nextInt(40) == 0) {
@@ -49,7 +50,7 @@ public class BlockMapleLeaveOrange extends BlockLeaves {
             double d4 = ((rand.nextFloat()) * 0.055D) + 0.015D;
             double d5 = rand.nextFloat() * k * 0.1D;
 
-            SakuraMain.proxy.spawnParticle(SakuraParticleType.MAPLEORANGE, d0, d1, d2, d3, -d4, d5);
+            SakuraMain.proxy.spawnParticle(SakuraParticleType.MAPLE_ORANGE, d0, d1, d2, d3, -d4, d5);
         }
     }
 
@@ -57,7 +58,6 @@ public class BlockMapleLeaveOrange extends BlockLeaves {
     public BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, CHECK_DECAY, DECAYABLE);
     }
-
 
     @Override
     public IBlockState getStateFromMeta(int meta) {

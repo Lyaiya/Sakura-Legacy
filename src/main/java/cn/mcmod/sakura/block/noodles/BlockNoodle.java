@@ -3,7 +3,6 @@ package cn.mcmod.sakura.block.noodles;
 import cn.mcmod.sakura.item.ItemLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
@@ -28,7 +27,7 @@ public abstract class BlockNoodle extends Block {
 
     public BlockNoodle() {
         super(Material.CAKE);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(this.getAgeProperty(), Integer.valueOf(0)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(this.getAgeProperty(), 0));
     }
 
     @Override
@@ -57,7 +56,7 @@ public abstract class BlockNoodle extends Block {
     }
 
     public boolean isReady(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue() >= 7;
+        return state.getValue(this.getAgeProperty()) >= 7;
     }
 
     public abstract ItemStack getNoodle();
@@ -108,16 +107,17 @@ public abstract class BlockNoodle extends Block {
 
 
     protected int getCutting(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue();
+        return state.getValue(this.getAgeProperty());
     }
 
     public IBlockState withCutting(int age) {
-        return this.getDefaultState().withProperty(this.getAgeProperty(), Integer.valueOf(age));
+        return this.getDefaultState().withProperty(this.getAgeProperty(), age);
     }
 
     /**
      * Convert the given metadata into a BlockState for this Block
      */
+    @Override
     public IBlockState getStateFromMeta(int meta) {
         return this.withCutting(meta);
     }
@@ -125,10 +125,12 @@ public abstract class BlockNoodle extends Block {
     /**
      * Convert the BlockState into the correct metadata value
      */
+    @Override
     public int getMetaFromState(IBlockState state) {
         return this.getCutting(state);
     }
 
+    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, CUTTING);
     }

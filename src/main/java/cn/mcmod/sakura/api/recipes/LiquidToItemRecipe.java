@@ -6,45 +6,44 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class LiquidToItemRecipe {
-    public final Map<FluidStack, Map<Object, ItemStack>> RecipesList = Maps.newHashMap();
-    private static final LiquidToItemRecipe RECIPE_BASE = new LiquidToItemRecipe();
+    public static final LiquidToItemRecipe INSTANCE = new LiquidToItemRecipe();
+
+    public final Map<FluidStack, Map<Object, ItemStack>> recipesList = Maps.newHashMap();
 
     private LiquidToItemRecipe() {
     }
 
-    public static LiquidToItemRecipe instance() {
-        return RECIPE_BASE;
-    }
-
     public void addRecipes(Object main, ItemStack result, FluidStack fluidStack) {
-        Map<Object, ItemStack> items = null;
-        if (!RecipesList.containsKey(fluidStack)) {
+        Map<Object, ItemStack> items;
+        if (!recipesList.containsKey(fluidStack)) {
             items = Maps.newHashMap();
-            RecipesList.put(fluidStack, items);
+            recipesList.put(fluidStack, items);
         } else {
-            items = RecipesList.get(fluidStack);
+            items = recipesList.get(fluidStack);
         }
         items.put(main, result);
     }
 
     public ItemStack getResultItemStack(FluidStack fluid, ItemStack stack) {
-        for (Entry<FluidStack, Map<Object, ItemStack>> entry : RecipesList.entrySet()) {
+        for (Entry<FluidStack, Map<Object, ItemStack>> entry : recipesList.entrySet()) {
             if (entry.getKey().isFluidEqual(fluid))
                 for (Entry<Object, ItemStack> entry2 : entry.getValue().entrySet()) {
-                    if (entry2.getKey() instanceof ItemStack) {
-                        if (ItemStack.areItemsEqual(stack, (ItemStack) entry2.getKey())) {
+                    if (entry2.getKey() instanceof ItemStack itemStack) {
+                        if (ItemStack.areItemsEqual(stack, itemStack)) {
                             return entry2.getValue();
                         }
-                    } else if (entry2.getKey() instanceof String) {
-                        String dict = (String) entry2.getKey();
+                    } else if (entry2.getKey() instanceof String dict) {
                         NonNullList<ItemStack> ore = OreDictionary.getOres(dict);
-                        if (!ore.isEmpty() && RecipesUtil.getInstance().containsMatch(true, ore, stack))
+                        if (!ore.isEmpty()
+                                && RecipesUtil.getInstance().containsMatch(true, ore, stack)) {
                             return entry2.getValue();
+                        }
                     }
                 }
         }
@@ -52,19 +51,21 @@ public class LiquidToItemRecipe {
         return ItemStack.EMPTY;
     }
 
+    @Nullable
     public FluidStack getResultFluid(FluidStack fluid) {
-        for (FluidStack entry : RecipesList.keySet()) {
-            if (entry.isFluidEqual(fluid))
+        for (FluidStack entry : recipesList.keySet()) {
+            if (entry.isFluidEqual(fluid)) {
                 return entry;
+            }
         }
         return null;
     }
 
-    public void ClearRecipe(FluidStack fluid, Object input) {
-        RecipesList.get(fluid).remove(input);
+    public void clearRecipe(FluidStack fluid, Object input) {
+        recipesList.get(fluid).remove(input);
     }
 
-    public void ClearAllRecipe() {
-        RecipesList.clear();
+    public void clearAllRecipe() {
+        recipesList.clear();
     }
 }

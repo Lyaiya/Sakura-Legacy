@@ -18,18 +18,17 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemSheath extends Item {
-
     public ItemSheath() {
         this.maxStackSize = 1;
         this.setMaxDamage(ToolMaterial.WOOD.getMaxUses());
         this.setTranslationKey(SakuraMain.MODID + "." + "sheath");
-
     }
 
+    @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
         playerIn.setActiveHand(handIn);
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
     @Override
@@ -37,6 +36,7 @@ public class ItemSheath extends Item {
         return EnumAction.BLOCK;
     }
 
+    @Override
     public int getMaxItemUseDuration(ItemStack stack) {
         return 72000;
     }
@@ -45,6 +45,7 @@ public class ItemSheath extends Item {
      * Current implementations of this method in child classes do not use the entry argument beside ev. They just raise
      * the damage on the stack.
      */
+    @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
         stack.damageItem(1, attacker);
         return true;
@@ -53,6 +54,7 @@ public class ItemSheath extends Item {
     /**
      * Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
      */
+    @Override
     public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
         if (state.getBlockHardness(worldIn, pos) != 0.0D) {
             stack.damageItem(2, entityLiving);
@@ -65,6 +67,7 @@ public class ItemSheath extends Item {
      * Returns True is the item is renderer in full 3D when hold.
      */
     @SideOnly(Side.CLIENT)
+    @Override
     public boolean isFull3D() {
         return true;
     }
@@ -75,13 +78,14 @@ public class ItemSheath extends Item {
      * @param toRepair the {@code ItemStack} being repaired
      * @param repair   the {@code ItemStack} being used to perform the repair
      */
+    @Override
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
         ItemStack mat = ToolMaterial.WOOD.getRepairItemStack();
         if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) return true;
         return super.getIsRepairable(toRepair, repair);
     }
 
-    public void sheath_In(EntityPlayer player) {
+    public void sheathIn(EntityPlayer player) {
         ItemStack item_l = player.getHeldItemMainhand();
         ItemStack item_r = player.getHeldItemOffhand();
         if (item_r.getItem() == ItemLoader.KATANA) {

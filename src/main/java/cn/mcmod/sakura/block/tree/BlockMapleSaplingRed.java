@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.block.tree;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.world.gen.WorldGenBigMaple;
 import cn.mcmod.sakura.world.gen.WorldGenMapleTree;
@@ -25,7 +25,7 @@ public class BlockMapleSaplingRed extends BlockBush implements IGrowable {
 
     public BlockMapleSaplingRed() {
         super();
-        setCreativeTab(CommonProxy.tab);
+        setCreativeTab(CommonProxy.TAB);
         this.setSoundType(SoundType.PLANT);
     }
 

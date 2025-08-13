@@ -1,6 +1,5 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.crop.*;
 import cn.mcmod.sakura.block.door.BlockDoorBase;
@@ -15,7 +14,9 @@ import cn.mcmod.sakura.block.slab.BlockCarpetTatami;
 import cn.mcmod.sakura.block.slab.BlockFallenLeaves;
 import cn.mcmod.sakura.block.slab.BlockHalfTatami;
 import cn.mcmod.sakura.block.tree.*;
+import cn.mcmod.sakura.compat.CompatConst;
 import cn.mcmod.sakura.item.ItemShoji;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod_mmf.mmlib.block.BlockBase;
 import cn.mcmod_mmf.mmlib.block.BlockFacing;
 import cn.mcmod_mmf.mmlib.block.slab.BlockCarpetFacing;
@@ -49,6 +50,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Random;
 
 public class BlockLoader {
+    public static final BlockLoader INSTANCE = new BlockLoader();
+
+    private BlockLoader() {
+    }
+
     public static Fluid FOODOIL_FLUID = new FluidBasic("food_oil");
     public static Block FOODOIL;
     public static Fluid YEAST_FLUID = new FluidBasic("yeast_liquid");
@@ -245,17 +251,13 @@ public class BlockLoader {
 
     public static Block SAKURA_DIAMOND_BLOCK = new BlockBase(Material.IRON, true).setBeaconBase(true).setSoundType(SoundType.METAL).setHardness(5.0F).setResistance(10.0F);
 
-    private static final BlockLoader instance = new BlockLoader();
-
     public void registerBlock() {
-
         FluidRegistry.addBucketForFluid(HOT_SPRING_WATER_FLUID);
         HOT_SPRING_WATER = registerFluidBlock(HOT_SPRING_WATER_FLUID, new BlockFluidBasic(HOT_SPRING_WATER_FLUID) {
             @Override
             public void onEntityCollision(World par1World, BlockPos pos, IBlockState state, Entity par5Entity) {
                 if (!par1World.isRemote) {
-                    if (par5Entity instanceof EntityLivingBase) {
-                        EntityLivingBase entityLiving = (EntityLivingBase) par5Entity;
+                    if (par5Entity instanceof EntityLivingBase entityLiving) {
                         if (entityLiving.ticksExisted % 20 == 0) {
                             entityLiving.heal(0.5f);
                         }
@@ -263,13 +265,12 @@ public class BlockLoader {
                 }
             }
 
-            @Method(modid = "toughasnails")
+            @Method(modid = CompatConst.TOUGH_AS_NAILS)
             private void TANTemp(EntityPlayer player) {
-
             }
 
-            @Override
             @SideOnly(Side.CLIENT)
+            @Override
             public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand) {
                 if (world.isAirBlock(pos.up())) {
                     double d0 = pos.getX() + rand.nextDouble();
@@ -407,7 +408,7 @@ public class BlockLoader {
         register(BARREL, new ItemBlock(BARREL), "barrel");
         register(BARREL_DISTILLATION, new ItemBlock(BARREL_DISTILLATION), "barrel_distillation");
         register(BARREL_OUT, new ItemBlock(BARREL_OUT), "barrel_out");
-//		BARREL_OUT
+        // BARREL_OUT
         register(CAMPFIRE_IDLE, new ItemBlock(CAMPFIRE_IDLE), "campfire_idle");
         register(PEPPER_SPLINT, new ItemBlock(PEPPER_SPLINT), "pepper_splint");
         register(VANILLA_SPLINT, new ItemBlock(VANILLA_SPLINT), "vanilla_splint");
@@ -472,15 +473,10 @@ public class BlockLoader {
         Blocks.FIRE.setFireInfo(MAPLE_LEAVE_RED, 30, 60);
         Blocks.FIRE.setFireInfo(MAPLE_LEAVE_YELLOW, 30, 60);
         Blocks.FIRE.setFireInfo(SAKURA_LEAVES, 30, 60);
-
-    }
-
-    private BlockLoader() {
-// singleton
     }
 
     private void register(Block block, Item itemBlock, String string) {
-        block.setCreativeTab(CommonProxy.tab);
+        block.setCreativeTab(CommonProxy.TAB);
         BlockRegister.getInstance().register(SakuraMain.MODID, block, itemBlock, string);
     }
 
@@ -490,7 +486,7 @@ public class BlockLoader {
 
     @SideOnly(Side.CLIENT)
     public void registerRenders() {
-//		please register blocks' renders in THIS void!
+        // please register blocks' renders in THIS void!
         registerRender(TEISHOKO_FISH_SALT);
         registerRender(BARREL_OUT);
         registerRender(UME_SAPLING);
@@ -641,24 +637,16 @@ public class BlockLoader {
                 icons_4,
                 icons_5
         );
-        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(SHOJI), stack -> {
-            switch (RecipesUtil.getInstance().getItemTagCompound(stack).getInteger("type")) {
-                case 0:
-                default:
-                    return icons_0;
-                case 1:
-                    return icons_1;
-                case 2:
-                    return icons_2;
-                case 3:
-                    return icons_3;
-                case 4:
-                    return icons_4;
-                case 5:
-                    return icons_5;
-            }
-        });
-
+        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(SHOJI), stack ->
+                switch (RecipesUtil.getInstance().getItemTagCompound(stack).getInteger("type")) {
+                    case 0 -> icons_0;
+                    case 1 -> icons_1;
+                    case 2 -> icons_2;
+                    case 3 -> icons_3;
+                    case 4 -> icons_4;
+                    case 5 -> icons_5;
+                    default -> icons_0;
+                });
     }
 
     @SideOnly(Side.CLIENT)
@@ -690,7 +678,4 @@ public class BlockLoader {
         BlockRegister.getInstance().registerRender(SakuraMain.MODID, block, name);
     }
 
-    public static BlockLoader getInstance() {
-        return instance;
-    }
 }

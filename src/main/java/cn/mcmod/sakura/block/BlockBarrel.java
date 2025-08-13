@@ -1,15 +1,14 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.gui.SakuraGuiHandler;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod.sakura.tileentity.TileEntityBarrel;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
@@ -26,8 +25,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockBarrel extends BlockContainer implements ITileEntityProvider {
 
@@ -36,14 +34,13 @@ public class BlockBarrel extends BlockContainer implements ITileEntityProvider {
         this.setHardness(2.5F);
         this.setResistance(8.0F);
         this.setSoundType(SoundType.WOOD);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (world.isRemote) {
-            return true;
-        }
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
+                                    EnumFacing side, float hitX, float hitY, float hitZ) {
+        if (world.isRemote) return true;
         ItemStack stack = player.getHeldItem(hand);
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEntityBarrel) {
@@ -52,12 +49,11 @@ public class BlockBarrel extends BlockContainer implements ITileEntityProvider {
                 FluidUtil.interactWithFluidHandler(player, hand, tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side));
                 return true;
             }
-            player.openGui(SakuraMain.instance, SakuraGuiHandler.ID_BARREL, world, pos.getX(), pos.getY(), pos.getZ());
+            player.openGui(SakuraMain.INSTANCE, SakuraGuiHandler.ID_BARREL, world, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return true;
     }
-
 
     @Nullable
     @Override
@@ -108,31 +104,31 @@ public class BlockBarrel extends BlockContainer implements ITileEntityProvider {
     }
 
     public void setDefaultFacing(World worldIn, BlockPos pos, IBlockState state) {
-        if (!worldIn.isRemote) {
-            IBlockState iblockstate = worldIn.getBlockState(pos.north());
-            IBlockState iblockstate1 = worldIn.getBlockState(pos.south());
-            IBlockState iblockstate2 = worldIn.getBlockState(pos.west());
-            IBlockState iblockstate3 = worldIn.getBlockState(pos.east());
-            EnumFacing enumfacing = state.getValue(FACING);
+        if (worldIn.isRemote) return;
+        IBlockState northState = worldIn.getBlockState(pos.north());
+        IBlockState southState = worldIn.getBlockState(pos.south());
+        IBlockState westState = worldIn.getBlockState(pos.west());
+        IBlockState eastState = worldIn.getBlockState(pos.east());
+        EnumFacing enumfacing = state.getValue(FACING);
 
-            if (enumfacing == EnumFacing.NORTH && iblockstate.isFullBlock() && !iblockstate1.isFullBlock()) {
-                enumfacing = EnumFacing.SOUTH;
-            } else if (enumfacing == EnumFacing.SOUTH && iblockstate1.isFullBlock() && !iblockstate.isFullBlock()) {
-                enumfacing = EnumFacing.NORTH;
-            } else if (enumfacing == EnumFacing.WEST && iblockstate2.isFullBlock() && !iblockstate3.isFullBlock()) {
-                enumfacing = EnumFacing.EAST;
-            } else if (enumfacing == EnumFacing.EAST && iblockstate3.isFullBlock() && !iblockstate2.isFullBlock()) {
-                enumfacing = EnumFacing.WEST;
-            }
-
-            worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
+        if (enumfacing == EnumFacing.NORTH && northState.isFullBlock() && !southState.isFullBlock()) {
+            enumfacing = EnumFacing.SOUTH;
+        } else if (enumfacing == EnumFacing.SOUTH && southState.isFullBlock() && !northState.isFullBlock()) {
+            enumfacing = EnumFacing.NORTH;
+        } else if (enumfacing == EnumFacing.WEST && westState.isFullBlock() && !eastState.isFullBlock()) {
+            enumfacing = EnumFacing.EAST;
+        } else if (enumfacing == EnumFacing.EAST && eastState.isFullBlock() && !westState.isFullBlock()) {
+            enumfacing = EnumFacing.WEST;
         }
+
+        worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
     }
 
     /**
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
+    @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
@@ -140,6 +136,7 @@ public class BlockBarrel extends BlockContainer implements ITileEntityProvider {
     /**
      * Called by ItemBlocks after a block is set in the world, to allow post-place logic
      */
+    @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
     }
@@ -161,6 +158,7 @@ public class BlockBarrel extends BlockContainer implements ITileEntityProvider {
     /**
      * Convert the BlockState into the correct metadata value
      */
+    @Override
     public int getMetaFromState(IBlockState state) {
         return state.getValue(FACING).getIndex();
     }
@@ -169,6 +167,7 @@ public class BlockBarrel extends BlockContainer implements ITileEntityProvider {
      * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
      * blockstate.
      */
+    @Override
     public IBlockState withRotation(IBlockState state, Rotation rot) {
         return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
     }
@@ -177,10 +176,12 @@ public class BlockBarrel extends BlockContainer implements ITileEntityProvider {
      * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
      * blockstate.
      */
+    @Override
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
         return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
     }
 
+    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING);
     }

@@ -2,6 +2,7 @@ package cn.mcmod.sakura.gui;
 
 import cn.mcmod.sakura.inventory.ContainerFluidOut;
 import cn.mcmod.sakura.tileentity.TileEntityFluidOut;
+import cn.mcmod.sakura.util.RLUtil;
 import cn.mcmod_mmf.mmlib.util.ClientUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -13,13 +14,13 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiFluidOut extends GuiContainer {
-    private static final ResourceLocation mortarGuiTextures = new ResourceLocation("sakura:textures/gui/barrel_out.png");
+    private static final ResourceLocation mortarGuiTextures = RLUtil.of("textures/gui/barrel_out.png");
 
-    private final TileEntityFluidOut tilePot;
+    private final TileEntityFluidOut teFluidOut;
 
-    public GuiFluidOut(InventoryPlayer inventory, TileEntityFluidOut tile) {
-        super(new ContainerFluidOut(inventory, tile));
-        this.tilePot = tile;
+    public GuiFluidOut(InventoryPlayer inventory, TileEntityFluidOut te) {
+        super(new ContainerFluidOut(inventory, te));
+        this.teFluidOut = te;
     }
 
     @Override
@@ -32,8 +33,8 @@ public class GuiFluidOut extends GuiContainer {
 
         this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
 
-        if (this.tilePot.getTank().getFluid() != null) {
-            FluidTank fluidTank = this.tilePot.getTank();
+        if (this.teFluidOut.getTank().getFluid() != null) {
+            FluidTank fluidTank = this.teFluidOut.getTank();
             int heightInd = (int) (162 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
             if (heightInd > 0) {
                 ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 168 - heightInd, l + 60, heightInd, 16F);

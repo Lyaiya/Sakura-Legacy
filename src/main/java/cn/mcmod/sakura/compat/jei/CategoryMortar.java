@@ -2,6 +2,7 @@ package cn.mcmod.sakura.compat.jei;
 
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.util.RLUtil;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -18,7 +19,7 @@ public class CategoryMortar implements IRecipeCategory<IRecipeWrapper> {
     private final IDrawable icon;
 
     public CategoryMortar(IGuiHelper helper) {
-        ResourceLocation backgroundTexture = new ResourceLocation(SakuraMain.MODID + ":textures/gui/stonemortar.png");
+        ResourceLocation backgroundTexture = RLUtil.of("textures/gui/stonemortar.png");
         this.icon = helper.createDrawableIngredient(new ItemStack(BlockLoader.STONEMORTAR));
         this.background = helper.createDrawable(backgroundTexture, 38, 24, 112, 39);
     }

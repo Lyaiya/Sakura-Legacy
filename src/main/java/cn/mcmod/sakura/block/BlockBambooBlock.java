@@ -1,9 +1,8 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.BlockRotatedPillar;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -23,8 +22,8 @@ public class BlockBambooBlock extends BlockRotatedPillar {
     public BlockBambooBlock(Material material, boolean sunburnt) {
         super(material);
         isSunburnt = sunburnt;
-        this.setTickRandomly(true);
-        this.setCreativeTab(CommonProxy.tab);
+        setTickRandomly(true);
+        setCreativeTab(CommonProxy.TAB);
     }
 
     @Override
@@ -37,43 +36,34 @@ public class BlockBambooBlock extends BlockRotatedPillar {
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        switch (state.getValue(LOG_AXIS)) {
-            case X:
-                return 4;
-            case Y:
-                return 0;
-            case Z:
-                return 8;
-            case NONE:
-            default:
-                return 12;
-        }
+        return switch (state.getValue(LOG_AXIS)) {
+            case X -> 4;
+            case Y -> 0;
+            case Z -> 8;
+            default -> 12;
+        };
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        switch (meta) {
-            case 0:
-                return getDefaultState().withProperty(LOG_AXIS, EnumAxis.Y);
-            case 4:
-                return getDefaultState().withProperty(LOG_AXIS, EnumAxis.X);
-            case 8:
-                return getDefaultState().withProperty(LOG_AXIS, EnumAxis.Z);
-            case 12:
-            default:
-                return getDefaultState().withProperty(LOG_AXIS, EnumAxis.NONE);
-        }
+        return switch (meta) {
+            case 0 -> getDefaultState().withProperty(LOG_AXIS, EnumAxis.Y);
+            case 4 -> getDefaultState().withProperty(LOG_AXIS, EnumAxis.X);
+            case 8 -> getDefaultState().withProperty(LOG_AXIS, EnumAxis.Z);
+            default -> getDefaultState().withProperty(LOG_AXIS, EnumAxis.NONE);
+        };
     }
-
 
     /**
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
+    @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        return this.getStateFromMeta(meta).withProperty(LOG_AXIS, EnumAxis.fromFacingAxis(facing.getAxis()));
+        return getStateFromMeta(meta).withProperty(LOG_AXIS, EnumAxis.fromFacingAxis(facing.getAxis()));
     }
 
+    @Override
     public BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, LOG_AXIS);
     }
@@ -82,23 +72,16 @@ public class BlockBambooBlock extends BlockRotatedPillar {
      * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
      * blockstate.
      */
+    @Override
     public IBlockState withRotation(IBlockState state, Rotation rot) {
-        switch (rot) {
-            case COUNTERCLOCKWISE_90:
-            case CLOCKWISE_90:
-
-                switch (state.getValue(LOG_AXIS)) {
-                    case X:
-                        return state.withProperty(LOG_AXIS, EnumAxis.Z);
-                    case Z:
-                        return state.withProperty(LOG_AXIS, EnumAxis.X);
-                    default:
-                        return state;
-                }
-
-            default:
-                return state;
-        }
+        return switch (rot) {
+            case COUNTERCLOCKWISE_90, CLOCKWISE_90 -> switch (state.getValue(LOG_AXIS)) {
+                case X -> state.withProperty(LOG_AXIS, EnumAxis.Z);
+                case Z -> state.withProperty(LOG_AXIS, EnumAxis.X);
+                default -> state;
+            };
+            default -> state;
+        };
     }
 
     public enum EnumAxis implements IStringSerializable {
@@ -113,21 +96,17 @@ public class BlockBambooBlock extends BlockRotatedPillar {
             this.name = name;
         }
 
+        @Override
         public String toString() {
             return this.name;
         }
 
         public static EnumAxis fromFacingAxis(EnumFacing.Axis axis) {
-            switch (axis) {
-                case X:
-                    return X;
-                case Y:
-                    return Y;
-                case Z:
-                    return Z;
-                default:
-                    return NONE;
-            }
+            return switch (axis) {
+                case X -> X;
+                case Y -> Y;
+                case Z -> Z;
+            };
         }
 
         public String getName() {

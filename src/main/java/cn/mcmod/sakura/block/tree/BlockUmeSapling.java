@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.block.tree;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod.sakura.world.gen.WorldGenUmeTree;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -26,7 +26,7 @@ public class BlockUmeSapling extends BlockBush implements IGrowable {
 
     public BlockUmeSapling() {
         super();
-        setCreativeTab(CommonProxy.tab);
+        setCreativeTab(CommonProxy.TAB);
         this.setSoundType(SoundType.PLANT);
     }
 

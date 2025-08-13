@@ -3,6 +3,7 @@ package cn.mcmod.sakura.compat.ie;
 import blusunrize.immersiveengineering.api.crafting.BlastFurnaceRecipe;
 import blusunrize.immersiveengineering.api.crafting.CokeOvenRecipe;
 import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.compat.CompatConst;
 import cn.mcmod.sakura.item.ItemLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @EventBusSubscriber
 public class IEcompat {
     @SubscribeEvent
-    @Method(modid = "immersiveengineering")
+    @Method(modid = CompatConst.IMMERSIVE_ENGINEERING)
     public static void registerRecipe(RegistryEvent.Register<IRecipe> event) {
         CokeOvenRecipe.addRecipe(new ItemStack(BlockLoader.BAMBOO_CHARCOAL_BLOCK), new ItemStack(BlockLoader.BAMBOO_BLOCK), 3200, 2000);
         CokeOvenRecipe.addRecipe(new ItemStack(ItemLoader.MATERIAL, 1, 51), new ItemStack(BlockLoader.BAMBOO, 1), 800, 500);

@@ -1,9 +1,9 @@
 package cn.mcmod.sakura.block.tree;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.client.SakuraParticleType;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.state.BlockStateContainer;
@@ -32,11 +32,12 @@ public class BlockSakuraLeave extends BlockLeaves {
         this.setHardness(0.2F);
         this.setLightOpacity(0);
         this.setLightLevel(0.75F);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
         this.setDefaultState(blockState.getBaseState().withProperty(CHECK_DECAY, false).withProperty(DECAYABLE, false));
     }
 
     @SideOnly(Side.CLIENT)
+    @Override
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
         Blocks.LEAVES.randomDisplayTick(stateIn, worldIn, pos, rand);
         if (rand.nextInt(40) == 0) {
@@ -50,7 +51,7 @@ public class BlockSakuraLeave extends BlockLeaves {
             double d4 = (rand.nextFloat() * 0.055D) + 0.015D;
             double d5 = rand.nextFloat() * k * 0.1D;
 
-            SakuraMain.proxy.spawnParticle(SakuraParticleType.LEAVESSAKURA, d0, d1, d2, d3, -d4, d5);
+            SakuraMain.proxy.spawnParticle(SakuraParticleType.LEAVES_SAKURA, d0, d1, d2, d3, -d4, d5);
         }
     }
 

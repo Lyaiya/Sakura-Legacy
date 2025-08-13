@@ -1,8 +1,8 @@
 package cn.mcmod.sakura.client.render.tileentity;
 
-import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.client.model.tileentity.ShojiModel;
 import cn.mcmod.sakura.tileentity.TileEntityShoji;
+import cn.mcmod.sakura.util.RLUtil;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -13,8 +13,7 @@ public class ShojiRender extends TileEntitySpecialRenderer<TileEntityShoji> {
 
     @Override
     public void render(TileEntityShoji te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        final ResourceLocation resource = new ResourceLocation(SakuraMain.MODID,
-                "textures/entity/block/shoji_type_" + te.getType() + ".png");
+        final ResourceLocation resource = RLUtil.of("textures/entity/block/shoji_type_" + te.getType() + ".png");
         this.bindTexture(resource);
 
         float time = (te.getAnimation() == 0) ? 0 : te.getAnimation() - partialTicks;

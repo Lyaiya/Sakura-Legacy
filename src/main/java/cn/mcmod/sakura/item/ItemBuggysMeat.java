@@ -6,8 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemBuggysMeat extends ItemFood {
@@ -17,6 +17,7 @@ public class ItemBuggysMeat extends ItemFood {
     }
 
     @SideOnly(Side.CLIENT)
+    @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         if (flagIn.isAdvanced()) {
             tooltip.add("Meat that bagu_chan seems to like UwU");
@@ -24,6 +25,7 @@ public class ItemBuggysMeat extends ItemFood {
         }
     }
 
+    @Override
     public int getMaxItemUseDuration(ItemStack stack) {
         return 38;
     }

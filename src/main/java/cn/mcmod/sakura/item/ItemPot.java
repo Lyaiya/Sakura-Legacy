@@ -7,5 +7,4 @@ public class ItemPot extends Item {
         setTranslationKey("sakura.cooking_pot");
         setMaxStackSize(1);
     }
-
 }

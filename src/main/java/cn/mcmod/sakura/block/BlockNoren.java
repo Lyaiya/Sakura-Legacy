@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod_mmf.mmlib.block.BlockFacing;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -14,8 +14,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BlockNoren extends BlockFacing {
@@ -26,7 +26,7 @@ public class BlockNoren extends BlockFacing {
 
     public BlockNoren() {
         super(Material.CLOTH, false);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
 
         this.setSoundType(SoundType.CLOTH);
         this.setTickRandomly(true);
@@ -45,7 +45,7 @@ public class BlockNoren extends BlockFacing {
         return state.isFullCube();
     }
 
-    public boolean canBlockStay(World worldIn, BlockPos pos) {
+    private boolean canBlockStay(World worldIn, BlockPos pos) {
         return this.canSustainNoren(worldIn.getBlockState(pos.up()));
     }
 
@@ -69,8 +69,8 @@ public class BlockNoren extends BlockFacing {
         }
     }
 
-    @Override
     @SideOnly(Side.CLIENT)
+    @Override
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos,
                                         EnumFacing side) {
         return false;
@@ -82,27 +82,23 @@ public class BlockNoren extends BlockFacing {
         return BlockFaceShape.UNDEFINED;
     }
 
-    @Override
     @Nullable
+    @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return NULL_AABB;
     }
 
+    @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         state = state.getActualState(source, pos);
         EnumFacing enumfacing = state.getValue(FACING);
 
-        switch (enumfacing) {
-            case EAST:
-                return EAST_AABB;
-            case SOUTH:
-                return SOUTH_AABB;
-            case WEST:
-                return WEST_AABB;
-            case NORTH:
-            default:
-                return NORTH_AABB;
-        }
+        return switch (enumfacing) {
+            case EAST -> EAST_AABB;
+            case SOUTH -> SOUTH_AABB;
+            case WEST -> WEST_AABB;
+            default -> NORTH_AABB;
+        };
     }
 
 }

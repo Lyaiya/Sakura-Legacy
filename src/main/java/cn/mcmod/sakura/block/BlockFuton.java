@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -14,6 +13,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
@@ -22,8 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BlockFuton extends BlockFacing {
@@ -140,9 +140,8 @@ public class BlockFuton extends BlockFacing {
     }
 
     @Override
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return state.getValue(PART) == EnumPartType.HEAD ? null : ItemLoader.FUTON;
+        return state.getValue(PART) == EnumPartType.HEAD ? Items.AIR : ItemLoader.FUTON;
     }
 
     @Override
@@ -181,7 +180,7 @@ public class BlockFuton extends BlockFacing {
         return null;
     }
 
-    protected static boolean hasRoomForPlayer(World worldIn, BlockPos pos) {
+    private static boolean hasRoomForPlayer(World worldIn, BlockPos pos) {
         return worldIn.getBlockState(pos.down()).isTopSolid() && !worldIn.getBlockState(pos).getMaterial().isSolid()
                 && !worldIn.getBlockState(pos.up()).getMaterial().isSolid();
     }
@@ -219,6 +218,7 @@ public class BlockFuton extends BlockFacing {
         }
     }
 
+    @Override
     public IBlockState getStateFromMeta(int meta) {
         EnumFacing enumfacing = EnumFacing.byHorizontalIndex(meta);
         return (meta & 8) > 0
@@ -256,6 +256,7 @@ public class BlockFuton extends BlockFacing {
         return i;
     }
 
+    @Override
     public IBlockState withRotation(IBlockState state, Rotation rot) {
         return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
     }
@@ -264,6 +265,7 @@ public class BlockFuton extends BlockFacing {
      * Returns the blockstate with the given mirror of the passed blockstate. If
      * inapplicable, returns the passed blockstate.
      */
+    @Override
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
         return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
     }
@@ -282,12 +284,14 @@ public class BlockFuton extends BlockFacing {
      * model, MODELBLOCK_ANIMATED for TESR-only, LIQUID for vanilla liquids,
      * INVISIBLE to skip all rendering
      */
+    @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.MODEL;
     }
 
     public enum EnumPartType implements IStringSerializable {
-        HEAD("head"), FOOT("foot");
+        HEAD("head"),
+        FOOT("foot");
 
         private final String name;
 

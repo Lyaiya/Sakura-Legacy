@@ -1,20 +1,19 @@
 package cn.mcmod.sakura.tileentity;
 
-import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.client.TileEntityRenderHelper;
 import cn.mcmod.sakura.client.render.tileentity.*;
+import cn.mcmod.sakura.util.RLUtil;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntityRegistry {
-    private static final TileEntityRegistry instance = new TileEntityRegistry();
+    public static final TileEntityRegistry INSTANCE = new TileEntityRegistry();
 
     private TileEntityRegistry() {
     }
@@ -45,15 +44,11 @@ public class TileEntityRegistry {
     }
 
     private void registerTileEntity(Class<? extends TileEntity> cls, String baseName) {
-        GameRegistry.registerTileEntity(cls, new ResourceLocation(SakuraMain.MODID, baseName));
+        GameRegistry.registerTileEntity(cls, RLUtil.of(baseName));
     }
 
     private Item getItem(final Block block) {
         return Item.getItemFromBlock(block);
-    }
-
-    public static TileEntityRegistry getInstance() {
-        return instance;
     }
 
 }

@@ -15,11 +15,11 @@ public final class BarrelRecipeMaker {
     public static List<BarrelRecipe> getRecipes(IJeiHelpers helpers) {
         IStackHelper stackHelper = helpers.getStackHelper();
 
-        List<BarrelRecipe> recipes = new ArrayList<BarrelRecipe>();
+        List<BarrelRecipe> recipes = new ArrayList<>();
 
-        for (Entry<Pair<FluidStack, Object[]>, List<FluidStack>> entry : BarrelRecipes.getInstance().RecipesList.entrySet()) {
-            List<List<ItemStack>> inputs = new ArrayList<List<ItemStack>>();
-            List<List<FluidStack>> fluidlist = new ArrayList<List<FluidStack>>();
+        for (Entry<Pair<FluidStack, Object[]>, List<FluidStack>> entry : BarrelRecipes.INSTANCE.recipesList.entrySet()) {
+            List<List<ItemStack>> inputs = new ArrayList<>();
+            List<List<FluidStack>> fluidlist = new ArrayList<>();
 
             for (Object obj : entry.getKey().getRight()) {
                 List<ItemStack> subinputs = stackHelper.toItemStackList(obj);

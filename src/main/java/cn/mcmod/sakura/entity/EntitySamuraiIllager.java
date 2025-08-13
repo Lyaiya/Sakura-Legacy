@@ -20,8 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class EntitySamuraiIllager extends AbstractIllager {
     public EntitySamuraiIllager(World p_i47509_1_) {
@@ -29,6 +28,7 @@ public class EntitySamuraiIllager extends AbstractIllager {
         this.setSize(0.6F, 1.95F);
     }
 
+    @Override
     protected void initEntityAI() {
         super.initEntityAI();
         this.tasks.addTask(0, new EntityAISwimming(this));
@@ -44,6 +44,7 @@ public class EntitySamuraiIllager extends AbstractIllager {
         this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<EntityIronGolem>(this, EntityIronGolem.class, true));
     }
 
+    @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3499999940395355D);
@@ -52,10 +53,12 @@ public class EntitySamuraiIllager extends AbstractIllager {
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
     }
 
+    @Override
     protected void entityInit() {
         super.entityInit();
     }
 
+    @Override
     protected ResourceLocation getLootTable() {
         return LootTableList.ENTITIES_VINDICATION_ILLAGER;
     }
@@ -72,12 +75,13 @@ public class EntitySamuraiIllager extends AbstractIllager {
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
+    @Override
     public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
-
     }
 
     @SideOnly(Side.CLIENT)
+    @Override
     public AbstractIllager.IllagerArmPose getArmPose() {
         return this.isAggressive() ? AbstractIllager.IllagerArmPose.ATTACKING : AbstractIllager.IllagerArmPose.CROSSED;
     }
@@ -85,9 +89,9 @@ public class EntitySamuraiIllager extends AbstractIllager {
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
+    @Override
     public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
-
     }
 
     /**
@@ -95,6 +99,7 @@ public class EntitySamuraiIllager extends AbstractIllager {
      * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
      */
     @Nullable
+    @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
         IEntityLivingData ientitylivingdata = super.onInitialSpawn(difficulty, livingdata);
         this.setEquipmentBasedOnDifficulty(difficulty);
@@ -105,6 +110,7 @@ public class EntitySamuraiIllager extends AbstractIllager {
     /**
      * Gives armor or weapon for entity based on given DifficultyInstance
      */
+    @Override
     protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
         float f = this.world.getDifficultyForLocation(new BlockPos(this)).getAdditionalDifficulty();
 
@@ -115,6 +121,7 @@ public class EntitySamuraiIllager extends AbstractIllager {
         }
     }
 
+    @Override
     protected void updateAITasks() {
         super.updateAITasks();
         this.setAggressive(this.getAttackTarget() != null);
@@ -123,6 +130,7 @@ public class EntitySamuraiIllager extends AbstractIllager {
     /**
      * Returns whether this Entity is on the same team as the given Entity.
      */
+    @Override
     public boolean isOnSameTeam(Entity entityIn) {
         if (super.isOnSameTeam(entityIn)) {
             return true;
@@ -133,11 +141,12 @@ public class EntitySamuraiIllager extends AbstractIllager {
         }
     }
 
-
+    @Override
     protected SoundEvent getAmbientSound() {
         return SoundEvents.VINDICATION_ILLAGER_AMBIENT;
     }
 
+    @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.VINDICATION_ILLAGER_DEATH;
     }

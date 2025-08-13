@@ -2,6 +2,7 @@ package cn.mcmod.sakura.gui;
 
 import cn.mcmod.sakura.inventory.ContainerMapleCauldron;
 import cn.mcmod.sakura.tileentity.TileEntityMapleCauldron;
+import cn.mcmod.sakura.util.RLUtil;
 import cn.mcmod_mmf.mmlib.util.ClientUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -13,21 +14,20 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiMapleCauldron extends GuiContainer {
-
-    private static final ResourceLocation GuiTextures = new ResourceLocation("sakura:textures/gui/maple_pot.png");
+    private static final ResourceLocation GUI_TEXTURE = RLUtil.of("textures/gui/maple_pot.png");
 
     private final TileEntityMapleCauldron tilePot;
 
-    public GuiMapleCauldron(InventoryPlayer inventory, TileEntityMapleCauldron tile) {
-        super(new ContainerMapleCauldron(inventory, tile));
-        this.tilePot = tile;
+    public GuiMapleCauldron(InventoryPlayer inventory, TileEntityMapleCauldron te) {
+        super(new ContainerMapleCauldron(inventory, te));
+        this.tilePot = te;
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTickTime, int x, int y) {
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(GuiTextures);
+        this.mc.getTextureManager().bindTexture(GUI_TEXTURE);
 
         int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;

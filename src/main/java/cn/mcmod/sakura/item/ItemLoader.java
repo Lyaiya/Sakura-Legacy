@@ -1,6 +1,5 @@
 package cn.mcmod.sakura.item;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.item.armors.ItemHaori;
@@ -11,6 +10,7 @@ import cn.mcmod.sakura.item.katana.*;
 import cn.mcmod.sakura.item.tool.ItemBroom;
 import cn.mcmod.sakura.item.tool.ItemHammer;
 import cn.mcmod.sakura.item.tool.ItemKnifeNoodle;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod_mmf.mmlib.item.*;
 import cn.mcmod_mmf.mmlib.item.food.ItemFoodBase;
 import cn.mcmod_mmf.mmlib.item.food.ItemFoodContain;
@@ -30,6 +30,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemLoader {
+    public static final ItemLoader INSTANCE = new ItemLoader();
+
+    private ItemLoader() {
+    }
+
     public static Item SAKURA_DIAMOND = new ItemSakuraDiamond();
 
     public static final ItemArmor.ArmorMaterial STRAW_MATERIAL = EnumHelper.addArmorMaterial("STRAW_MATERIAL", SakuraMain.MODID + ":textures/models/armor/strawhat.png", 6, new int[]{0, 0, 0, 1}, 30, net.minecraft.init.SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0);
@@ -386,10 +391,6 @@ public class ItemLoader {
             new ItemStack(MATERIAL, 1, 58),
             new ItemStack(MATERIAL, 1, 58),
     });
-    private static final ItemLoader INSTANCE = new ItemLoader();
-
-    private ItemLoader() {
-    }
 
     public void registerItem() {
         register(cup);
@@ -469,7 +470,7 @@ public class ItemLoader {
         MinecraftForge.addGrassSeed(new ItemStack(MATERIAL, 1, 37), 1);
         MinecraftForge.addGrassSeed(new ItemStack(TARO), 1);
 
-//        OreDictionary.getOres().forEach((stack)->SOLDIER_MATERIAL.setRepairItem(stack));
+        // OreDictionary.getOres().forEach((stack)->SOLDIER_MATERIAL.setRepairItem(stack));
     }
 
     @SideOnly(Side.CLIENT)
@@ -538,11 +539,8 @@ public class ItemLoader {
     }
 
     private void register(Item item) {
-        item.setCreativeTab(CommonProxy.tab);
+        item.setCreativeTab(CommonProxy.TAB);
         ItemRegister.getInstance().register(SakuraMain.MODID, item);
     }
 
-    public static ItemLoader getInstance() {
-        return INSTANCE;
-    }
 }

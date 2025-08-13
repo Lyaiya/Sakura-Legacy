@@ -35,6 +35,7 @@ public class WorldGenUmeTree extends WorldGenAbstractTree {
         this.metaLeaves = DEFAULT_LEAF;
     }
 
+    @Override
     public boolean generate(World worldIn, Random rand, BlockPos position) {
         int i = rand.nextInt(3) + this.minTreeHeight;
         boolean flag = true;

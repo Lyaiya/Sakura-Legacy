@@ -1,8 +1,8 @@
 package cn.mcmod.sakura.client.render.tileentity;
 
-import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.client.model.tileentity.ModelPot;
 import cn.mcmod.sakura.tileentity.TileEntityCampfirePot;
+import cn.mcmod.sakura.util.RLUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -22,8 +22,7 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileEntityCampfirePot> {
-
-    private static final ResourceLocation TEXTURES = new ResourceLocation(SakuraMain.MODID, "textures/entity/tileentity/pot.png");
+    private static final ResourceLocation TEXTURES = RLUtil.of("textures/entity/tileentity/pot.png");
 
     private final ModelPot model = new ModelPot();
 
@@ -107,7 +106,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             int b = color & 0xFF;
             int a = color >> 24 & 0xFF;
 
-            double height = 0.6 + 0.4 * ((double) fluid.amount / te.tank.getCapacity());
+            double height = 0.6 + 0.4 * ((double) fluid.amount / te.getTank().getCapacity());
 
             GlStateManager.translate(x + 0.1, y, z + 0.1);
             GlStateManager.scale(0.8, 0.8, 0.8);
@@ -125,7 +124,6 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
     }
 
     protected void renderItem(TileEntityCampfirePot te, double posX, double posY, double posZ, float partialTicks) {
-
         ItemStack itemstack = te.getStackInSlot(0);
         if (itemstack != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();

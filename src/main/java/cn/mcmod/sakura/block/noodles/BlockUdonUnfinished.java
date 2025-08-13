@@ -46,6 +46,7 @@ public class BlockUdonUnfinished extends Block {
     }
 
     @SideOnly(Side.CLIENT)
+    @Override
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }

@@ -56,22 +56,24 @@ public class BlockPepperSplint extends Block {
     /**
      * Used to determine ambient occlusion and culling when rebuilding chunks for render
      */
+    @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
+    @Override
     public boolean isFullCube(IBlockState state) {
         return false;
     }
 
     @SideOnly(Side.CLIENT)
+    @Override
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-        // TODO Auto-generated method stub
         return worldIn.getBlockState(pos.down()).getMaterial() == Material.GROUND || worldIn.getBlockState(pos.down()).getMaterial() == Material.GRASS
                 || worldIn.getBlockState(pos.down()).getBlock() == BlockLoader.PEPPER_SPLINT || worldIn.getBlockState(pos.down()).getBlock() == BlockLoader.PEPPERCROP;
     }
@@ -83,6 +85,7 @@ public class BlockPepperSplint extends Block {
         }
     }
 
+    @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         this.checkAndDropBlock(worldIn, pos, state);
     }
@@ -96,6 +99,7 @@ public class BlockPepperSplint extends Block {
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
+    @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
         this.checkAndDropBlock(worldIn, pos, state);

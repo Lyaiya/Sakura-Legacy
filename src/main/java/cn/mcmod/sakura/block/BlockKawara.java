@@ -2,7 +2,6 @@ package cn.mcmod.sakura.block;
 
 import cn.mcmod_mmf.mmlib.block.BlockFacing;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
@@ -27,19 +26,23 @@ public class BlockKawara extends BlockFacing {
     /**
      * Called by ItemBlocks after a block is set in the world, to allow post-place logic
      */
+    @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(SHAPE, EnumShape.STRAIGHT), 2);
     }
 
+    @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         IBlockState iblockstate = getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(SHAPE, EnumShape.STRAIGHT);
         return iblockstate;
     }
 
+    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING, SHAPE);
     }
 
+    @Override
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
         return state.withProperty(SHAPE, getStairsShape(state, worldIn, pos));
     }
@@ -69,6 +72,7 @@ public class BlockKawara extends BlockFacing {
         return EnumShape.STRAIGHT;
     }
 
+    @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
         return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
     }
@@ -77,9 +81,12 @@ public class BlockKawara extends BlockFacing {
         return state.getBlock() instanceof BlockKawara;
     }
 
-    public enum EnumShape
-            implements IStringSerializable {
-        STRAIGHT("straight"), INNER_LEFT("inner_left"), INNER_RIGHT("inner_right"), OUTER_LEFT("outer_left"), OUTER_RIGHT("outer_right");
+    public enum EnumShape implements IStringSerializable {
+        STRAIGHT("straight"),
+        INNER_LEFT("inner_left"),
+        INNER_RIGHT("inner_right"),
+        OUTER_LEFT("outer_left"),
+        OUTER_RIGHT("outer_right");
 
         private final String name;
 

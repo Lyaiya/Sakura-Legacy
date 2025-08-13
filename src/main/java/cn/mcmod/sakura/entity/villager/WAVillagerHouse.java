@@ -41,6 +41,7 @@ public class WAVillagerHouse extends StructureVillagePieces.Village {
      * second Part of Structure generating, this for example places Spiderwebs, Mob Spawners, it closes
      * Mineshafts at the end, it adds Fences...
      */
+    @Override
     public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn) {
         if (this.averageGroundLvl < 0) {
             this.averageGroundLvl = this.getAverageGroundLevel(worldIn, structureBoundingBoxIn);
@@ -137,19 +138,18 @@ public class WAVillagerHouse extends StructureVillagePieces.Village {
         return true;
     }
 
+    @Override
     protected int chooseProfession(int villagersSpawnedIn, int currentVillagerProfession) {
         ForgeRegistry<VillagerRegistry.VillagerProfession> registry = (ForgeRegistry<VillagerProfession>) ForgeRegistries.VILLAGER_PROFESSIONS;
 
-        int id = registry.getID(VillagerLoader.wa_villager);
-        int id1 = registry.getID(VillagerLoader.wa_kimono_villager);
+        int id = registry.getID(VillagerLoader.WA_VILLAGER);
+        int id1 = registry.getID(VillagerLoader.WA_KIMONO_VILLAGER);
         if (id < 0 || id1 < 0)
             return currentVillagerProfession;
         Random rand = new Random();
-        switch (rand.nextInt()) {
-            case 0:
-                return id1;
-            default:
-                return id;
+        if (rand.nextInt() == 0) {
+            return id1;
         }
+        return id;
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -21,16 +22,23 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class TileEntityDistillation extends TileEntity implements ITickable, IInventory {
-    private static final String TAG_PROCESS = "processTimer";
-    public FluidTank tank = new FluidTank(3000) {
+    public static final int ID_PROCESS_TIMER = 0;
+
+    private static final String KEY_TANK = "Tank";
+    private static final String KEY_RESULT_TANK = "ResultTank";
+    private static final String KEY_PROCESS_TIMER = "processTimer";
+
+    private final NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+
+    private int processTimer = 0;
+
+    private final FluidTank inputTank = new FluidTank(3000) {
         @Override
         protected void onContentsChanged() {
-            TileEntityDistillation.this.refresh();
+            refresh();
         }
 
         @Override
@@ -41,16 +49,14 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
             return fluid.getFluid().getTemperature(fluid) < 500;
         }
     };
+
     // This is a tank that accumulates liquid when the process is over
-    public FluidTank resultTank = new FluidTank(3000) {
+    private final FluidTank outputTank = new FluidTank(3000) {
         @Override
         protected void onContentsChanged() {
-            TileEntityDistillation.this.refresh();
+            refresh();
         }
     };
-    protected NonNullList<ItemStack> inventory = NonNullList.withSize(this.getSizeInventory(),
-            ItemStack.EMPTY);
-    private int processTimer = 0;
 
     public TileEntityDistillation() {
     }
@@ -59,15 +65,15 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
         return processTimer;
     }
 
-    public FluidTank getTank() {
-        return this.tank;
+    public FluidTank getInputTank() {
+        return inputTank;
     }
 
-    public FluidTank getResultTank() {
-        return this.resultTank;
+    public FluidTank getOutputTank() {
+        return outputTank;
     }
 
-    protected void refresh() {
+    private void refresh() {
         if (hasWorld() && !world.isRemote) {
             IBlockState state = world.getBlockState(pos);
             world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
@@ -76,55 +82,56 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
 
     @Override
     public void update() {
-        if (!world.isRemote) {
-            DrainInput();
-            if (this.getTank() != null) {
-                ItemStack[] iteminput = new ItemStack[]{this.inventory.get(0), this.inventory.get(1),
-                        this.inventory.get(2)};
-                if (isRecipes(this.getTank().getFluid(), iteminput)) {
-                    FluidStack result = DistillationRecipes.getInstance().getResultFluidStack(this.getTank().getFluid(),
-                            iteminput);
-                    FluidStack fluidStack = DistillationRecipes.getInstance().getFluidStack(this.getTank().getFluid());
-                    if ((resultTank.getFluid() == null || resultTank.canFill() && result.getFluid().equals(resultTank.getFluid().getFluid()))
-                            && HeatUtil.getHeatStrength(getWorld(), getPos()) > 1) {
-                        processTimer += 1;
-                    } else
-                        processTimer = 0;
+        if (world.isRemote) return;
+        drainInput();
+        ItemStack[] inputItemStacks = new ItemStack[]{inventory.get(0), inventory.get(1), inventory.get(2)};
 
-                    if (processTimer >= 800) {
-                        processTimer = 0;
-                        this.resultTank.fill(result, true);
+        final FluidStack inputTankFluidStack = inputTank.getFluid();
+        if (inputTankFluidStack == null) return;
 
-                        // If pot is a recipe that uses a liquid, it consumes
-                        // only that amount of liquid
-                        if (fluidStack != null && fluidStack.amount > 0) {
-                            this.tank.drain(fluidStack, true);
-                        }
+        final FluidStack result = DistillationRecipes.INSTANCE.getFluidStackOutput(inputTankFluidStack, inputItemStacks);
+        if (result == null) return;
 
-                        for (int i = 0; i < 3; i++) {
-                            if (this.inventory.get(i).getCount() == 1
-                                    && this.inventory.get(i).getItem().getContainerItem(this.inventory.get(i)) != null)
-                                this.inventory.set(i,
-                                        this.inventory.get(i).getItem().getContainerItem(this.inventory.get(i)).copy());
-                            else
-                                this.decrStackSize(i, 1);
-                        }
-                        this.markDirty();
-                    }
+        FluidStack fluidStack = DistillationRecipes.INSTANCE.getFluidStack(inputTankFluidStack);
+
+        FluidStack resultTankFluid = outputTank.getFluid();
+        if ((resultTankFluid == null
+                || outputTank.canFill()
+                && result.getFluid().equals(resultTankFluid.getFluid()))
+                && HeatUtil.getHeatStrength(getWorld(), getPos()) > 1) {
+            processTimer += 1;
+        } else {
+            processTimer = 0;
+        }
+
+        if (processTimer >= 800) {
+            processTimer = 0;
+            outputTank.fill(result, true);
+
+            // If pot is a recipe that uses a liquid, it consumes
+            // only that amount of liquid
+            if (fluidStack != null && fluidStack.amount > 0) {
+                inputTank.drain(fluidStack, true);
+            }
+
+            ItemStack itemStack;
+            Item item;
+            for (int i = 0; i < 3; i++) {
+                itemStack = inventory.get(i);
+                item = itemStack.getItem();
+                if (itemStack.getCount() == 1) {
+                    inventory.set(i, item.getContainerItem(itemStack).copy());
+                } else {
+                    decrStackSize(i, 1);
                 }
             }
+            markDirty();
         }
-    }
-
-    protected boolean isRecipes(FluidStack fluid, ItemStack[] items) {
-        FluidStack result = DistillationRecipes.getInstance().getResultFluidStack(fluid, items);
-        return result != null;
     }
 
     @Override
     public void markDirty() {
         super.markDirty();
-
     }
 
     @Override
@@ -144,7 +151,7 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
 
     @Override
     public boolean isEmpty() {
-        for (ItemStack itemstack : this.inventory) {
+        for (ItemStack itemstack : inventory) {
             if (!itemstack.isEmpty()) {
                 return false;
             }
@@ -162,7 +169,7 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
         ItemStack itemstack = ItemStackHelper.getAndSplit(inventory, index, count);
 
         if (!itemstack.isEmpty()) {
-            this.markDirty();
+            markDirty();
         }
 
         return itemstack;
@@ -176,10 +183,10 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
         inventory.set(index, stack);
-        if (stack.getCount() > this.getInventoryStackLimit()) {
-            stack.setCount(this.getInventoryStackLimit());
+        if (stack.getCount() > getInventoryStackLimit()) {
+            stack.setCount(getInventoryStackLimit());
         }
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -189,20 +196,20 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
 
     @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        if (this.world.getTileEntity(this.pos) != this) {
+        if (world.getTileEntity(pos) != this) {
             return false;
         }
-        return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+        return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
     public void openInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
     public void closeInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -210,23 +217,22 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
         return index < 3;
     }
 
+    @Override
     public int getField(int id) {
-        switch (id) {
-            case 0:
-                return this.processTimer;
-            default:
-                return 0;
+        if (id == ID_PROCESS_TIMER) {
+            return processTimer;
         }
+        return 0;
     }
 
+    @Override
     public void setField(int id, int value) {
-        switch (id) {
-            case 0:
-                this.processTimer = value;
-                break;
+        if (id == ID_PROCESS_TIMER) {
+            processTimer = value;
         }
     }
 
+    @Override
     public int getFieldCount() {
         return 1;
     }
@@ -240,31 +246,25 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
         return inventory;
     }
 
-    /**
-     * @return
-     */
-
     @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-    @Override
     @Nullable
+    @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(inputTank);
         }
         return super.getCapability(capability, facing);
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState,
-                                 @Nonnull IBlockState newState) {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 
-    @Nonnull
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
         NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
@@ -272,7 +272,6 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
         return ret;
     }
 
-    @Nonnull
     @Override
     public final NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
@@ -284,24 +283,24 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
         readPacketNBT(par1nbtTagCompound);
     }
 
-    public void writePacketNBT(NBTTagCompound cmp) {
-        NBTTagCompound tankTag = this.tank.writeToNBT(new NBTTagCompound());
-        ItemStackHelper.saveAllItems(cmp, this.inventory);
+    private void writePacketNBT(NBTTagCompound cmp) {
+        NBTTagCompound tankTag = inputTank.writeToNBT(new NBTTagCompound());
+        ItemStackHelper.saveAllItems(cmp, inventory);
 
-        cmp.setTag("Tank", tankTag);
-        NBTTagCompound resultTankTag = this.resultTank.writeToNBT(new NBTTagCompound());
-        cmp.setTag("ResultTank", resultTankTag);
-        cmp.setInteger(TAG_PROCESS, processTimer);
+        cmp.setTag(KEY_TANK, tankTag);
+        NBTTagCompound resultTankTag = outputTank.writeToNBT(new NBTTagCompound());
+        cmp.setTag(KEY_RESULT_TANK, resultTankTag);
+        cmp.setInteger(KEY_PROCESS_TIMER, processTimer);
     }
 
-    public void readPacketNBT(NBTTagCompound cmp) {
-        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(cmp, this.inventory);
+    private void readPacketNBT(NBTTagCompound cmp) {
+        inventory.clear();
+        ItemStackHelper.loadAllItems(cmp, inventory);
 
-        processTimer = cmp.getInteger(TAG_PROCESS);
+        processTimer = cmp.getInteger(KEY_PROCESS_TIMER);
 
-        this.tank.readFromNBT(cmp.getCompoundTag("Tank"));
-        this.resultTank.readFromNBT(cmp.getCompoundTag("ResultTank"));
+        inputTank.readFromNBT(cmp.getCompoundTag(KEY_TANK));
+        outputTank.readFromNBT(cmp.getCompoundTag(KEY_RESULT_TANK));
     }
 
     @Override
@@ -317,35 +316,37 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
         readPacketNBT(packet.getNbtCompound());
     }
 
-    private void DrainInput() {
-        ItemStack itemstack = this.inventory.get(3);
-        ItemStack itemstack2 = this.inventory.get(4);
-        if (this.getResultTank() != null) {
-            FluidStack fluid = LiquidToItemRecipe.instance().getResultFluid(this.getResultTank().getFluid());
-            if (fluid != null) {
-                ItemStack itemstack1 = LiquidToItemRecipe.instance().getResultItemStack(this.getResultTank().getFluid(),
-                        itemstack);
-                if (itemstack1.isEmpty())
-                    return;
-                if (this.getResultTank().getFluid().amount < fluid.amount)
-                    return;
-                boolean not_full = (itemstack2.getCount() + itemstack1.getCount() <= this.getInventoryStackLimit()
-                        && itemstack2.getCount() + itemstack1.getCount() <= itemstack2.getMaxStackSize());
-                if (!not_full)
-                    return;
-                if (itemstack2.isEmpty()) {
-                    this.inventory.set(4, itemstack1.copy());
-                } else if (itemstack2.getItem() == itemstack1.getItem()) {
-                    itemstack2.grow(itemstack1.getCount());
-                }
+    private void drainInput() {
+        final FluidStack resultTankFluid = outputTank.getFluid();
+        if (resultTankFluid == null) return;
 
-                if (!itemstack.getItem().hasContainerItem(itemstack))
-                    itemstack.shrink(1);
-                else
-                    this.inventory.set(3, new ItemStack(itemstack.getItem().getContainerItem()));
+        ItemStack itemStack3 = inventory.get(3);
+        ItemStack itemStack4 = inventory.get(4);
+        FluidStack resultFluid = LiquidToItemRecipe.INSTANCE.getResultFluid(resultTankFluid);
+        if (resultFluid != null) {
+            ItemStack resultItemStack = LiquidToItemRecipe.INSTANCE.getResultItemStack(resultTankFluid, itemStack3);
+            if (resultItemStack.isEmpty()) return;
 
-                this.getResultTank().drain(fluid, true);
+            if (resultTankFluid.amount < resultFluid.amount) return;
+
+            boolean notFull = itemStack4.getCount() + resultItemStack.getCount() <= getInventoryStackLimit()
+                    && itemStack4.getCount() + resultItemStack.getCount() <= itemStack4.getMaxStackSize();
+            if (!notFull) return;
+
+            if (itemStack4.isEmpty()) {
+                inventory.set(4, resultItemStack.copy());
+            } else if (itemStack4.getItem() == resultItemStack.getItem()) {
+                itemStack4.grow(resultItemStack.getCount());
             }
+
+            Item item3 = itemStack3.getItem();
+            if (item3.hasContainerItem(itemStack3)) {
+                inventory.set(3, new ItemStack(item3.getContainerItem()));
+            } else {
+                itemStack3.shrink(1);
+            }
+
+            outputTank.drain(resultFluid, true);
         }
     }
 

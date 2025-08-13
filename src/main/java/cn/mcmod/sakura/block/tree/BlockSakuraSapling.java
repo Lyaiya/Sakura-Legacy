@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.block.tree;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod.sakura.world.gen.WorldGenBigSakura;
 import cn.mcmod.sakura.world.gen.WorldGenSakuraTree;
 import net.minecraft.block.Block;
@@ -27,7 +27,7 @@ public class BlockSakuraSapling extends BlockBush implements IGrowable {
 
     public BlockSakuraSapling() {
         super();
-        setCreativeTab(CommonProxy.tab);
+        setCreativeTab(CommonProxy.TAB);
         this.setSoundType(SoundType.PLANT);
     }
 
@@ -43,7 +43,6 @@ public class BlockSakuraSapling extends BlockBush implements IGrowable {
 
     @Override
     protected boolean canSustainBush(IBlockState state) {
-
         Block block = state.getBlock();
         return block == Blocks.GRASS || block == Blocks.DIRT || block.getMaterial(state) == Material.GROUND;
     }

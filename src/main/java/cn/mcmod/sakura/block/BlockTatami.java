@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 public class BlockTatami extends BlockFacing {
-    public final boolean isNS;
+    private final boolean isNS;
 
     public BlockTatami(boolean ns) {
         super(Material.CLOTH, true);

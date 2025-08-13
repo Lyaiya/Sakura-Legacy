@@ -33,31 +33,34 @@ public class ItemRiceSeeds extends Item implements IPlantable {
         RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
 
         if (raytraceresult == null) {
-            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+            return new ActionResult<>(EnumActionResult.PASS, itemstack);
         }
         if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
             BlockPos blockpos = raytraceresult.getBlockPos();
 
-            if (!worldIn.isBlockModifiable(playerIn, blockpos) || !playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack)) {
-                return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+            if (!worldIn.isBlockModifiable(playerIn, blockpos)
+                    || !playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack)) {
+                return new ActionResult<>(EnumActionResult.FAIL, itemstack);
             }
 
-            BlockPos blockpos1 = blockpos.up();
+            BlockPos upPos = blockpos.up();
             IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-            if (iblockstate.getMaterial() == Material.WATER && iblockstate.getValue(BlockLiquid.LEVEL).intValue() == 0 && worldIn.isAirBlock(blockpos1)) {
+            if (iblockstate.getMaterial() == Material.WATER
+                    && iblockstate.getValue(BlockLiquid.LEVEL) == 0
+                    && worldIn.isAirBlock(upPos)) {
                 // special case for handling block placement with water lilies
-                net.minecraftforge.common.util.BlockSnapshot blocksnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(worldIn, blockpos1);
-                worldIn.setBlockState(blockpos1, BlockLoader.RICECROP.getDefaultState());
+                net.minecraftforge.common.util.BlockSnapshot blocksnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(worldIn, upPos);
+                worldIn.setBlockState(upPos, BlockLoader.RICECROP.getDefaultState());
                 if (net.minecraftforge.event.ForgeEventFactory.onPlayerBlockPlace(playerIn, blocksnapshot, net.minecraft.util.EnumFacing.UP, handIn).isCanceled()) {
                     blocksnapshot.restore(true, false);
-                    return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
                 }
 
-                worldIn.setBlockState(blockpos1, BlockLoader.RICECROP.getDefaultState(), 11);
+                worldIn.setBlockState(upPos, BlockLoader.RICECROP.getDefaultState(), 11);
 
                 if (playerIn instanceof EntityPlayerMP) {
-                    CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) playerIn, blockpos1, itemstack);
+                    CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) playerIn, upPos, itemstack);
                 }
 
                 if (!playerIn.capabilities.isCreativeMode) {
@@ -66,13 +69,12 @@ public class ItemRiceSeeds extends Item implements IPlantable {
 
                 playerIn.addStat(StatList.getObjectUseStats(this));
                 worldIn.playSound(playerIn, blockpos, SoundEvents.BLOCK_WATERLILY_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-                return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+                return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
             }
         }
 
-        return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+        return new ActionResult<>(EnumActionResult.FAIL, itemstack);
     }
-
 
     @Override
     public EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {

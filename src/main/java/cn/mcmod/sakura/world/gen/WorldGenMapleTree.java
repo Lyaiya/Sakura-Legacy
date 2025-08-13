@@ -24,19 +24,20 @@ public class WorldGenMapleTree extends WorldGenAbstractTree {
     private final IBlockState metaLeaves;
     private final IBlockState metaFallenLeaves;
 
-    public WorldGenMapleTree(boolean p_i2027_1_, boolean sap) {
-        this(p_i2027_1_, 4, DEFAULT_TRUNK, DEFAULT_LEAF, DEFAULT_FALLEN_LEAF, sap);
+    public WorldGenMapleTree(boolean notify, boolean sap) {
+        this(notify, 4, DEFAULT_TRUNK, DEFAULT_LEAF, DEFAULT_FALLEN_LEAF, sap);
     }
 
-    public WorldGenMapleTree(boolean notify, int minTreeHeightIn, IBlockState woodMeta, IBlockState p_i46446_4_, IBlockState fallenMeta, boolean sap) {
+    public WorldGenMapleTree(boolean notify, int minTreeHeightIn, IBlockState woodMeta, IBlockState metaLeaves, IBlockState fallenMeta, boolean sap) {
         super(notify);
         this.minTreeHeight = minTreeHeightIn;
         this.metaWood = woodMeta;
-        this.metaLeaves = p_i46446_4_;
+        this.metaLeaves = metaLeaves;
         this.metaFallenLeaves = fallenMeta;
         this.generateSap = sap;
     }
 
+    @Override
     public boolean generate(World worldIn, Random rand, BlockPos position) {
         int i = rand.nextInt(3) + this.minTreeHeight;
         boolean flag = true;

@@ -25,7 +25,7 @@ public class WorldGenPepper implements IWorldGenerator {
             return;
         }
 
-        if (random.nextFloat() < SakuraConfig.pepper_weight / 4000.0F) {
+        if (random.nextFloat() < SakuraConfig.PEPPER_WEIGHT / 4000.0F) {
             int posX = x + world.rand.nextInt(16) + 8;
             int posZ = z + world.rand.nextInt(16) + 8;
             BlockPos newPos = WorldUtil.getInstance().findGround(world, new BlockPos(posX, 0, posZ), true, true, true);

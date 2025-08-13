@@ -25,8 +25,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockShoji extends Block implements ITileEntityProvider {
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
@@ -101,18 +100,13 @@ public class BlockShoji extends Block implements ITileEntityProvider {
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         boolean isOpen = state.getValue(OPEN);
 
-        switch (state.getValue(FACING)) {
-            case NORTH:
-                return isOpen ? EAST_AABB : BLOCK_AABB_ROTATE;
-            case SOUTH:
-                return isOpen ? WEST_AABB : BLOCK_AABB_ROTATE;
-            case WEST:
-                return isOpen ? SOUTH_AABB : BLOCK_AABB;
-            case EAST:
-                return isOpen ? NORTH_AABB : BLOCK_AABB;
-            default:
-                return isOpen ? EAST_AABB : BLOCK_AABB_ROTATE;
-        }
+        return switch (state.getValue(FACING)) {
+            case NORTH -> isOpen ? EAST_AABB : BLOCK_AABB_ROTATE;
+            case SOUTH -> isOpen ? WEST_AABB : BLOCK_AABB_ROTATE;
+            case WEST -> isOpen ? SOUTH_AABB : BLOCK_AABB;
+            case EAST -> isOpen ? NORTH_AABB : BLOCK_AABB;
+            default -> isOpen ? EAST_AABB : BLOCK_AABB_ROTATE;
+        };
     }
 
     @Override
@@ -162,15 +156,14 @@ public class BlockShoji extends Block implements ITileEntityProvider {
         }
     }
 
-    public static ItemStack getItemStackWithType(int type) {
+    private static ItemStack getItemStackWithType(int type) {
         ItemStack stack = getDefaultItemStack();
         RecipesUtil.getInstance().getItemTagCompound(stack).setInteger("type", type);
         return stack;
     }
 
-
-    @Override
     @SideOnly(Side.CLIENT)
+    @Override
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
         return false;
     }

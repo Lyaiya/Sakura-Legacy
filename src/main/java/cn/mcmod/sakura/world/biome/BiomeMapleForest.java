@@ -31,80 +31,48 @@ public class BiomeMapleForest extends Biome {
 
     public BiomeMapleForest(BiomeProperties mapleForest) {
         super(mapleForest);
-        this.decorator.treesPerChunk = 10;
-        this.decorator.grassPerChunk = 2;
+        decorator.treesPerChunk = 10;
+        decorator.grassPerChunk = 2;
 
-        this.spawnableCreatureList.add(new SpawnListEntry(EntityDeer.class, 10, 3, 4));
+        spawnableCreatureList.add(new SpawnListEntry(EntityDeer.class, 10, 3, 4));
     }
 
+    @Override
     public WorldGenAbstractTree getRandomTreeFeature(Random rand) {
-        switch (rand.nextInt(32)) {
-            case 0:
-                return (WorldGenAbstractTree) RED_MAPLETREE_SAP;
-            case 1:
-                return (WorldGenAbstractTree) RED_MAPLETREE;
-            case 2:
-                return (WorldGenAbstractTree) YELLOW_MAPLETREE_SAP;
-            case 3:
-                return (WorldGenAbstractTree) YELLOW_MAPLETREE;
-            case 4:
-                return (WorldGenAbstractTree) ORANGE_MAPLETREE_SAP;
-            case 5:
-                return (WorldGenAbstractTree) ORANGE_MAPLETREE;
-            case 6:
-                return (WorldGenAbstractTree) GREEN_MAPLETREE_SAP;
-            case 7:
-                return (WorldGenAbstractTree) GREEN_MAPLETREE;
-            case 8:
-                return (WorldGenAbstractTree) RED_MAPLETREE_SAP;
-            case 9:
-                return (WorldGenAbstractTree) RED_MAPLETREE;
-            case 10:
-                return (WorldGenAbstractTree) YELLOW_MAPLETREE_SAP;
-            case 11:
-                return (WorldGenAbstractTree) YELLOW_MAPLETREE;
-            case 12:
-                return (WorldGenAbstractTree) ORANGE_MAPLETREE_SAP;
-            case 13:
-                return (WorldGenAbstractTree) ORANGE_MAPLETREE;
-            case 14:
-                return (WorldGenAbstractTree) GREEN_MAPLETREE_SAP;
-            case 15:
-                return (WorldGenAbstractTree) GREEN_MAPLETREE;
-            case 16:
-                return (WorldGenAbstractTree) BIG_RED_MAPLETREE_SAP;
-            case 17:
-                return (WorldGenAbstractTree) RED_MAPLETREE;
-            case 18:
-                return (WorldGenAbstractTree) BIG_YELLOW_MAPLETREE_SAP;
-            case 19:
-                return (WorldGenAbstractTree) BIG_YELLOW_MAPLETREE;
-            case 20:
-                return (WorldGenAbstractTree) BIG_ORANGE_MAPLETREE_SAP;
-            case 21:
-                return (WorldGenAbstractTree) BIG_ORANGE_MAPLETREE;
-            case 22:
-                return (WorldGenAbstractTree) GREEN_MAPLETREE_SAP;
-            case 23:
-                return (WorldGenAbstractTree) GREEN_MAPLETREE;
-            case 24:
-                return (WorldGenAbstractTree) RED_MAPLETREE_SAP;
-            case 25:
-                return (WorldGenAbstractTree) RED_MAPLETREE;
-            case 26:
-                return (WorldGenAbstractTree) YELLOW_MAPLETREE_SAP;
-            case 27:
-                return (WorldGenAbstractTree) YELLOW_MAPLETREE;
-            case 28:
-                return (WorldGenAbstractTree) ORANGE_MAPLETREE_SAP;
-            case 29:
-                return (WorldGenAbstractTree) ORANGE_MAPLETREE;
-            case 30:
-                return (WorldGenAbstractTree) GREEN_MAPLETREE_SAP;
-            case 31:
-                return (WorldGenAbstractTree) GREEN_MAPLETREE;
-            default:
-                return (WorldGenAbstractTree) RED_MAPLETREE;
-        }
+        return switch (rand.nextInt(32)) {
+            case 0 -> (WorldGenAbstractTree) RED_MAPLETREE_SAP;
+            case 1 -> (WorldGenAbstractTree) RED_MAPLETREE;
+            case 2 -> (WorldGenAbstractTree) YELLOW_MAPLETREE_SAP;
+            case 3 -> (WorldGenAbstractTree) YELLOW_MAPLETREE;
+            case 4 -> (WorldGenAbstractTree) ORANGE_MAPLETREE_SAP;
+            case 5 -> (WorldGenAbstractTree) ORANGE_MAPLETREE;
+            case 6 -> (WorldGenAbstractTree) GREEN_MAPLETREE_SAP;
+            case 7 -> (WorldGenAbstractTree) GREEN_MAPLETREE;
+            case 8 -> (WorldGenAbstractTree) RED_MAPLETREE_SAP;
+            case 9 -> (WorldGenAbstractTree) RED_MAPLETREE;
+            case 10 -> (WorldGenAbstractTree) YELLOW_MAPLETREE_SAP;
+            case 11 -> (WorldGenAbstractTree) YELLOW_MAPLETREE;
+            case 12 -> (WorldGenAbstractTree) ORANGE_MAPLETREE_SAP;
+            case 13 -> (WorldGenAbstractTree) ORANGE_MAPLETREE;
+            case 14 -> (WorldGenAbstractTree) GREEN_MAPLETREE_SAP;
+            case 15 -> (WorldGenAbstractTree) GREEN_MAPLETREE;
+            case 16 -> (WorldGenAbstractTree) BIG_RED_MAPLETREE_SAP;
+            case 17 -> (WorldGenAbstractTree) RED_MAPLETREE;
+            case 18 -> (WorldGenAbstractTree) BIG_YELLOW_MAPLETREE_SAP;
+            case 19 -> (WorldGenAbstractTree) BIG_YELLOW_MAPLETREE;
+            case 20 -> (WorldGenAbstractTree) BIG_ORANGE_MAPLETREE_SAP;
+            case 21 -> (WorldGenAbstractTree) BIG_ORANGE_MAPLETREE;
+            case 22 -> (WorldGenAbstractTree) GREEN_MAPLETREE_SAP;
+            case 23 -> (WorldGenAbstractTree) GREEN_MAPLETREE;
+            case 24 -> (WorldGenAbstractTree) RED_MAPLETREE_SAP;
+            case 25 -> (WorldGenAbstractTree) RED_MAPLETREE;
+            case 26 -> (WorldGenAbstractTree) YELLOW_MAPLETREE_SAP;
+            case 27 -> (WorldGenAbstractTree) YELLOW_MAPLETREE;
+            case 28 -> (WorldGenAbstractTree) ORANGE_MAPLETREE_SAP;
+            case 29 -> (WorldGenAbstractTree) ORANGE_MAPLETREE;
+            case 30 -> (WorldGenAbstractTree) GREEN_MAPLETREE_SAP;
+            case 31 -> (WorldGenAbstractTree) GREEN_MAPLETREE;
+            default -> (WorldGenAbstractTree) RED_MAPLETREE;
+        };
     }
 }

@@ -9,18 +9,18 @@ import net.minecraft.entity.Entity;
  * Created using Tabula 7.0.0
  */
 public class ModelPot extends ModelBase {
-    public ModelRenderer base;
-    public ModelRenderer ironBar;
-    public ModelRenderer ironBar2;
-    public ModelRenderer ironBar3;
-    public ModelRenderer ironBar4;
-    public ModelRenderer pot1;
-    public ModelRenderer base2;
-    public ModelRenderer base3;
-    public ModelRenderer pot2;
-    public ModelRenderer pot3;
-    public ModelRenderer pot3_1;
-    public ModelRenderer pot4;
+    public final ModelRenderer base;
+    public final ModelRenderer ironBar;
+    public final ModelRenderer ironBar2;
+    public final ModelRenderer ironBar3;
+    public final ModelRenderer ironBar4;
+    public final ModelRenderer pot1;
+    public final ModelRenderer base2;
+    public final ModelRenderer base3;
+    public final ModelRenderer pot2;
+    public final ModelRenderer pot3;
+    public final ModelRenderer pot3_1;
+    public final ModelRenderer pot4;
 
     public ModelPot() {
         this.textureWidth = 128;

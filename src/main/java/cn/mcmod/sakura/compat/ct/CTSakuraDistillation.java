@@ -13,13 +13,12 @@ import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
-
 @ZenClass("mods.sakura.Distillation")
 @ZenRegister
 public class CTSakuraDistillation {
     @ZenMethod
     public static void RemoveRecipe(ILiquidStack input) {
-        SakuraRecipeRegister.getInstance().actions.add(new Removal(CraftTweakerMC.getLiquidStack(input)));
+        SakuraRecipeRegister.INSTANCE.addAction(new Removal(CraftTweakerMC.getLiquidStack(input)));
     }
 
     @ZenMethod
@@ -33,13 +32,13 @@ public class CTSakuraDistillation {
                     array[i] = ((IOreDictEntry) input[i]).getName();
             }
 
-            SakuraRecipeRegister.getInstance().actions.add(new Addition(array, CraftTweakerMC.getLiquidStack(output), CraftTweakerMC.getLiquidStack(input_fluid)));
+            SakuraRecipeRegister.INSTANCE.addAction(new Addition(array, CraftTweakerMC.getLiquidStack(output), CraftTweakerMC.getLiquidStack(input_fluid)));
         }
     }
 
     @ZenMethod
     public static void ClearAllRecipe() {
-        SakuraRecipeRegister.getInstance().actions.add(new ClearAllRecipe());
+        SakuraRecipeRegister.INSTANCE.addAction(new ClearAllRecipe());
     }
 
     private static final class Removal implements IAction {
@@ -51,7 +50,7 @@ public class CTSakuraDistillation {
 
         @Override
         public void apply() {
-            DistillationRecipes.getInstance().ClearRecipe(itemInput);
+            DistillationRecipes.INSTANCE.clearRecipe(itemInput);
         }
 
         @Override
@@ -73,7 +72,7 @@ public class CTSakuraDistillation {
 
         @Override
         public void apply() {
-            DistillationRecipes.getInstance().register(fluidInput, fluidOutput, itemInput);
+            DistillationRecipes.INSTANCE.register(fluidInput, fluidOutput, itemInput);
         }
 
         @Override
@@ -86,7 +85,7 @@ public class CTSakuraDistillation {
     private static final class ClearAllRecipe implements IAction {
         @Override
         public void apply() {
-            DistillationRecipes.getInstance().ClearAllRecipe();
+            DistillationRecipes.INSTANCE.clearAllRecipe();
         }
 
         @Override

@@ -6,15 +6,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import org.jetbrains.annotations.Nullable;
 
 public class PacketKeyMessageHandler implements IMessageHandler<PacketKeyMessage, IMessage> {
 
+    @Nullable
     @Override
     public IMessage onMessage(PacketKeyMessage message, MessageContext ctx) {
         EntityPlayer player = ctx.getServerHandler().player;
         if (isPlayerHoldingSheath(player)) {
             ItemStack sheath = getHeldItemSheath(player);
-            ((ItemSheath) sheath.getItem()).sheath_In(player);
+            ((ItemSheath) sheath.getItem()).sheathIn(player);
         }
         return null;
     }
@@ -28,7 +30,6 @@ public class PacketKeyMessageHandler implements IMessageHandler<PacketKeyMessage
     }
 
     public boolean isPlayerHoldingSheath(EntityPlayer player) {
-
         if (!(!player.getHeldItemMainhand().isEmpty() || !player.getHeldItemOffhand().isEmpty())) {
             return false;
         }

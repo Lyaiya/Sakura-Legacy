@@ -4,7 +4,6 @@ import cn.mcmod.sakura.SakuraConfig;
 import cn.mcmod.sakura.item.ItemLoader;
 import cn.mcmod_mmf.mmlib.block.BlockBase;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -21,7 +20,7 @@ public class BlockTataraSmelting extends BlockBase {
 
     public BlockTataraSmelting() {
         super(Material.IRON, true);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(this.getTimerProperty(), Integer.valueOf(0)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(this.getTimerProperty(), 0));
         this.setTickRandomly(true);
         this.setHarvestLevel("forging_hammer", 1);
     }
@@ -48,7 +47,7 @@ public class BlockTataraSmelting extends BlockBase {
 
         } else
             for (int i = 0; i < 9 + fortune; ++i) {
-                switch (SakuraConfig.harder_iron_difficult) {
+                switch (SakuraConfig.HARDER_IRON_DIFFICULT) {
                     case 1:
                         if (rand.nextInt(9) <= 7) {
                             drops.add(new ItemStack(ItemLoader.MATERIAL, 1, 54));
@@ -68,6 +67,7 @@ public class BlockTataraSmelting extends BlockBase {
             }
     }
 
+    @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         super.updateTick(worldIn, pos, state, rand);
 
@@ -87,20 +87,21 @@ public class BlockTataraSmelting extends BlockBase {
     }
 
     protected int getTime(IBlockState state) {
-        return state.getValue(this.getTimerProperty()).intValue();
+        return state.getValue(this.getTimerProperty());
     }
 
     public IBlockState withTime(int age) {
-        return this.getDefaultState().withProperty(this.getTimerProperty(), Integer.valueOf(age));
+        return this.getDefaultState().withProperty(this.getTimerProperty(), age);
     }
 
     public boolean isFinished(IBlockState state) {
-        return state.getValue(this.getTimerProperty()).intValue() >= this.getFinishTime();
+        return state.getValue(this.getTimerProperty()) >= this.getFinishTime();
     }
 
     /**
      * Convert the given metadata into a BlockState for this Block
      */
+    @Override
     public IBlockState getStateFromMeta(int meta) {
         return this.withTime(meta);
     }
@@ -108,26 +109,34 @@ public class BlockTataraSmelting extends BlockBase {
     /**
      * Convert the BlockState into the correct metadata value
      */
+    @Override
     public int getMetaFromState(IBlockState state) {
         return this.getTime(state);
     }
 
+    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, Timer);
     }
 
     private void setSmelting(World worldIn, BlockPos pos) {
-        if (worldIn.getBlockState(pos.up()).getBlock() == BlockLoader.TATARA)
+        if (worldIn.getBlockState(pos.up()).getBlock() == BlockLoader.TATARA) {
             worldIn.setBlockState(pos.up(), this.withTime(0), 2);
-        if (worldIn.getBlockState(pos.down()).getBlock() == BlockLoader.TATARA)
+        }
+        if (worldIn.getBlockState(pos.down()).getBlock() == BlockLoader.TATARA) {
             worldIn.setBlockState(pos.down(), this.withTime(0), 2);
-        if (worldIn.getBlockState(pos.east()).getBlock() == BlockLoader.TATARA)
+        }
+        if (worldIn.getBlockState(pos.east()).getBlock() == BlockLoader.TATARA) {
             worldIn.setBlockState(pos.east(), this.withTime(0), 2);
-        if (worldIn.getBlockState(pos.north()).getBlock() == BlockLoader.TATARA)
+        }
+        if (worldIn.getBlockState(pos.north()).getBlock() == BlockLoader.TATARA) {
             worldIn.setBlockState(pos.north(), this.withTime(0), 2);
-        if (worldIn.getBlockState(pos.west()).getBlock() == BlockLoader.TATARA)
+        }
+        if (worldIn.getBlockState(pos.west()).getBlock() == BlockLoader.TATARA) {
             worldIn.setBlockState(pos.west(), this.withTime(0), 2);
-        if (worldIn.getBlockState(pos.south()).getBlock() == BlockLoader.TATARA)
+        }
+        if (worldIn.getBlockState(pos.south()).getBlock() == BlockLoader.TATARA) {
             worldIn.setBlockState(pos.south(), this.withTime(0), 2);
+        }
     }
 }

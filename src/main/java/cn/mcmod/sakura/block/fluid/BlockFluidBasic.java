@@ -12,6 +12,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockFluidBasic extends BlockFluidClassic {
 
@@ -21,7 +22,8 @@ public class BlockFluidBasic extends BlockFluidClassic {
     }
 
     @Override
-    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(World worldIn, BlockPos pos, IBlockState state, Entity entityIn) {
+        super.onEntityCollision(worldIn, pos, state, entityIn);
     }
 
     @Override
@@ -29,6 +31,7 @@ public class BlockFluidBasic extends BlockFluidClassic {
         return FULL_BLOCK_AABB;
     }
 
+    @Nullable
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return NULL_AABB;

@@ -2,6 +2,7 @@ package cn.mcmod.sakura.compat.jei;
 
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.item.ItemLoader;
+import cn.mcmod.sakura.util.RLUtil;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
@@ -20,7 +21,7 @@ public class CategoryPot implements IRecipeCategory<IRecipeWrapper> {
     private final IDrawable icon;
 
     public CategoryPot(IGuiHelper helper) {
-        ResourceLocation backgroundTexture = new ResourceLocation(SakuraMain.MODID + ":textures/gui/pot.png");
+        ResourceLocation backgroundTexture = RLUtil.of("textures/gui/pot.png");
         this.icon = helper.createDrawableIngredient(new ItemStack(ItemLoader.POT));
         this.background = helper.createDrawable(backgroundTexture, 7, 7, 162, 74);
     }

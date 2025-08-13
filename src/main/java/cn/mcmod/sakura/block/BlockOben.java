@@ -62,16 +62,15 @@ public class BlockOben extends BlockFacing implements ITileEntityProvider {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (worldIn.isRemote)
-            return true;
+        if (worldIn.isRemote) return true;
 
         ItemStack stack = playerIn.getHeldItem(hand);
         TileEntity tile = worldIn.getTileEntity(pos);
         if (hand == EnumHand.MAIN_HAND) {
-            if (tile instanceof TileEntityOben) {
-                TileEntityOben tileEntity = (TileEntityOben) tile;
-                if (!(tileEntity.getInventory().getStackInSlot(0)).isEmpty() && !(stack.equals(tileEntity.getInventory().getStackInSlot(0)))) {
-                    Block.spawnAsEntity(worldIn, pos, tileEntity.getInventory().getStackInSlot(0));
+            if (tile instanceof TileEntityOben tileEntity) {
+                ItemStack itemStack = tileEntity.getInventory().getStackInSlot(0);
+                if (!itemStack.isEmpty() && !stack.equals(itemStack)) {
+                    Block.spawnAsEntity(worldIn, pos, itemStack);
                     tileEntity.getInventory().setStackInSlot(0, ItemStack.EMPTY);
                     tileEntity.markDirty();
                     return true;

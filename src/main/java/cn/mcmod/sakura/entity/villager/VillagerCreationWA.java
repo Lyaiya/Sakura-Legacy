@@ -15,9 +15,7 @@ import java.util.Random;
 
 public class VillagerCreationWA implements IVillageCreationHandler {
     public static void registerComponents() {
-        MapGenStructureIO.registerStructureComponent(WAVillagerHouse.class,
-                SakuraMain.MODID + ":wa_house");
-
+        MapGenStructureIO.registerStructureComponent(WAVillagerHouse.class, SakuraMain.MODID + ":wa_house");
     }
 
     @Override

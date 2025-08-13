@@ -24,19 +24,19 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class TileEntityMapleCauldron extends TileEntity implements ITickable, IInventory {
+    public static final int ID_MAPLE_TIME = 0;
+    public static final int ID_COOK_TIME = 1;
 
-    public FluidTank tank = new FluidTank(5000) {
-        @Override
-        protected void onContentsChanged() {
-            TileEntityMapleCauldron.this.refresh();
-        }
-    };
+    private static final String KEY_MAPLE_TIME = "MapleTime";
+    private static final String KEY_COOK_TIME = "CookTime";
+    private static final String KEY_TANK = "Tank";
 
+    private final NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+
+    @Nullable
     private FluidStack liquidForRendering = null;
     /**
      * The number of ticks that a fresh copy of the currently-burning item would keep the furnace burning for
@@ -44,12 +44,23 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
     private int cookTime;
     private int mapleTime;
 
+    public FluidTank tank = new FluidTank(5000) {
+        @Override
+        protected void onContentsChanged() {
+            refresh();
+        }
+    };
+
+    public TileEntityMapleCauldron() {
+    }
+
     public FluidTank getTank() {
-        return this.tank;
+        return tank;
     }
 
     // Render only
     @SideOnly(Side.CLIENT)
+    @Nullable
     public FluidStack getFluidForRendering(float partialTicks) {
         final FluidStack actual = tank.getFluid();
         int actualAmount;
@@ -79,8 +90,8 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
     }
 
     public boolean isBurning() {
-        return this.getTank().canDrainFluidType(new FluidStack(BlockLoader.MAPLE_SYRUP_FLUID, 500))
-                && this.getTank().getFluidAmount() >= 500
+        return tank.canDrainFluidType(new FluidStack(BlockLoader.MAPLE_SYRUP_FLUID, 500))
+                && tank.getFluidAmount() >= 500
                 && HeatUtil.getHeatStrength(getWorld(), getPos()) > 0;
     }
 
@@ -92,14 +103,14 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
     }
 
     public int getCookTime() {
-        return this.cookTime;
+        return cookTime;
     }
 
     public int getMapleTime() {
-        return this.mapleTime;
+        return mapleTime;
     }
 
-    protected void refresh() {
+    private void refresh() {
         if (hasWorld() && !world.isRemote) {
             IBlockState state = world.getBlockState(pos);
             world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
@@ -109,14 +120,14 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
     @Override
     public void update() {
         // check can cook
-        if (!this.world.isRemote) {
-            this.drawing();
-            this.cooking();
+        if (!world.isRemote) {
+            drawing();
+            cooking();
         }
     }
 
     private void drawing() {
-        boolean flag = this.canDraw();
+        boolean flag = canDraw();
         boolean flag1 = false;
 
         if (canDraw()) {
@@ -124,21 +135,23 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
         }
         if (mapleTime >= 20) {
             mapleTime = 0;
-            if (this.getTank().canFill())
-                this.getTank().fill(new FluidStack(BlockLoader.MAPLE_SYRUP_FLUID, 10), true);
+            if (tank.canFill()) {
+                tank.fill(new FluidStack(BlockLoader.MAPLE_SYRUP_FLUID, 10), true);
+            }
             flag1 = true;
         }
-        if (flag != this.canDraw()) {
+        if (flag != canDraw()) {
             flag1 = true;
         }
-        if (flag1)
-            this.markDirty();
+        if (flag1) {
+            markDirty();
+        }
     }
 
     private void cooking() {
-        boolean flag = this.isBurning();
+        boolean flag = isBurning();
         boolean flag1 = false;
-        ItemStack itemstack = this.inventory.get(0);
+        ItemStack itemstack = inventory.get(0);
         if (isBurning() && (itemstack.getCount() < itemstack.getMaxStackSize())) {
             cookTime += 1;
         }
@@ -146,28 +159,25 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
             cookTime = 0;
 
             if (itemstack.isEmpty()) {
-                this.inventory.set(0, new ItemStack(ItemLoader.MATERIAL, 8, 49).copy());
+                inventory.set(0, new ItemStack(ItemLoader.MATERIAL, 8, 49).copy());
             } else {
                 itemstack.grow(8);
             }
-            this.tank.drainInternal(500, true);
+            tank.drainInternal(500, true);
             flag1 = true;
         }
-        if (flag != this.isBurning()) {
+        if (flag != isBurning()) {
             flag1 = true;
         }
-        if (flag1)
-            this.markDirty();
+        if (flag1) {
+            markDirty();
+        }
     }
 
     @Override
     public void markDirty() {
         super.markDirty();
-
     }
-
-    protected NonNullList<ItemStack> inventory =
-            NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
     @Override
     public String getName() {
@@ -186,7 +196,7 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
 
     @Override
     public boolean isEmpty() {
-        for (ItemStack itemstack : this.inventory) {
+        for (ItemStack itemstack : inventory) {
             if (!itemstack.isEmpty()) {
                 return false;
             }
@@ -204,7 +214,7 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
         ItemStack itemstack = ItemStackHelper.getAndSplit(inventory, index, count);
 
         if (!itemstack.isEmpty()) {
-            this.markDirty();
+            markDirty();
         }
 
         return itemstack;
@@ -218,10 +228,10 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
         inventory.set(index, stack);
-        if (stack.getCount() > this.getInventoryStackLimit()) {
-            stack.setCount(this.getInventoryStackLimit());
+        if (stack.getCount() > getInventoryStackLimit()) {
+            stack.setCount(getInventoryStackLimit());
         }
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -231,20 +241,20 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
 
     @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        if (this.world.getTileEntity(this.pos) != this) {
+        if (world.getTileEntity(pos) != this) {
             return false;
         }
-        return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+        return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
     public void openInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
     public void closeInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -252,30 +262,28 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
         return false;
     }
 
+    @Override
     public int getField(int id) {
-        switch (id) {
-            case 0:
-                return this.mapleTime;
-            case 1:
-                return this.cookTime;
-            default:
-                return 0;
-
-        }
+        return switch (id) {
+            case ID_MAPLE_TIME -> mapleTime;
+            case ID_COOK_TIME -> cookTime;
+            default -> 0;
+        };
     }
 
-
+    @Override
     public void setField(int id, int value) {
         switch (id) {
-            case 0:
-                this.mapleTime = value;
+            case ID_MAPLE_TIME:
+                mapleTime = value;
                 break;
-            case 1:
-                this.cookTime = value;
+            case ID_COOK_TIME:
+                cookTime = value;
                 break;
         }
     }
 
+    @Override
     public int getFieldCount() {
         return 2;
     }
@@ -304,11 +312,10 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 
-    @Nonnull
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
         NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
@@ -316,7 +323,6 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
         return ret;
     }
 
-    @Nonnull
     @Override
     public final NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
@@ -328,24 +334,23 @@ public class TileEntityMapleCauldron extends TileEntity implements ITickable, II
         readPacketNBT(par1nbtTagCompound);
     }
 
-    public void writePacketNBT(NBTTagCompound cmp) {
-        ItemStackHelper.saveAllItems(cmp, this.inventory);
-        cmp.setInteger("MapleTime", this.mapleTime);
-        cmp.setInteger("CookTime", this.cookTime);
-        NBTTagCompound tankTag = this.tank.writeToNBT(new NBTTagCompound());
-        cmp.setTag("Tank", tankTag);
+    private void writePacketNBT(NBTTagCompound cmp) {
+        ItemStackHelper.saveAllItems(cmp, inventory);
+        cmp.setInteger(KEY_MAPLE_TIME, mapleTime);
+        cmp.setInteger(KEY_COOK_TIME, cookTime);
+        NBTTagCompound tankTag = tank.writeToNBT(new NBTTagCompound());
+        cmp.setTag(KEY_TANK, tankTag);
         if (tank.getFluid() != null) {
             liquidForRendering = tank.getFluid().copy();
         }
     }
 
-    public void readPacketNBT(NBTTagCompound cmp) {
-        this.inventory =
-                NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(cmp, this.inventory);
-        this.mapleTime = cmp.getInteger("MapleTime");
-        this.cookTime = cmp.getInteger("CookTime");
-        this.tank.readFromNBT(cmp.getCompoundTag("Tank"));
+    private void readPacketNBT(NBTTagCompound cmp) {
+        inventory.clear();
+        ItemStackHelper.loadAllItems(cmp, inventory);
+        mapleTime = cmp.getInteger(KEY_MAPLE_TIME);
+        cookTime = cmp.getInteger(KEY_COOK_TIME);
+        tank.readFromNBT(cmp.getCompoundTag(KEY_TANK));
     }
 
     @Override

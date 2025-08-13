@@ -9,14 +9,21 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class TileEntityShoji extends TileEntity implements ITickable {
+    private static final String KEY_TYPE = "type";
+    private static final String KEY_FACING = "facing";
+    private static final String KEY_OPEN = "open";
+    private static final String KEY_ANIMATION = "animation";
+
     private int type = 0;
     private EnumFacing facing = EnumFacing.SOUTH;
     private boolean open = false;
     private int animation = 0;
+
+    public TileEntityShoji() {
+    }
 
     @Override
     public void update() {
@@ -53,27 +60,27 @@ public class TileEntityShoji extends TileEntity implements ITickable {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        if (compound.hasKey("type")) {
-            type = compound.getInteger("type");
+        if (compound.hasKey(KEY_TYPE)) {
+            type = compound.getInteger(KEY_TYPE);
         }
-        if (compound.hasKey("facing")) {
-            facing = EnumFacing.byName(compound.getString("facing"));
+        if (compound.hasKey(KEY_FACING)) {
+            facing = EnumFacing.byName(compound.getString(KEY_FACING));
         }
-        if (compound.hasKey("open")) {
-            open = compound.getBoolean("open");
+        if (compound.hasKey(KEY_OPEN)) {
+            open = compound.getBoolean(KEY_OPEN);
         }
-        if (compound.hasKey("animation")) {
-            animation = compound.getInteger("animation");
+        if (compound.hasKey(KEY_ANIMATION)) {
+            animation = compound.getInteger(KEY_ANIMATION);
         }
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setInteger("type", type);
-        compound.setString("facing", facing.getName());
-        compound.setBoolean("open", open);
-        compound.setInteger("animation", animation);
+        compound.setInteger(KEY_TYPE, type);
+        compound.setString(KEY_FACING, facing.getName());
+        compound.setBoolean(KEY_OPEN, open);
+        compound.setInteger(KEY_ANIMATION, animation);
         return compound;
     }
 

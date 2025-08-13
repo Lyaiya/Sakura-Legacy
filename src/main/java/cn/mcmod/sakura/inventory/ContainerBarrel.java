@@ -11,62 +11,63 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerBarrel extends Container {
-    private final TileEntityBarrel tileBarrel;
+    private final TileEntityBarrel teBarrel;
+
     private int processTime;
 
-    public ContainerBarrel(InventoryPlayer inventory, TileEntityBarrel tile) {
-        tileBarrel = tile;
+    public ContainerBarrel(InventoryPlayer inventory, TileEntityBarrel te) {
+        teBarrel = te;
         int i, j, k;
-        for (k = 0; k < 3; ++k)
-            addSlotToContainer(new Slot(tile, k, 42, 36 + (k - 1) * 18));
-        addSlotToContainer(new Slot(tile, 3, 131, 12));
-        addSlotToContainer(new Slot(tile, 4, 130, 56) {
+        for (k = 0; k < 3; ++k) {
+            addSlotToContainer(new Slot(te, k, 42, 36 + (k - 1) * 18));
+        }
+        addSlotToContainer(new Slot(te, 3, 131, 12));
+        addSlotToContainer(new Slot(te, 4, 130, 56) {
             @Override
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
         });
 
-
-        for (i = 0; i < 3; ++i)
-            for (j = 0; j < 9; ++j)
+        for (i = 0; i < 3; ++i) {
+            for (j = 0; j < 9; ++j) {
                 addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            }
+        }
 
-        for (i = 0; i < 9; ++i)
+        for (i = 0; i < 9; ++i) {
             addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
+        }
     }
-
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendAllWindowProperties(this, this.tileBarrel);
+        listener.sendAllWindowProperties(this, teBarrel);
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
 
-        for (int i = 0; i < this.listeners.size(); ++i) {
-            IContainerListener icontainerlistener = this.listeners.get(i);
-
-            if (this.processTime != this.tileBarrel.getField(0)) {
-                icontainerlistener.sendWindowProperty(this, 0, this.tileBarrel.getField(0));
+        for (IContainerListener listener : listeners) {
+            if (processTime != teBarrel.getField(TileEntityBarrel.ID_PROCESS_TIMER)) {
+                listener.sendWindowProperty(this, 0, teBarrel.getField(TileEntityBarrel.ID_PROCESS_TIMER));
             }
         }
 
-        this.processTime = this.tileBarrel.getField(0);
+        processTime = teBarrel.getField(TileEntityBarrel.ID_PROCESS_TIMER);
     }
 
-    @Override
     @SideOnly(Side.CLIENT)
+    @Override
     public void updateProgressBar(int id, int value) {
-        this.tileBarrel.setField(id, value);
+        teBarrel.setField(id, value);
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
-        return tileBarrel.isUsableByPlayer(player);
+        return teBarrel.isUsableByPlayer(player);
     }
 
     /**
@@ -79,27 +80,27 @@ public class ContainerBarrel extends Container {
         // 32-41: Hot bar in the player inventory
 
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
+        Slot slot = inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack()) {
             ItemStack itemStack1 = slot.getStack();
             itemStack = itemStack1.copy();
 
             if (index >= 0 && index <= 4) {
-                if (!this.mergeItemStack(itemStack1, 5, 41, true)) {
+                if (!mergeItemStack(itemStack1, 5, 41, true)) {
                     return ItemStack.EMPTY;
                 }
 
                 slot.onSlotChange(itemStack1, itemStack);
             } else if (index >= 5) {
                 if (index >= 5 && index < 32) {
-                    if (!this.mergeItemStack(itemStack1, 32, 41, false)) {
+                    if (!mergeItemStack(itemStack1, 32, 41, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index >= 32 && index < 41 && !this.mergeItemStack(itemStack1, 5, 32, false)) {
+                } else if (index >= 32 && index < 41 && !mergeItemStack(itemStack1, 5, 32, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemStack1, 5, 41, false)) {
+            } else if (!mergeItemStack(itemStack1, 5, 41, false)) {
                 return ItemStack.EMPTY;
             }
 

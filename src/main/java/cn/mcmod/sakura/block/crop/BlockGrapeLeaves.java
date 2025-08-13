@@ -7,12 +7,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemShears;
@@ -36,18 +34,18 @@ import java.util.List;
 import java.util.Random;
 
 public class BlockGrapeLeaves extends BlockBase implements IPlantable, IGrowable, IShearable {
-    public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 7);
+    private static final PropertyInteger AGE = PropertyInteger.create("age", 0, 7);
 
     public BlockGrapeLeaves() {
         super(Material.WOOD, false);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(this.getAgeProperty(), Integer.valueOf(0)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(this.getAgeProperty(), 0));
         this.setTickRandomly(true);
         this.setCreativeTab(null);
         this.setHardness(2.0F);
         this.setSoundType(SoundType.WOOD);
     }
 
-    protected PropertyInteger getAgeProperty() {
+    private PropertyInteger getAgeProperty() {
         return AGE;
     }
 
@@ -56,28 +54,31 @@ public class BlockGrapeLeaves extends BlockBase implements IPlantable, IGrowable
     }
 
     protected int getAge(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue();
+        return state.getValue(this.getAgeProperty());
     }
 
     public IBlockState withAge(int age) {
-        return this.getDefaultState().withProperty(this.getAgeProperty(), Integer.valueOf(age));
+        return this.getDefaultState().withProperty(this.getAgeProperty(), age);
     }
 
     public boolean isMaxAge(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue() >= this.getMaxAge();
+        return state.getValue(this.getAgeProperty()) >= this.getMaxAge();
     }
 
     /**
      * Whether this IGrowable can grow
      */
+    @Override
     public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient) {
         return !this.isMaxAge(state);
     }
 
+    @Override
     public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state) {
         return true;
     }
 
+    @Override
     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state) {
         this.grow(worldIn, pos, state);
     }
@@ -85,6 +86,7 @@ public class BlockGrapeLeaves extends BlockBase implements IPlantable, IGrowable
     /**
      * Convert the given metadata into a BlockState for this Block
      */
+    @Override
     public IBlockState getStateFromMeta(int meta) {
         return this.withAge(meta);
     }
@@ -92,27 +94,33 @@ public class BlockGrapeLeaves extends BlockBase implements IPlantable, IGrowable
     /**
      * Convert the BlockState into the correct metadata value
      */
+    @Override
     public int getMetaFromState(IBlockState state) {
         return this.getAge(state);
     }
 
+    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, AGE);
     }
 
     @SideOnly(Side.CLIENT)
+    @Override
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
+    @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
         return BlockFaceShape.UNDEFINED;
     }
 
+    @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
+    @Override
     public boolean isFullCube(IBlockState state) {
         return false;
     }
@@ -148,6 +156,7 @@ public class BlockGrapeLeaves extends BlockBase implements IPlantable, IGrowable
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return Item.getItemFromBlock(BlockLoader.GRAPE_SPLINT);
     }
@@ -170,6 +179,7 @@ public class BlockGrapeLeaves extends BlockBase implements IPlantable, IGrowable
     /**
      * Spawns this Block's drops into the World as EntityItems.
      */
+    @Override
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
         if (!worldIn.isRemote) {
             spawnAsEntity(worldIn, pos, new ItemStack(BlockLoader.GRAPE_SPLINT));
@@ -184,6 +194,7 @@ public class BlockGrapeLeaves extends BlockBase implements IPlantable, IGrowable
         }
     }
 
+    @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
         return new ItemStack(BlockLoader.GRAPE_SPLINT);
     }
@@ -196,23 +207,22 @@ public class BlockGrapeLeaves extends BlockBase implements IPlantable, IGrowable
     @Override
     public List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
         int i = this.getAge(world.getBlockState(pos));
-        List<ItemStack> list = new ArrayList<ItemStack>();
+        List<ItemStack> list = new ArrayList<>();
         if (i == 6) {
-            list.clear();
             list.add(new ItemStack(ItemLoader.FOODSET, 1 + fortune, 120));
         } else if (i == 7) {
-            list.clear();
             list.add(new ItemStack(ItemLoader.FOODSET, 1 + fortune, 0));
         }
         return list;
     }
 
+    @Override
     public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction,
                                    IPlantable plantable) {
         return true;
     }
 
-    public void grow(World worldIn, BlockPos pos, IBlockState state) {
+    private void grow(World worldIn, BlockPos pos, IBlockState state) {
         int i = this.getAge(state) + this.getBonemealAgeIncrease(worldIn);
         int j = this.getMaxAge();
         if (i >= 2 && worldIn.getBlockState(pos.east()).getBlock() == BlockLoader.GRAPE_SPLINT)

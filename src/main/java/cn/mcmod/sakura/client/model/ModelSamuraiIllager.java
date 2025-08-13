@@ -15,6 +15,7 @@ public class ModelSamuraiIllager extends ModelIllager {
         super(scaleFactor, p_i47227_2_, textureWidthIn, textureHeightIn);
     }
 
+    @Override
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         this.head.rotateAngleY = netHeadYaw * 0.017453292F;
         this.head.rotateAngleX = headPitch * 0.017453292F;

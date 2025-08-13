@@ -18,8 +18,9 @@ public class ItemShoji extends ItemBlock {
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
                                       EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (worldIn.isAirBlock(pos.up(2)))
+        if (worldIn.isAirBlock(pos.up(2))) {
             return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+        }
         return EnumActionResult.FAIL;
     }
 }

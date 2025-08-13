@@ -12,15 +12,15 @@ import java.util.Map.Entry;
 public final class MortarRecipeMaker {
     public static List<SimpleRecipe> getRecipes(IJeiHelpers helpers) {
         IStackHelper stackHelper = helpers.getStackHelper();
-        List<SimpleRecipe> recipes = new ArrayList<SimpleRecipe>();
+        List<SimpleRecipe> recipes = new ArrayList<>();
 
-        for (Entry<Object[], ItemStack[]> entry : MortarRecipes.instance().RecipesList.entrySet()) {
-            List<List<ItemStack>> inputs = new ArrayList<List<ItemStack>>();
+        for (Entry<Object[], ItemStack[]> entry : MortarRecipes.INSTANCE.recipesList.entrySet()) {
+            List<List<ItemStack>> inputs = new ArrayList<>();
             for (Object obj : entry.getKey()) {
                 List<ItemStack> subinputs = stackHelper.toItemStackList(obj);
                 inputs.add(subinputs);
             }
-            List<List<ItemStack>> outputs = new ArrayList<List<ItemStack>>();
+            List<List<ItemStack>> outputs = new ArrayList<>();
             for (ItemStack obj : entry.getValue()) {
                 List<ItemStack> suboutputs = stackHelper.toItemStackList(obj);
                 outputs.add(suboutputs);

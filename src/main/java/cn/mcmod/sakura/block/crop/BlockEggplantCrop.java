@@ -4,7 +4,6 @@ import cn.mcmod.sakura.item.ItemLoader;
 import net.minecraft.item.Item;
 
 public class BlockEggplantCrop extends BlockHighCrop {
-
     public BlockEggplantCrop() {
         super();
     }

@@ -14,16 +14,14 @@ public class RenderTileEntityOben extends TileEntitySpecialRenderer<TileEntityOb
 
     @Override
     public void render(TileEntityOben te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-
-        if (!te.getInventory().getStackInSlot(0).isEmpty()) {
-            ItemStack stack = te.getInventory().getStackInSlot(0);
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(x + 0.5D, y + 0.4D, z + 0.5D);
-            GlStateManager.scale(0.75F, 0.75F, 0.75F);
-            GlStateManager.rotate(getFacingRotate(te), 0.0F, 1.0F, 0.0F);
-            Minecraft.getMinecraft().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.FIXED);
-            GlStateManager.popMatrix();
-        }
+        ItemStack itemStack = te.getInventory().getStackInSlot(0);
+        if (itemStack.isEmpty()) return;
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x + 0.5D, y + 0.4D, z + 0.5D);
+        GlStateManager.scale(0.75F, 0.75F, 0.75F);
+        GlStateManager.rotate(getFacingRotate(te), 0.0F, 1.0F, 0.0F);
+        Minecraft.getMinecraft().getRenderItem().renderItem(itemStack, ItemCameraTransforms.TransformType.FIXED);
+        GlStateManager.popMatrix();
     }
 
     private float getFacingRotate(TileEntityOben te) {

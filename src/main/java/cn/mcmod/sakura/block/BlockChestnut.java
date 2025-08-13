@@ -23,16 +23,17 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.IShearable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class BlockChestnut extends Block implements IGrowable, net.minecraftforge.common.IShearable, IPlantable {
-
-    public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 3);
+public class BlockChestnut extends Block implements IGrowable, IShearable, IPlantable {
+    private static final PropertyInteger AGE = PropertyInteger.create("age", 0, 3);
 
     public static boolean fruitRemoval = false;// This is for Dynamic Trees since the fruits grow back completely
 
@@ -43,6 +44,7 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, 0));
     }
 
+    @Nullable
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return NULL_AABB;
@@ -56,6 +58,7 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         return 5f;
     }
 
+    @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         if (!this.canBlockStay(worldIn, pos))
             this.dropBlock(worldIn, pos, state);
@@ -113,8 +116,8 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         return leafBlock == Blocks.LEAVES || leafBlock == Blocks.LEAVES2;
     }
 
-    @Override
     @SideOnly(Side.CLIENT)
+    @Override
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
@@ -134,8 +137,7 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         return new BlockStateContainer(this, AGE);
     }
 
-
-    protected PropertyInteger getAgeProperty() {
+    private PropertyInteger getAgeProperty() {
         return AGE;
     }
 
@@ -143,6 +145,7 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         return 3;
     }
 
+    @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         super.updateTick(worldIn, pos, state, rand);
 
@@ -162,7 +165,7 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         }
     }
 
-    protected static float getGrowthChance(Block blockIn, World worldIn, BlockPos pos) {
+    private static float getGrowthChance(Block blockIn, World worldIn, BlockPos pos) {
         float f = 1.0F;
         BlockPos blockpos = pos.down();
 
@@ -207,20 +210,19 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         return f;
     }
 
-
-    protected int getAge(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue();
+    private int getAge(IBlockState state) {
+        return state.getValue(this.getAgeProperty());
     }
 
-    public IBlockState withAge(int age) {
-        return this.getDefaultState().withProperty(this.getAgeProperty(), Integer.valueOf(age));
+    private IBlockState withAge(int age) {
+        return this.getDefaultState().withProperty(this.getAgeProperty(), age);
     }
 
-    public boolean isMaxAge(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue() >= this.getMaxAge();
+    private boolean isMaxAge(IBlockState state) {
+        return state.getValue(this.getAgeProperty()) >= this.getMaxAge();
     }
 
-
+    @Override
     public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos) {
         return true;
     }
@@ -234,14 +236,14 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         double d1 = world.rand.nextFloat() * f + 0.25D;
         double d2 = world.rand.nextFloat() * f + 0.25D;
 
-
         EntityItem entityItem = new EntityItem(world, pos.getX() + d0, pos.getY() + d1, pos.getZ() + d2, itemStack);
         entityItem.setDefaultPickupDelay();
         world.spawnEntity(entityItem);
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
+                                    EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             if (canGrow(worldIn, pos, state, false))
                 return false;
@@ -252,25 +254,29 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         return false;
     }
 
+    @Override
     public List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
         ret.add(new ItemStack(this, 1, 0));
         return ret;
     }
 
+    @Override
     public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient) {
         return !this.isMaxAge(state);
     }
 
+    @Override
     public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state) {
         return true;
     }
 
+    @Override
     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state) {
         this.grow(worldIn, pos, state);
     }
 
-    public void grow(World worldIn, BlockPos pos, IBlockState state) {
+    private void grow(World worldIn, BlockPos pos, IBlockState state) {
         int i = this.getAge(state) + this.getBonemealAgeIncrease(worldIn);
         int j = this.getMaxAge();
 
@@ -287,7 +293,6 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
 
     @Override
     public EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {
-        // TODO Auto-generated method stub
         return EnumPlantType.Crop;
     }
 
@@ -297,6 +302,5 @@ public class BlockChestnut extends Block implements IGrowable, net.minecraftforg
         if (state.getBlock() != this) return getDefaultState();
         return state;
     }
-
 
 }

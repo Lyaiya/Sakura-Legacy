@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.client.particle;
 
-import cn.mcmod.sakura.ClientProxy;
+import cn.mcmod.sakura.proxy.ClientProxy;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -57,7 +57,6 @@ public class ParticleMapleOrangeLeaf extends Particle {
 
     @Override
     public void onUpdate() {
-
         prevPosX = posX;
         prevPosY = posY;
         prevPosZ = posZ;

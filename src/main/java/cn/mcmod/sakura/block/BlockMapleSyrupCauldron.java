@@ -1,8 +1,8 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.gui.SakuraGuiHandler;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod.sakura.tileentity.TileEntityMapleCauldron;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -33,7 +33,7 @@ public class BlockMapleSyrupCauldron extends BlockContainer implements ITileEnti
         super(Material.IRON);
         this.setHardness(0.5F);
         this.setSoundType(SoundType.ANVIL);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
     }
 
     @Override
@@ -82,10 +82,8 @@ public class BlockMapleSyrupCauldron extends BlockContainer implements ITileEnti
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (worldIn.isRemote) {
-            return true;
-        }
-        playerIn.openGui(SakuraMain.instance, SakuraGuiHandler.ID_MAPLECAULDRON, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        if (worldIn.isRemote) return true;
+        playerIn.openGui(SakuraMain.INSTANCE, SakuraGuiHandler.ID_MAPLE_CAULDRON, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return true;
     }
 

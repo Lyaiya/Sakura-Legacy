@@ -1,4 +1,4 @@
-package cn.mcmod.sakura;
+package cn.mcmod.sakura.proxy;
 
 import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.client.SakuraParticleType;
@@ -7,6 +7,7 @@ import cn.mcmod.sakura.entity.SakuraEntityRegister;
 import cn.mcmod.sakura.item.ItemLoader;
 import cn.mcmod.sakura.item.drinks.DrinksLoader;
 import cn.mcmod.sakura.tileentity.TileEntityRegistry;
+import cn.mcmod.sakura.util.RLUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.settings.KeyBinding;
@@ -20,34 +21,32 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
-
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
-    public static ResourceLocation leafTexture = new ResourceLocation(SakuraMain.MODID, "textures/particles/particles.png");
+    public static ResourceLocation leafTexture = RLUtil.of("textures/particles/particles.png");
     public static KeyBinding ChangeMode;
 
     @Override
-    public void preInit(FMLPreInitializationEvent event) {
-        super.preInit(event);
-        BlockLoader.getInstance().registerRenders();
-        ItemLoader.getInstance().registerRenders();
-        DrinksLoader.getInstance().registerRender();
-        SakuraEntityRegister.entityRender();
+    public void onPreInit(FMLPreInitializationEvent event) {
+        super.onPreInit(event);
+        BlockLoader.INSTANCE.registerRenders();
+        ItemLoader.INSTANCE.registerRenders();
+        DrinksLoader.INSTANCE.registerRender();
+        SakuraEntityRegister.registerEntityRender();
 
-        TileEntityRegistry.getInstance().render();
+        TileEntityRegistry.INSTANCE.render();
     }
 
     @Override
-    public void init(FMLInitializationEvent event) {
-        super.init(event);
+    public void onInit(FMLInitializationEvent event) {
+        super.onInit(event);
         ChangeMode = new KeyBinding("key.sakura.sheath_in", Keyboard.KEY_V, "key.categories.sakura");
         ClientRegistry.registerKeyBinding(ChangeMode);
     }
 
     @Override
-    public void postInit(FMLPostInitializationEvent event) {
-        super.postInit(event);
-
+    public void onPostInit(FMLPostInitializationEvent event) {
+        super.onPostInit(event);
     }
 
     @Override
@@ -61,22 +60,22 @@ public class ClientProxy extends CommonProxy {
             if (i == 1 && world.rand.nextInt(3) == 0) i = 2;
             Particle particle = null;
             switch (particleType) {
-                case MAPLERED:
+                case MAPLE_RED:
                     particle = new ParticleMapleRedLeaf(world, x, y, z, velX, velY, velZ);
                     break;
-                case MAPLEGREEN:
+                case MAPLE_GREEN:
                     particle = new ParticleMapleGreenLeaf(world, x, y, z, velX, velY, velZ);
                     break;
-                case MAPLEORANGE:
+                case MAPLE_ORANGE:
                     particle = new ParticleMapleOrangeLeaf(world, x, y, z, velX, velY, velZ);
                     break;
-                case MAPLEYELLOW:
+                case MAPLE_YELLOW:
                     particle = new ParticleMapleYellowLeaf(world, x, y, z, velX, velY, velZ);
                     break;
-                case LEAVESSAKURA:
+                case LEAVES_SAKURA:
                     particle = new ParticleSakuraLeaf(world, x, y, z, velX, velY, velZ);
                     break;
-                case SYRUPDROP:
+                case SYRUP_DROP:
                     particle = new ParticleSyrupDrop(world, x, y, z, velX, velY, velZ);
                     break;
                 default:
@@ -87,7 +86,6 @@ public class ClientProxy extends CommonProxy {
             if (particle != null) {
                 mc.effectRenderer.addEffect(particle);
             }
-
         }
     }
 

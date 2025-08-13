@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.entity;
 
-import cn.mcmod.sakura.SakuraMain;
+import cn.mcmod.sakura.util.RLUtil;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
@@ -9,8 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityDeer extends EntityAnimal {
 
@@ -19,6 +18,7 @@ public class EntityDeer extends EntityAnimal {
         this.setSize(0.9F, 0.95F);
     }
 
+    @Override
     protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 1.25D));
@@ -46,13 +46,11 @@ public class EntityDeer extends EntityAnimal {
     @Nullable
     @Override
     public EntityDeer createChild(EntityAgeable ageable) {
-        EntityDeer entityDeer = new EntityDeer(this.world);
-        return entityDeer;
+        return new EntityDeer(this.world);
     }
 
     @Override
     protected ResourceLocation getLootTable() {
-        // TODO Auto-generated method stub
-        return new ResourceLocation(SakuraMain.MODID, "entity/deer");
+        return RLUtil.of("entity/deer");
     }
 }

@@ -19,15 +19,15 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class TileEntityFluidOut extends TileEntity implements ITickable, IInventory {
-    public FluidTank tank = new FluidTank(10000) {
+    protected NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+
+    private final FluidTank tank = new FluidTank(10000) {
         @Override
         protected void onContentsChanged() {
-            TileEntityFluidOut.this.refresh();
+            refresh();
         }
 
         @Override
@@ -39,14 +39,11 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
         }
     };
 
-    protected NonNullList<ItemStack> inventory = NonNullList.withSize(this.getSizeInventory(),
-            ItemStack.EMPTY);
-
     public TileEntityFluidOut() {
     }
 
     public FluidTank getTank() {
-        return this.tank;
+        return tank;
     }
 
     protected void refresh() {
@@ -59,14 +56,13 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
     @Override
     public void update() {
         if (!world.isRemote) {
-            DrainInput();
+            drainInput();
         }
     }
 
     @Override
     public void markDirty() {
         super.markDirty();
-
     }
 
     @Override
@@ -86,7 +82,7 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
 
     @Override
     public boolean isEmpty() {
-        for (ItemStack itemstack : this.inventory) {
+        for (ItemStack itemstack : inventory) {
             if (!itemstack.isEmpty()) {
                 return false;
             }
@@ -104,7 +100,7 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
         ItemStack itemstack = ItemStackHelper.getAndSplit(inventory, index, count);
 
         if (!itemstack.isEmpty()) {
-            this.markDirty();
+            markDirty();
         }
 
         return itemstack;
@@ -118,10 +114,10 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
         inventory.set(index, stack);
-        if (stack.getCount() > this.getInventoryStackLimit()) {
-            stack.setCount(this.getInventoryStackLimit());
+        if (stack.getCount() > getInventoryStackLimit()) {
+            stack.setCount(getInventoryStackLimit());
         }
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -131,20 +127,20 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
 
     @Override
     public boolean isUsableByPlayer(EntityPlayer player) {
-        if (this.world.getTileEntity(this.pos) != this) {
+        if (world.getTileEntity(pos) != this) {
             return false;
         }
-        return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+        return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
     public void openInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
     public void closeInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -161,12 +157,8 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
         return inventory;
     }
 
-    /**
-     * @return
-     */
-
     @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
@@ -180,41 +172,38 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState,
-                                 @Nonnull IBlockState newState) {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 
-    @Nonnull
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
-        NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        NBTTagCompound ret = super.writeToNBT(compound);
         writePacketNBT(ret);
         return ret;
     }
 
-    @Nonnull
     @Override
     public final NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-        super.readFromNBT(par1nbtTagCompound);
-        readPacketNBT(par1nbtTagCompound);
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        readPacketNBT(compound);
     }
 
-    public void writePacketNBT(NBTTagCompound cmp) {
-        NBTTagCompound tankTag = this.tank.writeToNBT(new NBTTagCompound());
-        ItemStackHelper.saveAllItems(cmp, this.inventory);
+    private void writePacketNBT(NBTTagCompound cmp) {
+        NBTTagCompound tankTag = tank.writeToNBT(new NBTTagCompound());
+        ItemStackHelper.saveAllItems(cmp, inventory);
         cmp.setTag("Tank", tankTag);
     }
 
-    public void readPacketNBT(NBTTagCompound cmp) {
-        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(cmp, this.inventory);
-        this.tank.readFromNBT(cmp.getCompoundTag("Tank"));
+    private void readPacketNBT(NBTTagCompound cmp) {
+        inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+        ItemStackHelper.loadAllItems(cmp, inventory);
+        tank.readFromNBT(cmp.getCompoundTag("Tank"));
     }
 
     @Override
@@ -225,29 +214,29 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        super.onDataPacket(net, packet);
-        readPacketNBT(packet.getNbtCompound());
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        super.onDataPacket(net, pkt);
+        readPacketNBT(pkt.getNbtCompound());
     }
 
-    private void DrainInput() {
-        ItemStack itemstack = this.inventory.get(0);
-        ItemStack itemstack2 = this.inventory.get(1);
-        if (this.getTank() != null) {
-            FluidStack fluid = LiquidToItemRecipe.instance().getResultFluid(this.getTank().getFluid());
+    private void drainInput() {
+        ItemStack itemstack = inventory.get(0);
+        ItemStack itemstack2 = inventory.get(1);
+        if (getTank() != null) {
+            FluidStack fluid = LiquidToItemRecipe.INSTANCE.getResultFluid(getTank().getFluid());
             if (fluid != null) {
-                ItemStack itemstack1 = LiquidToItemRecipe.instance().getResultItemStack(this.getTank().getFluid(),
+                ItemStack itemstack1 = LiquidToItemRecipe.INSTANCE.getResultItemStack(getTank().getFluid(),
                         itemstack);
                 if (itemstack1.isEmpty())
                     return;
-                if (this.getTank().getFluid().amount < fluid.amount)
+                if (getTank().getFluid().amount < fluid.amount)
                     return;
-                boolean not_full = (itemstack2.getCount() + itemstack1.getCount() <= this.getInventoryStackLimit()
+                boolean not_full = (itemstack2.getCount() + itemstack1.getCount() <= getInventoryStackLimit()
                         && itemstack2.getCount() + itemstack1.getCount() <= itemstack2.getMaxStackSize());
                 if (!not_full)
                     return;
                 if (itemstack2.isEmpty()) {
-                    this.inventory.set(1, itemstack1.copy());
+                    inventory.set(1, itemstack1.copy());
                 } else if (itemstack2.getItem() == itemstack1.getItem()) {
                     itemstack2.grow(itemstack1.getCount());
                 }
@@ -255,16 +244,15 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
                 if (!itemstack.getItem().hasContainerItem(itemstack))
                     itemstack.shrink(1);
                 else
-                    this.inventory.set(0, new ItemStack(itemstack.getItem().getContainerItem()));
+                    inventory.set(0, new ItemStack(itemstack.getItem().getContainerItem()));
 
-                this.getTank().drain(fluid, true);
+                getTank().drain(fluid, true);
             }
         }
     }
 
     @Override
     public int getField(int id) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
@@ -274,7 +262,6 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
 
     @Override
     public int getFieldCount() {
-        // TODO Auto-generated method stub
         return 0;
     }
 

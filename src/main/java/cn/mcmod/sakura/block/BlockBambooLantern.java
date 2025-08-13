@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -24,16 +24,15 @@ public class BlockBambooLantern extends Block {
     public BlockBambooLantern() {
         super(Material.CIRCUITS, MapColor.GREEN);
         this.setTickRandomly(true);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
         this.setHardness(1.0F);
         this.setResistance(5.0F);
         this.setLightLevel(0.9F);
     }
 
-    @Override
     @SideOnly(Side.CLIENT)
+    @Override
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-
         double d0 = pos.getX() + 0.5D;
         double d1 = pos.getY() + 0.5D;
         double d2 = pos.getZ() + 0.5D;

@@ -12,20 +12,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public class RenderTileEntityWeb extends TileEntitySpecialRenderer<TileEntityWeb> {
-
     @Override
     public void render(TileEntityWeb te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-
-        if (!te.getInventory().getStackInSlot(0).isEmpty()) {
-            ItemStack stack = te.getInventory().getStackInSlot(0);
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(x + 0.5D, y + 0.2D, z + 0.5D);
-            GlStateManager.scale(0.75F, 0.75F, 0.75F);
-            GlStateManager.rotate(getFacingRotate(te), 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(90, 1.0F, 0.0F, 0.0F);
-            Minecraft.getMinecraft().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.FIXED);
-            GlStateManager.popMatrix();
-        }
+        final ItemStack itemStack = te.getInventory().getStackInSlot(0);
+        if (itemStack.isEmpty()) return;
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x + 0.5D, y + 0.2D, z + 0.5D);
+        GlStateManager.scale(0.75F, 0.75F, 0.75F);
+        GlStateManager.rotate(getFacingRotate(te), 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(90, 1.0F, 0.0F, 0.0F);
+        Minecraft.getMinecraft().getRenderItem().renderItem(itemStack, ItemCameraTransforms.TransformType.FIXED);
+        GlStateManager.popMatrix();
     }
 
     private float getFacingRotate(TileEntityWeb te) {

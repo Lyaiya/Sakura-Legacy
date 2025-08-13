@@ -16,20 +16,28 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.Nullable;
 
 public class TileEntityCampfire extends TileEntity implements ITickable {
+    private static final String KEY_BURN_TIME = "BurnTime";
+    private static final String KEY_COOK_TIME = "CookTime";
+    private static final String KEY_INVENTORY = "Inventory";
+
+    private int burnTime;
+    /**
+     * The number of ticks that a fresh copy of the currently-burning item would keep the furnace burning for
+     */
+    private int cookTime;
 
     private final ItemStackHandler inventory = new ItemStackHandler() {
         @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        public boolean isItemValid(int slot, ItemStack stack) {
             return FurnaceRecipes.instance().getSmeltingResult(stack).getItem() instanceof ItemFood;
         }
 
         @Override
         protected void onContentsChanged(int slot) {
-            TileEntityCampfire.this.refresh();
+            refresh();
         }
 
         @Override
@@ -38,140 +46,134 @@ public class TileEntityCampfire extends TileEntity implements ITickable {
         }
     };
 
-    protected void refresh() {
+    public TileEntityCampfire() {
+    }
+
+    private void refresh() {
         if (hasWorld() && !world.isRemote) {
             IBlockState state = world.getBlockState(pos);
             world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
         }
     }
 
-    private int burnTime;
-    /**
-     * The number of ticks that a fresh copy of the currently-burning item would keep the furnace burning for
-     */
-    private int cookTime;
-
     public ItemStackHandler getInventory() {
-        return this.inventory;
+        return inventory;
     }
 
     public boolean isBurning() {
-        return this.burnTime > 0;
+        return burnTime > 0;
     }
 
     public void setBurningTime(int tick) {
-        this.burnTime = tick;
+        burnTime = tick;
     }
 
     public int getBurningTime() {
-        return this.burnTime;
+        return burnTime;
     }
 
     public int getCookTime() {
-        return this.cookTime;
+        return cookTime;
     }
 
     public ItemStack getItemBurning() {
-        return this.inventory.getStackInSlot(0);
+        return inventory.getStackInSlot(0);
     }
 
     @Override
     public void update() {
-        ItemStack cookstack;
-        boolean flag = this.isBurning();
+        boolean flag = isBurning();
         boolean flag1 = false;
 
-        if (this.isBurning()) {
-            --this.burnTime;
+        if (isBurning()) {
+            --burnTime;
         }
         if (!world.isRemote) {
             // check can cook
-            if (this.isBurning()) {
-                cookstack = getItemBurning();
-                ItemStack itemstack1 = FurnaceRecipes.instance().getSmeltingResult(cookstack);
-                if (!cookstack.isEmpty() && !(itemstack1.isEmpty())) {
-                    ++this.cookTime;
-                    if (this.cookTime >= 700) {
-                        this.inventory.setStackInSlot(0, new ItemStack(itemstack1.getItem(), cookstack.getCount(), itemstack1.getMetadata()));
+            if (isBurning()) {
+                ItemStack itemStackBurning = getItemBurning();
+                ItemStack resultItemStack = FurnaceRecipes.instance().getSmeltingResult(itemStackBurning);
+                if (!itemStackBurning.isEmpty() && !(resultItemStack.isEmpty())) {
+                    ++cookTime;
+                    if (cookTime >= 700) {
+                        inventory.setStackInSlot(0, new ItemStack(resultItemStack.getItem(), itemStackBurning.getCount(), resultItemStack.getMetadata()));
 
-                        this.cookTime = 0;
+                        cookTime = 0;
                         flag1 = true;
                     }
-                } else this.cookTime = 0;
+                } else {
+                    cookTime = 0;
+                }
             }
 
-            if (flag != this.isBurning()) {
+            if (flag != isBurning()) {
                 flag1 = true;
 
-                BlockCampfire.setState(this.isBurning(), this.world, this.pos);
+                BlockCampfire.setState(isBurning(), world, pos);
             }
         }
 
         if (flag1) {
-            this.markDirty();
+            markDirty();
         }
     }
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) inventory : super.getCapability(capability, facing);
     }
 
-
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 
-    @Nonnull
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
-        NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        NBTTagCompound ret = super.writeToNBT(compound);
         writePacketNBT(ret);
         return ret;
     }
 
-    @Nonnull
     @Override
-    public final NBTTagCompound getUpdateTag() {
+    public NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-        super.readFromNBT(par1nbtTagCompound);
-        readPacketNBT(par1nbtTagCompound);
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        readPacketNBT(compound);
     }
 
-    public void writePacketNBT(NBTTagCompound cmp) {
-        cmp.setInteger("BurnTime", (short) this.burnTime);
-        cmp.setInteger("CookTime", (short) this.cookTime);
-        cmp.setTag("Inventory", inventory.serializeNBT());
+    private void writePacketNBT(NBTTagCompound cmp) {
+        cmp.setInteger(KEY_BURN_TIME, burnTime);
+        cmp.setInteger(KEY_COOK_TIME, cookTime);
+        cmp.setTag(KEY_INVENTORY, inventory.serializeNBT());
     }
 
-    public void readPacketNBT(NBTTagCompound cmp) {
-        this.burnTime = cmp.getInteger("BurnTime");
-        this.cookTime = cmp.getInteger("CookTime");
-        inventory.deserializeNBT(cmp.getCompoundTag("Inventory"));
+    private void readPacketNBT(NBTTagCompound cmp) {
+        burnTime = cmp.getInteger(KEY_BURN_TIME);
+        cookTime = cmp.getInteger(KEY_COOK_TIME);
+        inventory.deserializeNBT(cmp.getCompoundTag(KEY_INVENTORY));
     }
 
     @Override
-    public final SPacketUpdateTileEntity getUpdatePacket() {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound tag = new NBTTagCompound();
         writePacketNBT(tag);
         return new SPacketUpdateTileEntity(pos, -999, tag);
     }
 
-
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        super.onDataPacket(net, packet);
-        readPacketNBT(packet.getNbtCompound());
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        super.onDataPacket(net, pkt);
+        readPacketNBT(pkt.getNbtCompound());
     }
 }

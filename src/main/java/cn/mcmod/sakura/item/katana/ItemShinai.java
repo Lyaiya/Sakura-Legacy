@@ -31,10 +31,11 @@ public class ItemShinai extends ItemSword {
         this.attackDamage = 2.0F + ToolMaterial.WOOD.getAttackDamage();
     }
 
+    @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
         playerIn.setActiveHand(handIn);
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
     @Override
@@ -91,6 +92,7 @@ public class ItemShinai extends ItemSword {
         return EnumAction.BOW;
     }
 
+    @Override
     public int getMaxItemUseDuration(ItemStack stack) {
         return 72000;
     }
@@ -99,8 +101,7 @@ public class ItemShinai extends ItemSword {
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
         if (worldIn.isRemote) return;
-        if (entityIn instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) entityIn;
+        if (entityIn instanceof EntityPlayer player) {
             ItemStack mainhand = player.getHeldItem(EnumHand.MAIN_HAND);
             ItemStack offhand = player.getHeldItem(EnumHand.OFF_HAND);
             boolean flag1 = !(mainhand.isEmpty()) && !(offhand.isEmpty()),
@@ -122,6 +123,7 @@ public class ItemShinai extends ItemSword {
     /**
      * Gets a map of item attribute modifiers, used by ItemSword to increase hit damage.
      */
+    @Override
     public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {
         Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
 

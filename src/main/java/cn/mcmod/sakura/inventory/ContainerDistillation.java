@@ -11,62 +11,63 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerDistillation extends Container {
-    private final TileEntityDistillation tileBarrel;
+    private final TileEntityDistillation teDistillation;
+
     private int processTime;
 
-    public ContainerDistillation(InventoryPlayer inventory, TileEntityDistillation tile) {
-        tileBarrel = tile;
+    public ContainerDistillation(InventoryPlayer inventory, TileEntityDistillation te) {
+        teDistillation = te;
         int i, j, k;
-        for (k = 0; k < 3; ++k)
-            addSlotToContainer(new Slot(tile, k, 42, 36 + (k - 1) * 18));
-        addSlotToContainer(new Slot(tile, 3, 131, 12));
-        addSlotToContainer(new Slot(tile, 4, 130, 56) {
+        for (k = 0; k < 3; ++k) {
+            addSlotToContainer(new Slot(te, k, 42, 36 + (k - 1) * 18));
+        }
+        addSlotToContainer(new Slot(te, 3, 131, 12));
+        addSlotToContainer(new Slot(te, 4, 130, 56) {
             @Override
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
         });
 
-
-        for (i = 0; i < 3; ++i)
-            for (j = 0; j < 9; ++j)
+        for (i = 0; i < 3; ++i) {
+            for (j = 0; j < 9; ++j) {
                 addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            }
+        }
 
-        for (i = 0; i < 9; ++i)
+        for (i = 0; i < 9; ++i) {
             addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
+        }
     }
-
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendAllWindowProperties(this, this.tileBarrel);
+        listener.sendAllWindowProperties(this, this.teDistillation);
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
 
-        for (int i = 0; i < this.listeners.size(); ++i) {
-            IContainerListener icontainerlistener = this.listeners.get(i);
-
-            if (this.processTime != this.tileBarrel.getField(0)) {
-                icontainerlistener.sendWindowProperty(this, 0, this.tileBarrel.getField(0));
+        for (IContainerListener icontainerlistener : this.listeners) {
+            if (this.processTime != this.teDistillation.getField(TileEntityDistillation.ID_PROCESS_TIMER)) {
+                icontainerlistener.sendWindowProperty(this, 0, this.teDistillation.getField(TileEntityDistillation.ID_PROCESS_TIMER));
             }
         }
 
-        this.processTime = this.tileBarrel.getField(0);
+        this.processTime = this.teDistillation.getField(TileEntityDistillation.ID_PROCESS_TIMER);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void updateProgressBar(int id, int value) {
-        this.tileBarrel.setField(id, value);
+        this.teDistillation.setField(id, value);
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
-        return tileBarrel.isUsableByPlayer(player);
+        return teDistillation.isUsableByPlayer(player);
     }
 
     /**

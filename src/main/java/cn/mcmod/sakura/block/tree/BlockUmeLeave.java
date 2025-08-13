@@ -1,8 +1,8 @@
 package cn.mcmod.sakura.block.tree;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.item.ItemLoader;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPlanks;
@@ -39,7 +39,7 @@ public class BlockUmeLeave extends BlockLeaves implements IPlantable, IGrowable,
     public BlockUmeLeave() {
         this.setHardness(0.2F);
         this.setLightOpacity(1);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
         this.setDefaultState(blockState.getBaseState().withProperty(AGE, 0).withProperty(CHECK_DECAY, false).withProperty(DECAYABLE, false));
     }
 
@@ -57,15 +57,15 @@ public class BlockUmeLeave extends BlockLeaves implements IPlantable, IGrowable,
     }
 
     protected int getAge(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue();
+        return state.getValue(this.getAgeProperty());
     }
 
     public IBlockState withAge(int age) {
-        return this.getDefaultState().withProperty(this.getAgeProperty(), Integer.valueOf(age));
+        return this.getDefaultState().withProperty(this.getAgeProperty(), age);
     }
 
     public boolean isMaxAge(IBlockState state) {
-        return state.getValue(this.getAgeProperty()).intValue() >= this.getMaxAge();
+        return state.getValue(this.getAgeProperty()) >= this.getMaxAge();
     }
 
     /**

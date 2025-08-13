@@ -1,9 +1,9 @@
 package cn.mcmod.sakura.item.drinks;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.item.ItemLoader;
 import cn.mcmod.sakura.potion.PotionLoader;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod_mmf.mmlib.item.ItemMetaDurability;
 import cn.mcmod_mmf.mmlib.item.food.ItemDrinkBase;
 import cn.mcmod_mmf.mmlib.item.info.FoodInfo;
@@ -17,7 +17,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class DrinksLoader {
-    private static final DrinksLoader instance = new DrinksLoader();
+    public static final DrinksLoader INSTANCE = new DrinksLoader();
+
+    private DrinksLoader() {
+    }
 
     public static ItemDrinkBase tea = new ItemDrinkBase(SakuraMain.MODID, "tea",
             new FoodInfo[]{
@@ -200,11 +203,11 @@ public class DrinksLoader {
             new PotionEffect[][]{
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "night_vision")), 200, 0),
-                            new PotionEffect(PotionLoader.exp_up, 200, 0),
+                            new PotionEffect(PotionLoader.EXP, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "night_vision")), 400, 1),
-                            new PotionEffect(PotionLoader.exp_up, 200, 0),
+                            new PotionEffect(PotionLoader.EXP, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "fire_resistance")), 200, 0),
@@ -217,10 +220,10 @@ public class DrinksLoader {
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "haste")), 200, 0),
-                            new PotionEffect(PotionLoader.golden_heart, 2, 0),
+                            new PotionEffect(PotionLoader.GOLDEN_HEART, 2, 0),
                     },
                     new PotionEffect[]{
-                            new PotionEffect(PotionLoader.cannon, 200, 0),
+                            new PotionEffect(PotionLoader.CANNON, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "haste")), 200, 0),
@@ -232,19 +235,19 @@ public class DrinksLoader {
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "haste")), 200, 0),
-                            new PotionEffect(PotionLoader.fire_blade, 200, 0),
+                            new PotionEffect(PotionLoader.FIRE_BLADE, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "strength")), 200, 0),
-                            new PotionEffect(PotionLoader.fire_blade, 200, 0),
+                            new PotionEffect(PotionLoader.FIRE_BLADE, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "haste")), 200, 0),
-                            new PotionEffect(PotionLoader.exp_up, 200, 0),
+                            new PotionEffect(PotionLoader.EXP, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "strength")), 200, 0),
-                            new PotionEffect(PotionLoader.exp_up, 200, 0),
+                            new PotionEffect(PotionLoader.EXP, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "jump_boost")), 200, 0),
@@ -318,7 +321,7 @@ public class DrinksLoader {
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "speed")), 200, 0),
                     },
                     new PotionEffect[]{
-                            new PotionEffect(PotionLoader.golden_heart, 200, 0),
+                            new PotionEffect(PotionLoader.GOLDEN_HEART, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "haste")), 400, 0),
@@ -330,11 +333,11 @@ public class DrinksLoader {
                     },
 
                     new PotionEffect[]{
-                            new PotionEffect(PotionLoader.poisom, 200, 0),
+                            new PotionEffect(PotionLoader.POISOM, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "resistance")), 200, 0),
-                            new PotionEffect(PotionLoader.golden_heart, 100, 0),
+                            new PotionEffect(PotionLoader.GOLDEN_HEART, 100, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "speed")), 200, 0),
@@ -357,7 +360,7 @@ public class DrinksLoader {
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "speed")), 200, 1),
                     },
                     new PotionEffect[]{
-                            new PotionEffect(PotionLoader.poisom_big, 200, 0),
+                            new PotionEffect(PotionLoader.POISOM_BIG, 200, 0),
                     },
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "strength")), 200, 0),
@@ -392,10 +395,6 @@ public class DrinksLoader {
         register(cocktail);
     }
 
-    private DrinksLoader() {
-
-    }
-
     @SideOnly(Side.CLIENT)
     public void registerRender() {
         ItemRegister.getInstance().registerRender(tea);
@@ -405,12 +404,8 @@ public class DrinksLoader {
     }
 
     private void register(Item item) {
-        item.setCreativeTab(CommonProxy.tab);
+        item.setCreativeTab(CommonProxy.TAB);
         ItemRegister.getInstance().register(SakuraMain.MODID, item);
-    }
-
-    public static DrinksLoader getInstance() {
-        return instance;
     }
 
 }

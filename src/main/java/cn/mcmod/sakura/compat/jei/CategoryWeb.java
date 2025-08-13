@@ -2,6 +2,7 @@ package cn.mcmod.sakura.compat.jei;
 
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.util.RLUtil;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -14,11 +15,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 public class CategoryWeb implements IRecipeCategory<IRecipeWrapper> {
-    protected final IDrawable background;
+    private final IDrawable background;
     private final IDrawable icon;
 
     public CategoryWeb(IGuiHelper helper) {
-        ResourceLocation backgroundTexture = new ResourceLocation(SakuraMain.MODID + ":textures/gui/jei_compat.png");
+        ResourceLocation backgroundTexture = RLUtil.of("textures/gui/jei_compat.png");
         this.icon = helper.createDrawableIngredient(new ItemStack(BlockLoader.STRAW_WEB));
         this.background = helper.createDrawable(backgroundTexture, 0, 81, 93, 46);
     }

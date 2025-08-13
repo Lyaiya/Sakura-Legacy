@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.IGrowable;
@@ -21,21 +21,23 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.EnumPlantType;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BlockBambooShoot extends BlockBush implements IPlantable, IGrowable {
-    public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 8);
-    protected static final AxisAlignedBB BAMBOO_AABB = new AxisAlignedBB(0.3D, 0.0D, 0.3D, 0.7D, 0.4D, 0.7D);
+    private static final PropertyInteger AGE = PropertyInteger.create("age", 0, 8);
+
+    private static final AxisAlignedBB BAMBOO_AABB = new AxisAlignedBB(0.3D, 0.0D, 0.3D, 0.7D, 0.4D, 0.7D);
 
     public BlockBambooShoot() {
         super(Material.PLANTS);
         this.setTickRandomly(true);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
         this.setResistance(2.0F);
     }
 
@@ -43,31 +45,34 @@ public class BlockBambooShoot extends BlockBush implements IPlantable, IGrowable
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         if (!worldIn.isAreaLoaded(pos, 1))
             return; // Forge: prevent growing cactus from loading unloaded chunks with block update
-        BlockPos blockpos = pos.up();
+        final BlockPos blockPos = pos.up();
 
-        if (worldIn.isAirBlock(blockpos)) {
-            if (worldIn.getLightFor(EnumSkyBlock.BLOCK, pos) > 6 + worldIn.rand.nextInt(6)) {
-                int j = state.getValue(AGE).intValue();
-                if (net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, blockpos, state, true)) {
-                    if (j == 6) {
-                        if (rand.nextInt() == 0) {
-                            if (worldIn.isAirBlock(blockpos.up(2)))
-                                worldIn.setBlockState(blockpos.up(2), BlockLoader.BAMBOO.getDefaultState());
+        if (!worldIn.isAirBlock(blockPos)) return;
+        if (worldIn.getLightFor(EnumSkyBlock.BLOCK, pos) > 6 + worldIn.rand.nextInt(6)) {
+            int j = state.getValue(AGE);
+            if (ForgeHooks.onCropsGrowPre(worldIn, blockPos, state, true)) {
+                if (j == 6) {
+                    if (rand.nextInt() == 0) {
+                        if (worldIn.isAirBlock(blockPos.up(2))) {
+                            worldIn.setBlockState(blockPos.up(2), BlockLoader.BAMBOO.getDefaultState());
                         }
-                        if (worldIn.isAirBlock(blockpos.up()))
-                            worldIn.setBlockState(blockpos.up(), BlockLoader.BAMBOO.getDefaultState());
-                        if (worldIn.isAirBlock(blockpos))
-                            worldIn.setBlockState(blockpos, BlockLoader.BAMBOO.getDefaultState());
-                        worldIn.setBlockState(pos, BlockLoader.BAMBOO.getDefaultState());
-                    } else {
-                        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
                     }
-                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
+                    if (worldIn.isAirBlock(blockPos.up())) {
+                        worldIn.setBlockState(blockPos.up(), BlockLoader.BAMBOO.getDefaultState());
+                    }
+                    if (worldIn.isAirBlock(blockPos)) {
+                        worldIn.setBlockState(blockPos, BlockLoader.BAMBOO.getDefaultState());
+                    }
+                    worldIn.setBlockState(pos, BlockLoader.BAMBOO.getDefaultState());
+                } else {
+                    worldIn.setBlockState(pos, state.withProperty(AGE, j + 1), 4);
                 }
+                ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
             }
         }
     }
 
+    @Nullable
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return NULL_AABB;
@@ -110,19 +115,21 @@ public class BlockBambooShoot extends BlockBush implements IPlantable, IGrowable
 
     public boolean canBlockStay(World worldIn, BlockPos pos) {
         IBlockState state = worldIn.getBlockState(pos.down());
-        return state.getBlock().canSustainPlant(state, worldIn, pos.down(), EnumFacing.UP, this) && !worldIn.getBlockState(pos.up()).getMaterial().isLiquid();
+        return state.getBlock().canSustainPlant(state, worldIn, pos.down(), EnumFacing.UP, this)
+                && !worldIn.getBlockState(pos.up()).getMaterial().isLiquid();
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
+    @Override
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state,
+                             @Nullable TileEntity te, ItemStack stack) {
         if (!worldIn.isRemote && stack.getItem() instanceof ItemHoe) {
             super.harvestBlock(worldIn, player, pos, state, te, stack);
         }
     }
 
-
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(AGE, Integer.valueOf(meta));
+        return this.getDefaultState().withProperty(AGE, meta);
     }
 
     @SideOnly(Side.CLIENT)
@@ -148,7 +155,7 @@ public class BlockBambooShoot extends BlockBush implements IPlantable, IGrowable
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        return state.getValue(AGE).intValue();
+        return state.getValue(AGE);
     }
 
     @Override
@@ -168,12 +175,15 @@ public class BlockBambooShoot extends BlockBush implements IPlantable, IGrowable
 
     @Override
     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state) {
-
         if (rand.nextInt() == 0) {
             worldIn.setBlockState(pos.up(3), BlockLoader.BAMBOO.getDefaultState());
         }
-        if (worldIn.isAirBlock(pos.up())) worldIn.setBlockState(pos.up(), BlockLoader.BAMBOO.getDefaultState());
-        if (worldIn.isAirBlock(pos.up(2))) worldIn.setBlockState(pos.up(2), BlockLoader.BAMBOO.getDefaultState());
+        if (worldIn.isAirBlock(pos.up())) {
+            worldIn.setBlockState(pos.up(), BlockLoader.BAMBOO.getDefaultState());
+        }
+        if (worldIn.isAirBlock(pos.up(2))) {
+            worldIn.setBlockState(pos.up(2), BlockLoader.BAMBOO.getDefaultState());
+        }
         worldIn.setBlockState(pos, BlockLoader.BAMBOO.getDefaultState());
     }
 }

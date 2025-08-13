@@ -2,6 +2,7 @@ package cn.mcmod.sakura.gui;
 
 import cn.mcmod.sakura.inventory.ContainerBarrel;
 import cn.mcmod.sakura.tileentity.TileEntityBarrel;
+import cn.mcmod.sakura.util.RLUtil;
 import cn.mcmod_mmf.mmlib.util.ClientUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -13,13 +14,13 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiBarrel extends GuiContainer {
-    private static final ResourceLocation mortarGuiTextures = new ResourceLocation("sakura:textures/gui/barrel.png");
+    private static final ResourceLocation mortarGuiTextures = RLUtil.of("textures/gui/barrel.png");
 
-    private final TileEntityBarrel tilePot;
+    private final TileEntityBarrel teBarrel;
 
-    public GuiBarrel(InventoryPlayer inventory, TileEntityBarrel tile) {
-        super(new ContainerBarrel(inventory, tile));
-        this.tilePot = tile;
+    public GuiBarrel(InventoryPlayer inventory, TileEntityBarrel te) {
+        super(new ContainerBarrel(inventory, te));
+        this.teBarrel = te;
     }
 
     @Override
@@ -34,8 +35,8 @@ public class GuiBarrel extends GuiContainer {
         int l2 = this.getCookProgressScaled(24);
         this.drawTexturedModalRect(k + 63, l + 35, 176, 0, l2 + 1, 16);
 
-        if (this.tilePot.getTank().getFluid() != null) {
-            FluidTank fluidTank = this.tilePot.getTank();
+        if (this.teBarrel.getInputTank().getFluid() != null) {
+            FluidTank fluidTank = this.teBarrel.getInputTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
 
             if (heightInd > 0) {
@@ -44,8 +45,8 @@ public class GuiBarrel extends GuiContainer {
 
         }
 
-        if (this.tilePot.getResultTank().getFluid() != null) {
-            FluidTank fluidTank = this.tilePot.getResultTank();
+        if (this.teBarrel.getOutputTank().getFluid() != null) {
+            FluidTank fluidTank = this.teBarrel.getOutputTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
            /* if (heightInd > 0) {
                 ClientUtils.drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167 - heightInd, l + 11, heightInd, 16f);
@@ -59,7 +60,7 @@ public class GuiBarrel extends GuiContainer {
     }
 
     private int getCookProgressScaled(int pixels) {
-        int i = this.tilePot.getField(0);
+        int i = this.teBarrel.getField(0);
         return i != 0 ? i * pixels / 1000 : 0;
     }
 

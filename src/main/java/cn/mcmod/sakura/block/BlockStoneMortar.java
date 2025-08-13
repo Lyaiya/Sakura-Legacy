@@ -1,8 +1,8 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.gui.SakuraGuiHandler;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod.sakura.tileentity.TileEntityStoneMortar;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.ITileEntityProvider;
@@ -21,8 +21,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockStoneMortar extends BlockContainer implements ITileEntityProvider {
     protected BlockStoneMortar() {
@@ -30,17 +29,16 @@ public class BlockStoneMortar extends BlockContainer implements ITileEntityProvi
         this.setHardness(2.0F);
         this.setResistance(11.0F);
         this.setSoundType(SoundType.STONE);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (world.isRemote) {
-            return true;
-        }
-        TileEntity tileEntity = world.getTileEntity(pos);
-        if (tileEntity instanceof TileEntityStoneMortar) {
-            player.openGui(SakuraMain.instance, SakuraGuiHandler.ID_STONEMORTAR, world, pos.getX(), pos.getY(), pos.getZ());
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
+                                    EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        if (world.isRemote) return true;
+        final TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityStoneMortar) {
+            player.openGui(SakuraMain.INSTANCE, SakuraGuiHandler.ID_STONE_MORTAR, world, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
     }
@@ -60,7 +58,6 @@ public class BlockStoneMortar extends BlockContainer implements ITileEntityProvi
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
-
 
     @Override
     public boolean isFullCube(IBlockState state) {
@@ -93,8 +90,8 @@ public class BlockStoneMortar extends BlockContainer implements ITileEntityProvi
         super.breakBlock(worldIn, pos, state);
     }
 
-    @Override
     @SideOnly(Side.CLIENT)
+    @Override
     public boolean hasCustomBreakingProgress(IBlockState state) {
         return true;
     }

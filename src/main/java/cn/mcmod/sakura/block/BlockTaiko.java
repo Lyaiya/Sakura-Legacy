@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod_mmf.mmlib.block.BlockFacing;
 import cn.mcmod_mmf.mmlib.util.RecipesUtil;
 import net.minecraft.block.SoundType;

@@ -2,6 +2,7 @@ package cn.mcmod.sakura.gui;
 
 import cn.mcmod.sakura.inventory.ContainerCampfirePot;
 import cn.mcmod.sakura.tileentity.TileEntityCampfirePot;
+import cn.mcmod.sakura.util.RLUtil;
 import cn.mcmod_mmf.mmlib.util.ClientUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -15,7 +16,7 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class GuiCampfirePot extends GuiContainer {
 
-    private static final ResourceLocation mortarGuiTextures = new ResourceLocation("sakura:textures/gui/pot.png");
+    private static final ResourceLocation mortarGuiTextures = RLUtil.of("textures/gui/pot.png");
 
     private final TileEntityCampfirePot tilePot;
     private final IInventory playerInventory;

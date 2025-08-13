@@ -1,15 +1,14 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.gui.SakuraGuiHandler;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod.sakura.tileentity.TileEntityDistillation;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
@@ -26,8 +25,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockBarrelDistillation extends BlockContainer implements ITileEntityProvider {
 
@@ -36,7 +34,7 @@ public class BlockBarrelDistillation extends BlockContainer implements ITileEnti
         this.setHardness(2.5F);
         this.setResistance(8.0F);
         this.setSoundType(SoundType.WOOD);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
     }
 
     @Override
@@ -52,12 +50,11 @@ public class BlockBarrelDistillation extends BlockContainer implements ITileEnti
                 FluidUtil.interactWithFluidHandler(player, hand, tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side));
                 return true;
             }
-            player.openGui(SakuraMain.instance, SakuraGuiHandler.ID_DISTILLATION, world, pos.getX(), pos.getY(), pos.getZ());
+            player.openGui(SakuraMain.INSTANCE, SakuraGuiHandler.ID_DISTILLATION, world, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
         return true;
     }
-
 
     @Nullable
     @Override
@@ -74,7 +71,6 @@ public class BlockBarrelDistillation extends BlockContainer implements ITileEnti
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
-
 
     @Override
     public boolean isFullCube(IBlockState state) {
@@ -98,16 +94,17 @@ public class BlockBarrelDistillation extends BlockContainer implements ITileEnti
         return downState.isTopSolid() && downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID;
     }
 
-    public static final PropertyDirection FACING = BlockHorizontal.FACING;
+    private static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     /**
      * Called after the block is set in the Chunk data, but before the Tile Entity is set
      */
+    @Override
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
         this.setDefaultFacing(worldIn, pos, state);
     }
 
-    public void setDefaultFacing(World worldIn, BlockPos pos, IBlockState state) {
+    private void setDefaultFacing(World worldIn, BlockPos pos, IBlockState state) {
         if (!worldIn.isRemote) {
             IBlockState iblockstate = worldIn.getBlockState(pos.north());
             IBlockState iblockstate1 = worldIn.getBlockState(pos.south());
@@ -133,6 +130,7 @@ public class BlockBarrelDistillation extends BlockContainer implements ITileEnti
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
+    @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
@@ -140,6 +138,7 @@ public class BlockBarrelDistillation extends BlockContainer implements ITileEnti
     /**
      * Called by ItemBlocks after a block is set in the world, to allow post-place logic
      */
+    @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
     }
@@ -161,6 +160,7 @@ public class BlockBarrelDistillation extends BlockContainer implements ITileEnti
     /**
      * Convert the BlockState into the correct metadata value
      */
+    @Override
     public int getMetaFromState(IBlockState state) {
         return state.getValue(FACING).getIndex();
     }
@@ -169,6 +169,7 @@ public class BlockBarrelDistillation extends BlockContainer implements ITileEnti
      * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
      * blockstate.
      */
+    @Override
     public IBlockState withRotation(IBlockState state, Rotation rot) {
         return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
     }
@@ -177,10 +178,12 @@ public class BlockBarrelDistillation extends BlockContainer implements ITileEnti
      * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
      * blockstate.
      */
+    @Override
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
         return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
     }
 
+    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING);
     }

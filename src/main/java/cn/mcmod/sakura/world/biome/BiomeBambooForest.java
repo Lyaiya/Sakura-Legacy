@@ -17,11 +17,12 @@ public class BiomeBambooForest extends Biome {
 
     public BiomeBambooForest(BiomeProperties bambooForest) {
         super(bambooForest);
-        this.decorator.treesPerChunk = 30;
-        this.decorator.grassPerChunk = 25;
-        this.decorator.flowersPerChunk = 4;
+        decorator.treesPerChunk = 30;
+        decorator.grassPerChunk = 25;
+        decorator.flowersPerChunk = 4;
     }
 
+    @Override
     public WorldGenAbstractTree getRandomTreeFeature(Random rand) {
         if (rand.nextInt(160) == 0) {
             return SAKURA_BIG;
@@ -34,6 +35,7 @@ public class BiomeBambooForest extends Biome {
         }
     }
 
+    @Override
     public WorldGenerator getRandomWorldGenForGrass(Random rand) {
         return rand.nextInt(4) == 0 ? new WorldGenTallGrass(BlockTallGrass.EnumType.FERN) : new WorldGenTallGrass(BlockTallGrass.EnumType.GRASS);
     }

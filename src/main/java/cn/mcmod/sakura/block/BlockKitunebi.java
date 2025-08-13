@@ -2,7 +2,6 @@ package cn.mcmod.sakura.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
@@ -101,6 +100,7 @@ public class BlockKitunebi extends Block {
     /**
      * Convert the given metadata into a BlockState for this Block
      */
+    @Override
     public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(ISVISIBLE, meta > 0);
     }
@@ -108,6 +108,7 @@ public class BlockKitunebi extends Block {
     /**
      * Convert the BlockState into the correct metadata value
      */
+    @Override
     public int getMetaFromState(IBlockState state) {
         return state.getValue(ISVISIBLE) ? 1 : 0;
     }

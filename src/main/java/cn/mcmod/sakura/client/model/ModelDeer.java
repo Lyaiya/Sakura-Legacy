@@ -11,16 +11,16 @@ import net.minecraft.util.math.MathHelper;
  * Created using Tabula 7.0.0
  */
 public class ModelDeer extends ModelBase {
-    public ModelRenderer body;
-    public ModelRenderer neck;
-    public ModelRenderer legR;
-    public ModelRenderer legL;
-    public ModelRenderer backlegR;
-    public ModelRenderer backlegL;
-    public ModelRenderer head;
-    public ModelRenderer head2;
-    public ModelRenderer earR;
-    public ModelRenderer earL;
+    private final ModelRenderer body;
+    private final ModelRenderer neck;
+    private final ModelRenderer legR;
+    private final ModelRenderer legL;
+    private final ModelRenderer backlegR;
+    private final ModelRenderer backlegL;
+    private final ModelRenderer head;
+    private final ModelRenderer head2;
+    private final ModelRenderer earR;
+    private final ModelRenderer earL;
 
     public ModelDeer() {
         super();

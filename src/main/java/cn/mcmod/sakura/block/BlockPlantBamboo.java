@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -28,7 +28,7 @@ public class BlockPlantBamboo extends Block implements IPlantable {
     public BlockPlantBamboo() {
         super(Material.WOOD, MapColor.GREEN);
         this.setTickRandomly(true);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
         this.setHardness(1.0F);
         this.setResistance(4.0F);
     }
@@ -46,16 +46,16 @@ public class BlockPlantBamboo extends Block implements IPlantable {
             }
 
             if (i < 18) {
-                int j = state.getValue(AGE).intValue();
+                int j = state.getValue(AGE);
 
                 if (net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, blockpos, state, true)) {
                     if (j == 5) {
                         worldIn.setBlockState(blockpos, this.getDefaultState());
-                        IBlockState iblockstate = state.withProperty(AGE, Integer.valueOf(0));
+                        IBlockState iblockstate = state.withProperty(AGE, 0);
                         worldIn.setBlockState(pos, iblockstate, 4);
                         iblockstate.neighborChanged(worldIn, blockpos, this, pos);
                     } else {
-                        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
+                        worldIn.setBlockState(pos, state.withProperty(AGE, j + 1), 4);
                     }
                     net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
                 }
@@ -134,6 +134,7 @@ public class BlockPlantBamboo extends Block implements IPlantable {
         return state.getBlock().canSustainPlant(state, worldIn, pos.down(), EnumFacing.UP, this) && !worldIn.getBlockState(pos.up()).getMaterial().isLiquid();
     }
 
+    @Override
     public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, net.minecraftforge.common.IPlantable plantable) {
         IBlockState plant = plantable.getPlant(world, pos.offset(direction));
         if (plant.getBlock() == BlockLoader.BAMBOO) {
@@ -152,7 +153,6 @@ public class BlockPlantBamboo extends Block implements IPlantable {
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
-
 
     @Override
     public EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {

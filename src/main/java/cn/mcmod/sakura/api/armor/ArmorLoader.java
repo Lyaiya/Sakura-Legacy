@@ -5,6 +5,7 @@ import cn.mcmod.sakura.item.ItemLoader;
 import cn.mcmod.sakura.item.armors.ItemHaori;
 import cn.mcmod.sakura.item.armors.ItemKimono;
 import cn.mcmod.sakura.item.armors.ItemSamuraiArmors;
+import cn.mcmod.sakura.util.RLUtil;
 import cn.mcmod_mmf.mmlib.util.RecipesUtil;
 import com.google.common.collect.HashMultimap;
 import net.minecraft.item.Item;
@@ -14,16 +15,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ArmorLoader {
-    private static final ArmorLoader instance = new ArmorLoader();
+    public static final ArmorLoader INSTANCE = new ArmorLoader();
 
     private ArmorLoader() {
     }
 
-    public static ArmorLoader getInstance() {
-        return instance;
-    }
-
-    public void Init() {
+    public void register() {
         registerKimono("kimono_1");
         registerKimono("kimono_2");
         registerKimono("kimono_3");
@@ -50,20 +47,20 @@ public class ArmorLoader {
         registerArmor(true, "soldier_armor_1");
     }
 
-    public void registerKimono(String texture_name) {
+    public void registerKimono(String textureName) {
         ItemStack kimono = new ItemStack(ItemLoader.KIMONO);
-        ItemKimono.KimonoIDs.add(texture_name);
+        ItemKimono.ALL_KIMONO_ID.add(textureName);
         NBTTagCompound tag = RecipesUtil.getInstance().getItemTagCompound(kimono);
-        ItemKimono.texture_name.set(tag, texture_name);
-        registerCustomItemStack(texture_name, kimono);
+        ItemKimono.TEXTURE_NAME.set(tag, textureName);
+        registerCustomItemStack(textureName, kimono);
     }
 
-    public void registerHaori(String texture_name) {
+    public void registerHaori(String textureName) {
         ItemStack kimono = new ItemStack(ItemLoader.HAORI);
-        ItemHaori.KimonoIDs.add(texture_name);
+        ItemHaori.ALL_KIMONO_NAME.add(textureName);
         NBTTagCompound tag = RecipesUtil.getInstance().getItemTagCompound(kimono);
-        ItemKimono.texture_name.set(tag, texture_name);
-        registerCustomItemStack(texture_name, kimono);
+        ItemKimono.TEXTURE_NAME.set(tag, textureName);
+        registerCustomItemStack(textureName, kimono);
     }
 
     public void registerArmor(boolean soldier, String texture_name) {
@@ -71,15 +68,15 @@ public class ArmorLoader {
         ItemStack body = soldier ? new ItemStack(ItemLoader.SOLDIER_CHEST) : new ItemStack(ItemLoader.SAMURAI_CHEST);
         ItemStack pants = soldier ? new ItemStack(ItemLoader.SOLDIER_PANTS) : new ItemStack(ItemLoader.SAMURAI_PANTS);
         ItemStack feet = soldier ? new ItemStack(ItemLoader.SOLDIER_SHOES) : new ItemStack(ItemLoader.SAMURAI_SHOES);
-        ItemSamuraiArmors.armorIDs.put(texture_name, soldier);
+        ItemSamuraiArmors.ALL_ARMOR_ID.put(texture_name, soldier);
         NBTTagCompound tag = RecipesUtil.getInstance().getItemTagCompound(head);
         NBTTagCompound tag1 = RecipesUtil.getInstance().getItemTagCompound(body);
         NBTTagCompound tag2 = RecipesUtil.getInstance().getItemTagCompound(pants);
         NBTTagCompound tag3 = RecipesUtil.getInstance().getItemTagCompound(feet);
-        ItemSamuraiArmors.texture_name.set(tag, texture_name);
-        ItemSamuraiArmors.texture_name.set(tag1, texture_name);
-        ItemSamuraiArmors.texture_name.set(tag2, texture_name);
-        ItemSamuraiArmors.texture_name.set(tag3, texture_name);
+        ItemSamuraiArmors.TEXTURE_NAME.set(tag, texture_name);
+        ItemSamuraiArmors.TEXTURE_NAME.set(tag1, texture_name);
+        ItemSamuraiArmors.TEXTURE_NAME.set(tag2, texture_name);
+        ItemSamuraiArmors.TEXTURE_NAME.set(tag3, texture_name);
         registerCustomItemStack(texture_name, head);
         registerCustomItemStack(texture_name, body);
         registerCustomItemStack(texture_name, pants);
@@ -89,20 +86,20 @@ public class ArmorLoader {
     public HashMultimap<ResourceLocation, ItemStack> ArmorRegistry = HashMultimap.create();
 
     public void registerCustomItemStack(String name, ItemStack stack) {
-        ArmorRegistry.put(new ResourceLocation(SakuraMain.MODID, name), stack);
+        ArmorRegistry.put(RLUtil.of(name), stack);
     }
 
     public ItemStack findItemStack(String modid, String name, Item item, int count) {
-        ResourceLocation key = new ResourceLocation(modid, name);
+        ResourceLocation key = RLUtil.of(modid, name);
         ItemStack stack = ItemStack.EMPTY;
 
         if (ArmorRegistry.containsKey(key)) {
-            for (ItemStack stack_item : ArmorRegistry.get(new ResourceLocation(modid, name))) {
+            for (ItemStack stack_item : ArmorRegistry.get(RLUtil.of(modid, name))) {
                 if (stack_item.getItem() == item)
                     stack = stack_item.copy();
             }
         } else {
-            Item new_item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(modid, name));
+            Item new_item = ForgeRegistries.ITEMS.getValue(RLUtil.of(modid, name));
             if (new_item != null)
                 stack = new ItemStack(new_item);
         }

@@ -3,6 +3,7 @@ package cn.mcmod.sakura.gui;
 
 import cn.mcmod.sakura.inventory.ContainerDistillation;
 import cn.mcmod.sakura.tileentity.TileEntityDistillation;
+import cn.mcmod.sakura.util.RLUtil;
 import cn.mcmod_mmf.mmlib.util.ClientUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -14,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiDistillation extends GuiContainer {
-    private static final ResourceLocation mortarGuiTextures = new ResourceLocation("sakura:textures/gui/barrel.png");
+    private static final ResourceLocation mortarGuiTextures = RLUtil.of("textures/gui/barrel.png");
 
     private final TileEntityDistillation tilePot;
 
@@ -35,8 +36,8 @@ public class GuiDistillation extends GuiContainer {
         int l2 = this.getCookProgressScaled(24);
         this.drawTexturedModalRect(k + 63, l + 35, 176, 0, l2 + 1, 16);
 
-        if (this.tilePot.getTank().getFluid() != null) {
-            FluidTank fluidTank = this.tilePot.getTank();
+        if (this.tilePot.getInputTank().getFluid() != null) {
+            FluidTank fluidTank = this.tilePot.getInputTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
 
             if (heightInd > 0) {
@@ -45,8 +46,8 @@ public class GuiDistillation extends GuiContainer {
 
         }
 
-        if (this.tilePot.getResultTank().getFluid() != null) {
-            FluidTank fluidTank = this.tilePot.getResultTank();
+        if (this.tilePot.getOutputTank().getFluid() != null) {
+            FluidTank fluidTank = this.tilePot.getOutputTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
            /* if (heightInd > 0) {
                 ClientUtils.drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167 - heightInd, l + 11, heightInd, 16f);

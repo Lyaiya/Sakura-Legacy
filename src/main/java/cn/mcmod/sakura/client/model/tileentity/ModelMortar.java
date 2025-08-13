@@ -12,9 +12,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 @SideOnly(Side.CLIENT)
 public class ModelMortar extends ModelBase {
-    public ModelRenderer block1;
-    public ModelRenderer block2;
-    public ModelRenderer handle;
+    public final ModelRenderer block1;
+    public final ModelRenderer block2;
+    public final ModelRenderer handle;
 
     public ModelMortar() {
         this.textureWidth = 128;

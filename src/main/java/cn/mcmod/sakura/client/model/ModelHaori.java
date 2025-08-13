@@ -12,9 +12,9 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 public class ModelHaori extends ModelCustomArmor {
-    ModelRenderer body;
-    ModelRenderer rightArm;
-    ModelRenderer leftArm;
+    private final ModelRenderer body;
+    private final ModelRenderer rightArm;
+    private final ModelRenderer leftArm;
 
     public ModelHaori() {
         super(1.3F, 0, 64, 64);

@@ -16,10 +16,10 @@ import java.util.Map.Entry;
 public final class PotRecipeMaker {
     public static List<ItemFluidRecipe> getRecipes(IJeiHelpers helpers) {
         IStackHelper stackHelper = helpers.getStackHelper();
-        List<ItemFluidRecipe> recipes = new ArrayList<ItemFluidRecipe>();
-        for (Entry<Pair<Object[], ItemStack>, List<FluidStack>> entry : PotRecipes.getInstance().RecipesList.entrySet()) {
-            List<List<ItemStack>> inputs = new ArrayList<List<ItemStack>>();
-            List<List<FluidStack>> fluidlist = new ArrayList<List<FluidStack>>();
+        List<ItemFluidRecipe> recipes = new ArrayList<>();
+        for (Entry<Pair<Object[], ItemStack>, List<FluidStack>> entry : PotRecipes.INSTANCE.recipesList.entrySet()) {
+            List<List<ItemStack>> inputs = new ArrayList<>();
+            List<List<FluidStack>> fluidlist = new ArrayList<>();
             for (Object obj : entry.getKey().getLeft()) {
                 List<ItemStack> subinputs = stackHelper.toItemStackList(obj);
                 inputs.add(subinputs);

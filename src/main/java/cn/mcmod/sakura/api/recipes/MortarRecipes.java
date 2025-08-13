@@ -11,48 +11,45 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class MortarRecipes {
-    public final Map<Object[], ItemStack[]> RecipesList = Maps.newHashMap();
-    private static final MortarRecipes RECIPE_BASE = new MortarRecipes();
+    public static final MortarRecipes INSTANCE = new MortarRecipes();
+
+    public final Map<Object[], ItemStack[]> recipesList = Maps.newHashMap();
 
     private MortarRecipes() {
-        // TODO Auto-generated constructor stub
-    }
-
-    public static MortarRecipes instance() {
-        return RECIPE_BASE;
     }
 
     public void addMortarRecipes(ItemStack[] result, Object[] main) {
-        RecipesList.put(main, result);
+        recipesList.put(main, result);
     }
 
     public ItemStack[] getResult(List<ItemStack> inputs) {
         ItemStack[] retStack = new ItemStack[0];
 
-        for (Entry<Object[], ItemStack[]> entry : RecipesList.entrySet()) {
+        for (Entry<Object[], ItemStack[]> entry : recipesList.entrySet()) {
             boolean flg1 = true;
-            if ((inputs.size() != entry.getKey().length))
-                continue;
-            for (Object obj1 : entry.getKey()) {
+            if (inputs.size() != entry.getKey().length) continue;
+
+            for (Object object : entry.getKey()) {
                 boolean flg2 = false;
-                for (ItemStack input : inputs) {
-                    if (input.isEmpty()) break;
-                    if (obj1 instanceof ItemStack) {
-                        ItemStack stack1 = (ItemStack) obj1;
-                        if (ItemStack.areItemsEqual(stack1, input)) {
-                            inputs.remove(input);
+
+                for (ItemStack inputItemStack : inputs) {
+                    if (inputItemStack.isEmpty()) break;
+                    if (object instanceof ItemStack itemStack) {
+                        if (ItemStack.areItemsEqual(itemStack, inputItemStack)) {
+                            inputs.remove(inputItemStack);
                             flg2 = true;
                             break;
                         }
-                    } else if (obj1 instanceof String) {
-                        NonNullList<ItemStack> ore = OreDictionary.getOres((String) obj1);
-                        if (!ore.isEmpty() && RecipesUtil.getInstance().containsMatch(false, ore, input)) {
-                            inputs.remove(input);
+                    } else if (object instanceof String name) {
+                        NonNullList<ItemStack> ore = OreDictionary.getOres(name);
+                        if (!ore.isEmpty() && RecipesUtil.getInstance().containsMatch(false, ore, inputItemStack)) {
+                            inputs.remove(inputItemStack);
                             flg2 = true;
                             break;
                         }
                     }
                 }
+
                 if (!flg2) {
                     flg1 = false;
                     break;
@@ -67,11 +64,11 @@ public class MortarRecipes {
         return retStack;
     }
 
-    public void ClearRecipe(Object[] inputs) {
-        RecipesList.remove(inputs);
+    public void clearRecipe(Object[] inputs) {
+        recipesList.remove(inputs);
     }
 
-    public void ClearAllRecipe() {
-        RecipesList.clear();
+    public void clearAllRecipe() {
+        recipesList.clear();
     }
 }

@@ -12,18 +12,33 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
+import java.util.List;
 
 public class TileEntityStoneMortar extends TileEntity implements ITickable, ISidedInventory {
+    public static final int ID_PROCESS_TIMER = 0;
+    public static final int ID_MAX_PROCESS_TIMER = 1;
+
+    private static final String KEY_PROCESS_TIMER = "processTimer";
+    private static final String KEY_MAX_PROCESS_TIMER = "maxProcessTimer";
+
+    private static final int[] SLOTS_INPUT = {0, 1, 2, 3};
+    private static final int[] SLOTS_OUTPUT = {4, 5};
+
+    private final NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+
     private int processTimer = 0;
-    private int maxprocessTimer = 200;
+    private int maxProcessTimer = 200;
+
+    public TileEntityStoneMortar() {
+    }
 
     public int getProcessTimer() {
         return processTimer;
@@ -31,45 +46,51 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
 
     @Override
     public void update() {
-        if (this.getWorld().isRemote) {
-            return;
-        }
-        ItemStack input1 = this.inventorySlotItemStack.get(0);
-        ItemStack input2 = this.inventorySlotItemStack.get(1);
-        ItemStack input3 = this.inventorySlotItemStack.get(2);
-        ItemStack input4 = this.inventorySlotItemStack.get(3);
-        ItemStack output1 = this.inventorySlotItemStack.get(4);
-        ItemStack output2 = this.inventorySlotItemStack.get(5);
+        if (world.isRemote) return;
+        ItemStack input1 = inventory.get(0);
+        ItemStack input2 = inventory.get(1);
+        ItemStack input3 = inventory.get(2);
+        ItemStack input4 = inventory.get(3);
+        ItemStack output1 = inventory.get(4);
+        ItemStack output2 = inventory.get(5);
 
-        ArrayList<ItemStack> inventoryList = Lists.newArrayList();
+        List<ItemStack> inventoryList = Lists.newArrayList();
         for (int i = 0; i < 4; i++) {
-            if (!this.inventorySlotItemStack.get(i).isEmpty()) {
-                inventoryList.add(this.inventorySlotItemStack.get(i).copy());
+            if (!inventory.get(i).isEmpty()) {
+                inventoryList.add(inventory.get(i).copy());
             }
         }
 
-        ItemStack[] result = MortarRecipes.instance().getResult(inventoryList);
+        ItemStack[] result = MortarRecipes.INSTANCE.getResult(inventoryList);
         if (result.length > 0) {
             if (RecipesUtil.getInstance().canIncrease(result[0], output1)) {
                 if (result.length > 1) {
-                    if (RecipesUtil.getInstance().canIncrease(result[1], output2))
+                    if (RecipesUtil.getInstance().canIncrease(result[1], output2)) {
                         processTimer += 1;
-                    else processTimer = 0;
-                } else processTimer += 1;
-            } else processTimer = 0;
-        } else processTimer = 0;
+                    } else {
+                        processTimer = 0;
+                    }
+                } else {
+                    processTimer += 1;
+                }
+            } else {
+                processTimer = 0;
+            }
+        } else {
+            processTimer = 0;
+        }
 
-        if (processTimer >= maxprocessTimer) {
+        if (processTimer >= maxProcessTimer) {
             processTimer = 0;
 
             if (output1.isEmpty()) {
-                this.inventorySlotItemStack.set(4, result[0].copy());
+                inventory.set(4, result[0].copy());
             } else if (output1.getItem() == result[0].getItem()) {
                 output1.grow(result[0].getCount());
             }
             if (result.length > 1) {
                 if (output2.isEmpty()) {
-                    this.inventorySlotItemStack.set(5, result[1].copy());
+                    inventory.set(5, result[1].copy());
                 } else if (output2.getItem() == result[1].getItem()) {
                     output2.grow(result[1].getCount());
                 }
@@ -84,7 +105,7 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
         }
     }
 
-    protected void refresh() {
+    private void refresh() {
         if (hasWorld() && !world.isRemote) {
             IBlockState state = world.getBlockState(pos);
             world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
@@ -95,9 +116,6 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
     public void markDirty() {
         super.markDirty();
     }
-
-    protected NonNullList<ItemStack> inventorySlotItemStack =
-            NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
     @Override
     public String getName() {
@@ -116,7 +134,7 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
 
     @Override
     public boolean isEmpty() {
-        for (ItemStack itemstack : this.inventorySlotItemStack) {
+        for (ItemStack itemstack : inventory) {
             if (!itemstack.isEmpty()) {
                 return false;
             }
@@ -126,15 +144,15 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
 
     @Override
     public ItemStack getStackInSlot(int index) {
-        return inventorySlotItemStack.get(index);
+        return inventory.get(index);
     }
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
-        ItemStack itemstack = ItemStackHelper.getAndSplit(inventorySlotItemStack, index, count);
+        ItemStack itemstack = ItemStackHelper.getAndSplit(inventory, index, count);
 
         if (!itemstack.isEmpty()) {
-            this.markDirty();
+            markDirty();
         }
 
         return itemstack;
@@ -142,17 +160,16 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
 
     @Override
     public ItemStack removeStackFromSlot(int index) {
-        return ItemStackHelper.getAndRemove(inventorySlotItemStack, index);
+        return ItemStackHelper.getAndRemove(inventory, index);
     }
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
-
-        inventorySlotItemStack.set(index, stack);
-        if (stack.getCount() > this.getInventoryStackLimit()) {
-            stack.setCount(this.getInventoryStackLimit());
+        inventory.set(index, stack);
+        if (stack.getCount() > getInventoryStackLimit()) {
+            stack.setCount(getInventoryStackLimit());
         }
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -161,22 +178,21 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
     }
 
     @Override
-
     public boolean isUsableByPlayer(EntityPlayer player) {
-        if (this.world.getTileEntity(this.pos) != this) {
+        if (world.getTileEntity(pos) != this) {
             return false;
         }
-        return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+        return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
     public void openInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
     public void closeInventory(EntityPlayer player) {
-        this.markDirty();
+        markDirty();
     }
 
     @Override
@@ -184,99 +200,44 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
         return index < 4;
     }
 
-
+    @Override
     public int getField(int id) {
-        switch (id) {
-            case 0:
-                return this.processTimer;
-            case 1:
-                return this.maxprocessTimer;
-            default:
-                return 0;
-        }
+        return switch (id) {
+            case ID_PROCESS_TIMER -> processTimer;
+            case ID_MAX_PROCESS_TIMER -> maxProcessTimer;
+            default -> 0;
+        };
     }
 
-
+    @Override
     public void setField(int id, int value) {
         switch (id) {
-            case 0:
-                this.processTimer = value;
+            case ID_PROCESS_TIMER:
+                processTimer = value;
                 break;
-            case 1:
-                this.maxprocessTimer = value;
+            case ID_MAX_PROCESS_TIMER:
+                maxProcessTimer = value;
                 break;
         }
     }
 
+    @Override
     public int getFieldCount() {
         return 2;
     }
 
     @Override
     public void clear() {
-        inventorySlotItemStack.clear();
+        inventory.clear();
     }
-
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-        this.inventorySlotItemStack =
-                NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(compound, this.inventorySlotItemStack);
-
-        this.maxprocessTimer = compound.getInteger("maxProcessTimer");
-        this.processTimer = compound.getInteger("processTimer");
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        compound = super.writeToNBT(compound);
-        ItemStackHelper.saveAllItems(compound, this.inventorySlotItemStack);
-
-        compound.setInteger("maxProcessTimer", this.maxprocessTimer);
-        compound.setInteger("processTimer", this.processTimer);
-        return compound;
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag() {
-        return this.writeToNBT(new NBTTagCompound());
-    }
-
-    @Override
-    public void handleUpdateTag(NBTTagCompound tag) {
-        this.readFromNBT(tag);
-    }
-
-    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
-        return new ContainerStoneMortar(playerInventory, this);
-    }
-
-    @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(this.pos, 0, this.writeToNBT(new NBTTagCompound()));
-    }
-
-    @Override
-    public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
-        this.readFromNBT(pkt.getNbtCompound());
-    }
-
-    private static final int[] OUTPUT_SLOTS = {4, 5};
-    private static final int[] INPUT_SLOTS = {0, 1, 2, 3};
 
     @Override
     public int[] getSlotsForFace(EnumFacing enumFacing) {
-        switch (enumFacing) {
-            case DOWN:
-                return OUTPUT_SLOTS;
-            case UP:
-                return INPUT_SLOTS;
-            default:
-                return new int[0];
-        }
+        return switch (enumFacing) {
+            case DOWN -> SLOTS_OUTPUT;
+            case UP -> SLOTS_INPUT;
+            default -> new int[0];
+        };
     }
 
     @Override
@@ -288,4 +249,49 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
     public boolean canExtractItem(int i, ItemStack itemStack, EnumFacing enumFacing) {
         return true;
     }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        inventory.clear();
+        ItemStackHelper.loadAllItems(compound, inventory);
+
+        maxProcessTimer = compound.getInteger(KEY_MAX_PROCESS_TIMER);
+        processTimer = compound.getInteger(KEY_PROCESS_TIMER);
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        compound = super.writeToNBT(compound);
+        ItemStackHelper.saveAllItems(compound, inventory);
+        compound.setInteger(KEY_MAX_PROCESS_TIMER, maxProcessTimer);
+        compound.setInteger(KEY_PROCESS_TIMER, processTimer);
+        return compound;
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        return writeToNBT(new NBTTagCompound());
+    }
+
+    @Override
+    public void handleUpdateTag(NBTTagCompound tag) {
+        readFromNBT(tag);
+    }
+
+    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
+        return new ContainerStoneMortar(playerInventory, this);
+    }
+
+    @Nullable
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return new SPacketUpdateTileEntity(pos, 0, writeToNBT(new NBTTagCompound()));
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        readFromNBT(pkt.getNbtCompound());
+    }
+
 }

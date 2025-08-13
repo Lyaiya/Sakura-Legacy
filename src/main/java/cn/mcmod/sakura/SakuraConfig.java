@@ -9,59 +9,59 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Config(modid = SakuraMain.MODID)
 @Mod.EventBusSubscriber(modid = SakuraMain.MODID)
 public class SakuraConfig {
-    private final static String config = "sakura.config.";
+    private final static String PREFIX = "sakura.config.";
 
-    @Config.LangKey(config + "vanilla_weight")
+    @Config.LangKey(PREFIX + "vanilla_weight")
     @Config.RequiresMcRestart
     @Config.RangeInt(min = 0, max = 2000)
     @Config.Comment("Changes generate rate of Vanilla. Increase value to gen more Vanilla.")
-    public static int vanilla_weight = 90;
+    public static int VANILLA_WEIGHT = 90;
 
-    @Config.LangKey(config + "pepper_weight")
+    @Config.LangKey(PREFIX + "pepper_weight")
     @Config.RequiresMcRestart
     @Config.RangeInt(min = 0, max = 2000)
     @Config.Comment("Changes generate rate of Pepper. Increase value to gen more Pepper.")
-    public static int pepper_weight = 90;
+    public static int PEPPER_WEIGHT = 90;
 
-    @Config.LangKey(config + "bambooshot_weight")
+    @Config.LangKey(PREFIX + "bambooshot_weight")
     @Config.RequiresMcRestart
     @Config.RangeInt(min = 0, max = 2000)
     @Config.Comment("Changes generate rate of BambooShot. Increase value to gen more BambooShot.")
-    public static int bambooshot_weight = 90;
+    public static int BAMBOOSHOT_WEIGHT = 90;
 
-    @Config.LangKey(config + "ume_weight")
+    @Config.LangKey(PREFIX + "ume_weight")
     @Config.RequiresMcRestart
     @Config.RangeInt(min = 0, max = 2000)
     @Config.Comment("Changes generate rate of Ume. Increase value to gen more Ume.")
-    public static int ume_weight = 90;
+    public static int UME_WEIGHT = 90;
 
-    @Config.LangKey(config + "iron_sand_amount")
+    @Config.LangKey(PREFIX + "iron_sand_amount")
     @Config.RequiresMcRestart
     @Config.RangeInt(min = 1, max = 5120)
     @Config.Comment("Changes generate amount of Iron Sand. Increase value to gen more Iron Sand.")
-    public static int iron_sand_amount = 128;
+    public static int IRON_SAND_AMOUNT = 128;
 
-    @Config.LangKey(config + "hotspring_weight")
+    @Config.LangKey(PREFIX + "hotspring_weight")
     @Config.RequiresMcRestart
     @Config.RangeInt(min = 0, max = 5000)
     @Config.Comment("Changes generate rate of Hot Spring. Increase value to gen more Hot Spring.")
-    public static int hotspring_weight = 10;
+    public static int HOTSPRING_WEIGHT = 10;
 
-    @Config.LangKey(config + "harder_iron_recipe")
+    @Config.LangKey(PREFIX + "harder_iron_recipe")
     @Config.RequiresMcRestart
     @Config.Comment("Whether to enable a more difficult iron ingot recipe.")
-    public static boolean harder_iron_recipe = false;
+    public static boolean HARDER_IRON_RECIPE = false;
 
-    @Config.LangKey(config + "harder_iron_difficult")
+    @Config.LangKey(PREFIX + "harder_iron_difficult")
     @Config.RequiresMcRestart
     @Config.RangeInt(min = 1, max = 3)
     @Config.Comment("Changes difficult level of harder iron ingot recipe.")
-    public static int harder_iron_difficult = 1;
+    public static int HARDER_IRON_DIFFICULT = 1;
 
-    @Config.LangKey(config + "every_where_sakura_diamond")
+    @Config.LangKey(PREFIX + "every_where_sakura_diamond")
     @Config.RequiresMcRestart
     @Config.Comment("Whether to enable spawn sakura diamond in every biome.")
-    public static boolean every_where_sakura_diamond = false;
+    public static boolean EVERY_WHERE_SAKURA_DIAMOND = false;
 
     @SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {

@@ -25,7 +25,7 @@ public class WorldGenVanilla implements IWorldGenerator {
             return;
         }
 
-        if (random.nextFloat() < SakuraConfig.vanilla_weight / 4000.0F) {
+        if (random.nextFloat() < SakuraConfig.VANILLA_WEIGHT / 4000.0F) {
             int posX = x + world.rand.nextInt(16) + 8;
             int posZ = z + world.rand.nextInt(16) + 8;
             BlockPos newPos = WorldUtil.getInstance().findGround(world, new BlockPos(posX, 0, posZ), true, true, true);

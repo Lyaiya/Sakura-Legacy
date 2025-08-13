@@ -11,7 +11,6 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 public class BlockTaroCrop extends BlockCrops {
-
     @Override
     protected Item getCrop() {
         return ItemLoader.TARO;

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class SakuraOreDictLoader {
-    private static final SakuraOreDictLoader instance = new SakuraOreDictLoader();
+    public static final SakuraOreDictLoader INSTANCE = new SakuraOreDictLoader();
 
     private SakuraOreDictLoader() {
     }
@@ -156,12 +156,6 @@ public class SakuraOreDictLoader {
         OreDictionary.registerOre("toolForginghammer", new ItemStack(ItemLoader.SAKURA_HAMMER, 1, Short.MAX_VALUE));
         OreDictionary.registerOre("toolKnifefish", new ItemStack(ItemLoader.KNIFE_FISH, 1, Short.MAX_VALUE));
         OreDictionary.registerOre("toolKnifefish", new ItemStack(ItemLoader.SAKURA_KNIFE_FISH, 1, Short.MAX_VALUE));
-
     }
-
-    public static SakuraOreDictLoader getInstance() {
-        return instance;
-    }
-
 
 }

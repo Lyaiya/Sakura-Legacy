@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.client.particle;
 
-import cn.mcmod.sakura.ClientProxy;
+import cn.mcmod.sakura.proxy.ClientProxy;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

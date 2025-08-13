@@ -14,7 +14,6 @@ import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
-
 @ZenClass("mods.sakura.liquid_to_itemStack")
 @ZenRegister
 public class CTSakuraL2IS {
@@ -27,17 +26,17 @@ public class CTSakuraL2IS {
             itemInput = ((IOreDictEntry) input).getName();
         }
         if (itemInput != null)
-            SakuraRecipeRegister.getInstance().actions.add(new Removal(CraftTweakerMC.getLiquidStack(input_fluid), itemInput));
+            SakuraRecipeRegister.INSTANCE.addAction(new Removal(CraftTweakerMC.getLiquidStack(input_fluid), itemInput));
     }
 
     @ZenMethod
     public static void AddRecipe(IItemStack input, IItemStack output, ILiquidStack input_fluid) {
-        SakuraRecipeRegister.getInstance().actions.add(new Addition(CraftTweakerMC.getItemStack(input), CraftTweakerMC.getItemStack(output), CraftTweakerMC.getLiquidStack(input_fluid)));
+        SakuraRecipeRegister.INSTANCE.addAction(new Addition(CraftTweakerMC.getItemStack(input), CraftTweakerMC.getItemStack(output), CraftTweakerMC.getLiquidStack(input_fluid)));
     }
 
     @ZenMethod
     public static void ClearAllRecipe() {
-        SakuraRecipeRegister.getInstance().actions.add(new ClearAllRecipe());
+        SakuraRecipeRegister.INSTANCE.addAction(new ClearAllRecipe());
     }
 
     private static final class Removal implements IAction {
@@ -51,7 +50,7 @@ public class CTSakuraL2IS {
 
         @Override
         public void apply() {
-            LiquidToItemRecipe.instance().ClearRecipe(fluid, itemInput);
+            LiquidToItemRecipe.INSTANCE.clearRecipe(fluid, itemInput);
         }
 
         @Override
@@ -73,7 +72,7 @@ public class CTSakuraL2IS {
 
         @Override
         public void apply() {
-            LiquidToItemRecipe.instance().addRecipes(itemInput, itemOutput, fluidInput);
+            LiquidToItemRecipe.INSTANCE.addRecipes(itemInput, itemOutput, fluidInput);
         }
 
         @Override
@@ -86,7 +85,7 @@ public class CTSakuraL2IS {
     private static final class ClearAllRecipe implements IAction {
         @Override
         public void apply() {
-            LiquidToItemRecipe.instance().ClearAllRecipe();
+            LiquidToItemRecipe.INSTANCE.clearAllRecipe();
         }
 
         @Override

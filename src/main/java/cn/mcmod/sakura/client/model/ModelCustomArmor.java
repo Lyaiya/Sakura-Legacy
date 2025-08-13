@@ -10,15 +10,15 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 
-public class ModelCustomArmor
-        extends ModelBiped {
+public class ModelCustomArmor extends ModelBiped {
     public ModelCustomArmor(float f, int i, int j, int k) {
         super(f, i, j, k);
     }
 
+    @Override
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
-        if ((entityIn instanceof EntityLivingBase)) {
-            this.swingProgress = ((EntityLivingBase) entityIn).getSwingProgress(0F);
+        if ((entityIn instanceof EntityLivingBase entityLivingBase)) {
+            this.swingProgress = entityLivingBase.getSwingProgress(0F);
         }
         if ((entityIn instanceof EntityArmorStand)) {
             setRotationAnglesStand(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
@@ -189,8 +189,7 @@ public class ModelCustomArmor
     }
 
     public void setRotationAnglesStand(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
-        if ((entityIn instanceof EntityArmorStand)) {
-            EntityArmorStand entityarmorstand = (EntityArmorStand) entityIn;
+        if ((entityIn instanceof EntityArmorStand entityarmorstand)) {
             this.bipedHead.rotateAngleX = (0.017453292F * entityarmorstand.getHeadRotation().getX());
             this.bipedHead.rotateAngleY = (0.017453292F * entityarmorstand.getHeadRotation().getY());
             this.bipedHead.rotateAngleZ = (0.017453292F * entityarmorstand.getHeadRotation().getZ());

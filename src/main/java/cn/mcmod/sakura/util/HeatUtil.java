@@ -10,10 +10,15 @@ import net.minecraft.world.World;
 
 public class HeatUtil {
 
-    public static int getHeatStrength(World par1World, BlockPos pos) {
+    public static int getHeatStrength(World world, BlockPos pos) {
         for (int i = 1; i < 5; i++) {
-            Block block = par1World.getBlockState(pos.down(i)).getBlock();
-            if (block instanceof BlockCampfire || block instanceof BlockMagma || block instanceof BlockFire || block == Blocks.LAVA || block == Blocks.FLOWING_LAVA) {
+            Block block = world.getBlockState(pos.down(i)).getBlock();
+            if (block instanceof BlockCampfire ||
+                    block instanceof BlockMagma ||
+                    block instanceof BlockFire ||
+                    block == Blocks.LAVA ||
+                    block == Blocks.FLOWING_LAVA
+            ) {
                 return i <= 3 ? 2 : 1;
             }
         }

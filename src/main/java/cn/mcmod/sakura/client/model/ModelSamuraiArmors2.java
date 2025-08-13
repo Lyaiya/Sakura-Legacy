@@ -5,55 +5,54 @@ import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import org.lwjgl.opengl.GL11;
 
-public class ModelSamuraiArmors2
-        extends ModelCustomArmor {
-    ModelRenderer Helmet;
-    ModelRenderer HelmetR;
-    ModelRenderer HelmetL;
-    ModelRenderer HelmetB;
-    ModelRenderer capsthingy;
-    ModelRenderer BeltR;
-    ModelRenderer Mbelt;
-    ModelRenderer MbeltL;
-    ModelRenderer MbeltR;
-    ModelRenderer BeltL;
-    ModelRenderer Chestplate;
-    ModelRenderer Backplate;
-    ModelRenderer ShoulderR;
-    ModelRenderer GauntletR;
-    ModelRenderer GauntletstrapR;
-    ModelRenderer ShoulderplateRtop;
-    ModelRenderer ShoulderplateR1;
-    ModelRenderer ShoulderL;
-    ModelRenderer GauntletL;
-    ModelRenderer GauntletstrapL;
-    ModelRenderer ShoulderplateLtop;
-    ModelRenderer ShoulderplateL1;
-    ModelRenderer LegpanelR4;
-    ModelRenderer LegpanelR5;
+public class ModelSamuraiArmors2 extends ModelCustomArmor {
+    private final ModelRenderer Helmet;
+    private final ModelRenderer HelmetR;
+    private final ModelRenderer HelmetL;
+    private final ModelRenderer HelmetB;
+    private final ModelRenderer capsthingy;
+    private final ModelRenderer BeltR;
+    private final ModelRenderer Mbelt;
+    private final ModelRenderer MbeltL;
+    private final ModelRenderer MbeltR;
+    private final ModelRenderer BeltL;
+    private final ModelRenderer Chestplate;
+    private final ModelRenderer Backplate;
+    private final ModelRenderer ShoulderR;
+    private final ModelRenderer GauntletR;
+    private final ModelRenderer GauntletstrapR;
+    private final ModelRenderer ShoulderplateRtop;
+    private final ModelRenderer ShoulderplateR1;
+    private final ModelRenderer ShoulderL;
+    private final ModelRenderer GauntletL;
+    private final ModelRenderer GauntletstrapL;
+    private final ModelRenderer ShoulderplateLtop;
+    private final ModelRenderer ShoulderplateL1;
+    private final ModelRenderer LegpanelR4;
+    private final ModelRenderer LegpanelR5;
     //  ModelRenderer LegpanelR6;
-    ModelRenderer SidepanelR1;
-    ModelRenderer SidepanelR2;
+    private final ModelRenderer SidepanelR1;
+    private final ModelRenderer SidepanelR2;
     //  ModelRenderer SidepanelR3;
-    ModelRenderer BackpanelR1;
-    ModelRenderer BackpanelR2;
-//  ModelRenderer BackpanelR3;
-//  ModelRenderer BackpanelL3;
+    private final ModelRenderer BackpanelR1;
+    private final ModelRenderer BackpanelR2;
+    //  ModelRenderer BackpanelR3;
+    //  ModelRenderer BackpanelL3;
 
-    ModelRenderer LegpanelL4;
-    ModelRenderer LegpanelL5;
+    private final ModelRenderer LegpanelL4;
+    private final ModelRenderer LegpanelL5;
     //  ModelRenderer LegpanelL6;
-    ModelRenderer SidepanelL1;
-    ModelRenderer SidepanelL2;
+    private final ModelRenderer SidepanelL1;
+    private final ModelRenderer SidepanelL2;
     //  ModelRenderer SidepanelL3;
-    ModelRenderer BackpanelL1;
-    ModelRenderer BackpanelL2;
-    ModelRenderer ShoesL;
-    ModelRenderer ShoesR;
-    ModelRenderer ShoesPartL;
-    ModelRenderer ShoesPartR;
-    public int state = 0;
-    public EntityEquipmentSlot armorSlot = EntityEquipmentSlot.CHEST;
+    private final ModelRenderer BackpanelL1;
+    private final ModelRenderer BackpanelL2;
+    private final ModelRenderer ShoesL;
+    private final ModelRenderer ShoesR;
+    private final ModelRenderer ShoesPartL;
+    private final ModelRenderer ShoesPartR;
+    private final int state;
+    private final EntityEquipmentSlot armorSlot;
 
     public ModelSamuraiArmors2(EntityEquipmentSlot slot, int armor_state, float f) {
         super(f, 0, 128, 64);
@@ -343,8 +342,8 @@ public class ModelSamuraiArmors2
         this.bipedLeftLeg.addChild(this.ShoesPartL);
     }
 
+    @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-
         this.LegpanelL4.isHidden = (state < 1) || (armorSlot != EntityEquipmentSlot.LEGS);
         this.LegpanelL5.isHidden = (state < 2) || (armorSlot != EntityEquipmentSlot.LEGS);
 

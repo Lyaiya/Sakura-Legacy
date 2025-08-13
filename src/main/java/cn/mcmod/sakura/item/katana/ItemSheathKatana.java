@@ -48,19 +48,19 @@ public class ItemSheathKatana extends Item {
 
         float sweepingRatio = 1f + EnchantmentHelper.getSweepingDamageRatio(entityLiving);
 
-        for (Entity entitylivingbase : worldIn.getEntitiesWithinAABB(Entity.class, entityLiving.getEntityBoundingBox().grow(1.4D + sweepingRatio * 1.2D, 0.3D + sweepingRatio * 0.15D, 1.4D + sweepingRatio * 1.2D))) {
-            if (entitylivingbase != entityLiving && !entityLiving.isOnSameTeam(entitylivingbase)) {
-                if (entitylivingbase instanceof EntityLivingBase) {
-                    if (entitylivingbase instanceof EntityPlayer && ((EntityPlayer) entitylivingbase).isActiveItemStackBlocking()) {
+        for (Entity entity : worldIn.getEntitiesWithinAABB(Entity.class, entityLiving.getEntityBoundingBox().grow(1.4D + sweepingRatio * 1.2D, 0.3D + sweepingRatio * 0.15D, 1.4D + sweepingRatio * 1.2D))) {
+            if (entity != entityLiving && !entityLiving.isOnSameTeam(entity)) {
+                if (entity instanceof EntityLivingBase entityLivingBase) {
+                    if (entity instanceof EntityPlayer entityPlayer && entityPlayer.isActiveItemStackBlocking()) {
                         // disable shield
-                        ((EntityPlayer) entitylivingbase).disableShield(false);
+                        entityPlayer.disableShield(false);
                     }
-                    ((EntityLivingBase) entitylivingbase).knockBack(entityLiving, 0.4F + 0.4F * EnchantmentHelper.getSweepingDamageRatio(entityLiving), MathHelper.sin(entityLiving.rotationYaw * 0.017453292F), (-MathHelper.cos(entityLiving.rotationYaw * 0.017453292F)));
-                    entitylivingbase.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) entityLiving), f3);
+                    entityLivingBase.knockBack(entityLiving, 0.4F + 0.4F * EnchantmentHelper.getSweepingDamageRatio(entityLiving), MathHelper.sin(entityLiving.rotationYaw * 0.017453292F), (-MathHelper.cos(entityLiving.rotationYaw * 0.017453292F)));
+                    entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) entityLiving), f3);
                 }
 
-                if (entitylivingbase instanceof MultiPartEntityPart) {
-                    entitylivingbase.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) entityLiving), f3);
+                if (entity instanceof MultiPartEntityPart) {
+                    entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) entityLiving), f3);
                 }
             }
         }
@@ -76,15 +76,15 @@ public class ItemSheathKatana extends Item {
         ((EntityPlayer) entityLiving).getCooldownTracker().setCooldown(katana, 15);
     }
 
+    @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
         playerIn.setActiveHand(handIn);
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
     private void dropHand(Entity entityIn, EnumHand hand, ItemStack blade) {
-        if (entityIn instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) entityIn;
+        if (entityIn instanceof EntityPlayer player) {
             blade.damageItem(2, player);
             if (hand == EnumHand.MAIN_HAND) {
                 ItemStack offhand = player.getHeldItem(EnumHand.OFF_HAND);
@@ -117,6 +117,7 @@ public class ItemSheathKatana extends Item {
         return EnumAction.BLOCK;
     }
 
+    @Override
     public int getMaxItemUseDuration(ItemStack stack) {
         return 72000;
     }
@@ -125,6 +126,7 @@ public class ItemSheathKatana extends Item {
      * Current implementations of this method in child classes do not use the entry argument beside ev. They just raise
      * the damage on the stack.
      */
+    @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
         stack.damageItem(1, attacker);
         return true;
@@ -133,6 +135,7 @@ public class ItemSheathKatana extends Item {
     /**
      * Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
      */
+    @Override
     public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
         if (state.getBlockHardness(worldIn, pos) != 0.0D) {
             stack.damageItem(2, entityLiving);
@@ -144,6 +147,7 @@ public class ItemSheathKatana extends Item {
      * Returns True is the item is renderer in full 3D when hold.
      */
     @SideOnly(Side.CLIENT)
+    @Override
     public boolean isFull3D() {
         return true;
     }

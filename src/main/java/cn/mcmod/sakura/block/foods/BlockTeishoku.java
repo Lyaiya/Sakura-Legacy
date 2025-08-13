@@ -1,13 +1,13 @@
 package cn.mcmod.sakura.block.foods;
 
 import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.compat.CompatConst;
 import cn.mcmod_mmf.mmlib.block.BlockFacing;
 import net.dries007.tfc.api.capability.food.FoodData;
 import net.dries007.tfc.api.capability.food.FoodHandler;
 import net.dries007.tfc.api.capability.food.IFoodStatsTFC;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -30,16 +30,15 @@ import toughasnails.api.thirst.ThirstHelper;
 import java.util.Random;
 
 public class BlockTeishoku extends BlockFacing {
-    public static final PropertyInteger BITES = PropertyInteger.create("bites", 0, 3);
-    public final int amount;
-    public final float saturation;
-    public final boolean isPlate;
+    private static final PropertyInteger BITES = PropertyInteger.create("bites", 0, 3);
+    private final int amount;
+    private final float saturation;
+    private final boolean isPlate;
 
     public BlockTeishoku(int amount, float saturation, boolean isPlate) {
         super(Material.WOOD, false);
         this.setSoundType(SoundType.WOOD);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(BITES,
-                Integer.valueOf(0)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(BITES, 0));
         this.amount = amount;
         this.saturation = saturation;
         this.isPlate = isPlate;
@@ -75,17 +74,17 @@ public class BlockTeishoku extends BlockFacing {
             return false;
         }
 
-        int i = state.getValue(BITES).intValue();
+        int i = state.getValue(BITES);
         if (!worldIn.isRemote) {
-            if (Loader.isModLoaded("tfc"))
+            if (Loader.isModLoaded(CompatConst.TFC))
                 addTFCStats(player);
             else {
                 player.getFoodStats().addStats(amount, saturation);
-                if (Loader.isModLoaded("toughasnails"))
+                if (Loader.isModLoaded(CompatConst.TOUGH_AS_NAILS))
                     addTANThirst(player, 2, 0.5F);
             }
             if (i < 3) {
-                worldIn.setBlockState(pos, state.withProperty(BITES, Integer.valueOf(i + 1)), 3);
+                worldIn.setBlockState(pos, state.withProperty(BITES, i + 1), 3);
             } else {
                 worldIn.setBlockState(pos, BlockLoader.TEISHOKO_FINISHED.getDefaultState().withProperty(BlockTeishokoFinished.isPlate, this.isPlate).withProperty(FACING, state.getValue(FACING)), 3);
             }
@@ -94,15 +93,14 @@ public class BlockTeishoku extends BlockFacing {
         return true;
     }
 
-    @Method(modid = "toughasnails")
+    @Method(modid = CompatConst.TOUGH_AS_NAILS)
     private void addTANThirst(EntityPlayer player, int i, float f) {
         ThirstHelper.getThirstData(player).addStats(i, f);
     }
 
-    @Method(modid = "tfc")
+    @Method(modid = CompatConst.TFC)
     private void addTFCStats(EntityPlayer player) {
-        if (player.getFoodStats() instanceof IFoodStatsTFC) {
-            IFoodStatsTFC foodStats = (IFoodStatsTFC) player.getFoodStats();
+        if (player.getFoodStats() instanceof IFoodStatsTFC foodStats) {
             foodStats.addStats(new FoodHandler(null, new FoodData(amount, 10F, saturation, 5F, 5F, 5F, 5F, 5F, 1F)));
         }
     }
@@ -113,31 +111,19 @@ public class BlockTeishoku extends BlockFacing {
     @Override
     public IBlockState getStateFromMeta(int meta) {
         int facing_meta = meta & 12;
-        EnumFacing facing;
-        switch (facing_meta) {
-            case 0:
-                facing = EnumFacing.SOUTH;
-                break;
-            case 1:
-                facing = EnumFacing.WEST;
-                break;
-            case 2:
-                facing = EnumFacing.NORTH;
-                break;
-            case 3:
-                facing = EnumFacing.EAST;
-                break;
-            default:
-                facing = EnumFacing.NORTH;
-                break;
-        }
+        EnumFacing facing = switch (facing_meta) {
+            case 0 -> EnumFacing.SOUTH;
+            case 1 -> EnumFacing.WEST;
+            case 2 -> EnumFacing.NORTH;
+            case 3 -> EnumFacing.EAST;
+            default -> EnumFacing.NORTH;
+        };
         return this.getDefaultState().withProperty(FACING, facing).withProperty(BITES, (meta & 3));
     }
 
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY,
                                             float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-
         return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(BITES, 0);
     }
 
@@ -146,7 +132,7 @@ public class BlockTeishoku extends BlockFacing {
      */
     @Override
     public int getMetaFromState(IBlockState state) {
-        return (state.getValue(FACING).getHorizontalIndex() << 2) + state.getValue(BITES).intValue();
+        return (state.getValue(FACING).getHorizontalIndex() << 2) + state.getValue(BITES);
     }
 
     @Override

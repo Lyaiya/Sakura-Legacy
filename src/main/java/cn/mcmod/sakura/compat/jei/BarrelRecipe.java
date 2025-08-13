@@ -9,20 +9,21 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.List;
 
 public class BarrelRecipe implements IRecipeWrapper {
-    private final List<List<ItemStack>> inputs;
-    private final List<List<FluidStack>> fluid;
-    private final FluidStack output;
+    private final List<List<ItemStack>> inputItemStacks;
+    private final List<List<FluidStack>> inputFluidStacks;
+    private final FluidStack outputFluidStack;
 
-    public BarrelRecipe(List<List<ItemStack>> inputs, List<List<FluidStack>> fluid, FluidStack output) {
-        this.inputs = inputs;
-        this.fluid = fluid;
-        this.output = output;
+    public BarrelRecipe(List<List<ItemStack>> inputItemStacks, List<List<FluidStack>> inputFluidStacks, FluidStack outputFluidStack) {
+        this.inputItemStacks = inputItemStacks;
+        this.inputFluidStacks = inputFluidStacks;
+        this.outputFluidStack = outputFluidStack;
     }
 
+    @Override
     public void getIngredients(IIngredients ingredients) {
-        ingredients.setInputLists(VanillaTypes.ITEM, this.inputs);
-        ingredients.setInputLists(VanillaTypes.FLUID, this.fluid);
-        ingredients.setOutput(VanillaTypes.FLUID, this.output);
+        ingredients.setInputLists(VanillaTypes.ITEM, this.inputItemStacks);
+        ingredients.setInputLists(VanillaTypes.FLUID, this.inputFluidStacks);
+        ingredients.setOutput(VanillaTypes.FLUID, this.outputFluidStack);
     }
 
 }

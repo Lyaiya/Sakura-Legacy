@@ -1,7 +1,7 @@
 package cn.mcmod.sakura.block.tree;
 
-import cn.mcmod.sakura.CommonProxy;
 import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -20,12 +20,13 @@ public class BlockMapleSapLog extends Block {
 
     public BlockMapleSapLog() {
         super(Material.WOOD);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
         this.setHardness(2.0F);
         this.setSoundType(SoundType.WOOD);
         this.setDefaultState(this.getBlockState().getBaseState().withProperty(SAP_AGE, 0));
     }
 
+    @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return Item.getItemFromBlock(BlockLoader.MAPLE_LOG);
     }

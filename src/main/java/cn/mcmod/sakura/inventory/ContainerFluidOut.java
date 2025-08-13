@@ -9,33 +9,34 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class ContainerFluidOut extends Container {
-    private final TileEntityFluidOut tileBarrel;
+    private final TileEntityFluidOut teFluidOut;
 
-    public ContainerFluidOut(InventoryPlayer inventory, TileEntityFluidOut tile) {
-        tileBarrel = tile;
+    public ContainerFluidOut(InventoryPlayer inventory, TileEntityFluidOut te) {
+        teFluidOut = te;
         int i, j;
-        addSlotToContainer(new Slot(tile, 0, 58, 26));
-        addSlotToContainer(new Slot(tile, 1, 105, 26) {
+        addSlotToContainer(new Slot(te, 0, 58, 26));
+        addSlotToContainer(new Slot(te, 1, 105, 26) {
             @Override
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
         });
 
-
-        for (i = 0; i < 3; ++i)
-            for (j = 0; j < 9; ++j)
+        for (i = 0; i < 3; ++i) {
+            for (j = 0; j < 9; ++j) {
                 addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            }
+        }
 
-        for (i = 0; i < 9; ++i)
+        for (i = 0; i < 9; ++i) {
             addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
+        }
     }
-
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendAllWindowProperties(this, this.tileBarrel);
+        listener.sendAllWindowProperties(this, this.teFluidOut);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class ContainerFluidOut extends Container {
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
-        return tileBarrel.isUsableByPlayer(player);
+        return teFluidOut.isUsableByPlayer(player);
     }
 
     /**

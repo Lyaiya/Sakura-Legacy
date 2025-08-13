@@ -1,6 +1,7 @@
 package cn.mcmod.sakura.compat.jei;
 
 import cn.mcmod.sakura.SakuraMain;
+import cn.mcmod.sakura.util.RLUtil;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
@@ -20,7 +21,7 @@ public class CategoryL2IS implements IRecipeCategory<IRecipeWrapper> {
     private final IDrawable icon;
 
     public CategoryL2IS(IGuiHelper helper) {
-        ResourceLocation backgroundTexture = new ResourceLocation(SakuraMain.MODID + ":textures/gui/jei_compat.png");
+        ResourceLocation backgroundTexture = RLUtil.of("textures/gui/jei_compat.png");
         this.icon = helper.createDrawableIngredient(new ItemStack(Items.BUCKET));
         this.background = helper.createDrawable(backgroundTexture, 101, 0, 93, 80);
     }

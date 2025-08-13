@@ -14,13 +14,13 @@ import java.util.Map.Entry;
 public final class L2ISRecipeMaker {
     public static List<ItemFluidRecipe> getRecipes(IJeiHelpers helpers) {
         IStackHelper stackHelper = helpers.getStackHelper();
-        List<ItemFluidRecipe> recipes = new ArrayList<ItemFluidRecipe>();
-        for (Entry<FluidStack, Map<Object, ItemStack>> entry : LiquidToItemRecipe.instance().RecipesList.entrySet()) {
+        List<ItemFluidRecipe> recipes = new ArrayList<>();
+        for (Entry<FluidStack, Map<Object, ItemStack>> entry : LiquidToItemRecipe.INSTANCE.recipesList.entrySet()) {
             for (Entry<Object, ItemStack> entry2 : entry.getValue().entrySet()) {
-                List<List<ItemStack>> inputs = new ArrayList<List<ItemStack>>();
+                List<List<ItemStack>> inputs = new ArrayList<>();
                 List<ItemStack> main = stackHelper.toItemStackList(entry2.getKey());
-                List<List<FluidStack>> fluidlist = new ArrayList<List<FluidStack>>();
-                List<FluidStack> fluid = new ArrayList<FluidStack>();
+                List<List<FluidStack>> fluidlist = new ArrayList<>();
+                List<FluidStack> fluid = new ArrayList<>();
 
                 inputs.add(main);
                 fluid.add(entry.getKey());

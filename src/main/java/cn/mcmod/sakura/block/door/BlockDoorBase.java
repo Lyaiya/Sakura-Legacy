@@ -1,8 +1,7 @@
 package cn.mcmod.sakura.block.door;
 
-import cn.mcmod.sakura.CommonProxy;
-import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.item.ItemLoader;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -17,7 +16,7 @@ import java.util.Random;
 public class BlockDoorBase extends BlockDoor {
     public BlockDoorBase(Material materialIn) {
         super(materialIn);
-        this.setCreativeTab(CommonProxy.tab);
+        this.setCreativeTab(CommonProxy.TAB);
         this.setHardness(1.6F);
         this.setResistance(6.0F);
     }
@@ -32,11 +31,7 @@ public class BlockDoorBase extends BlockDoor {
         return new ItemStack(this.getItem());
     }
 
-
     private Item getItem() {
-        if (this == BlockLoader.BAMBOODOOR) {
-            return ItemLoader.BAMBOO_DOOR;
-        }
         return ItemLoader.BAMBOO_DOOR;
     }
 }

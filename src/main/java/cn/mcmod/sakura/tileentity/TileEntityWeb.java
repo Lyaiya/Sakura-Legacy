@@ -15,30 +15,34 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.Nullable;
 
 public class TileEntityWeb extends TileEntity implements ITickable {
+    private static final String KEY_INVENTORY = "Inventory";
+
     private int cookTime;
 
+    public TileEntityWeb() {
+    }
+
     public int getCookTime() {
-        return this.cookTime;
+        return cookTime;
     }
 
     private final ItemStackHandler inventory = new ItemStackHandler() {
         @Override
         protected void onContentsChanged(int slot) {
-            TileEntityWeb.this.refresh();
+            refresh();
         }
 
         @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return !(WebRecipe.getInstance().getResultItemStack(stack).isEmpty());
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return !(WebRecipe.INSTANCE.getResultItemStack(stack).isEmpty());
         }
     };
 
     public ItemStackHandler getInventory() {
-        return this.inventory;
+        return inventory;
     }
 
     protected void refresh() {
@@ -49,49 +53,47 @@ public class TileEntityWeb extends TileEntity implements ITickable {
     }
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) inventory
-                : super.getCapability(capability, facing);
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory);
+        }
+        return super.getCapability(capability, facing);
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState,
-                                 @Nonnull IBlockState newState) {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 
-    @Nonnull
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
-        NBTTagCompound ret = super.writeToNBT(par1nbtTagCompound);
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        NBTTagCompound ret = super.writeToNBT(compound);
         writePacketNBT(ret);
         return ret;
     }
 
-    @Nonnull
     @Override
     public final NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-        super.readFromNBT(par1nbtTagCompound);
-        readPacketNBT(par1nbtTagCompound);
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        readPacketNBT(compound);
     }
 
-    public void writePacketNBT(NBTTagCompound cmp) {
-        cmp.setTag("Inventory", inventory.serializeNBT());
+    private void writePacketNBT(NBTTagCompound cmp) {
+        cmp.setTag(KEY_INVENTORY, inventory.serializeNBT());
     }
 
-    public void readPacketNBT(NBTTagCompound cmp) {
-        inventory.deserializeNBT(cmp.getCompoundTag("Inventory"));
+    private void readPacketNBT(NBTTagCompound cmp) {
+        inventory.deserializeNBT(cmp.getCompoundTag(KEY_INVENTORY));
     }
 
     @Override
@@ -109,30 +111,24 @@ public class TileEntityWeb extends TileEntity implements ITickable {
 
     @Override
     public void update() {
+        if (world.isRemote) return;
         boolean flag = false;
-        if (!this.world.isRemote) {
-            if (isRecipes(this.inventory.getStackInSlot(0))) {
-                this.cookTime += (1 * calcAdaptation(getWorld(), getPos()));
-                if (cookTime >= 32000) {
-                    cookTime = 0;
-                    ItemStack result = WebRecipe.getInstance().getResultItemStack(this.inventory.getStackInSlot(0)).copy();
-                    result.setCount(result.getCount() * this.inventory.getStackInSlot(0).getCount());
-                    this.inventory.setStackInSlot(0, result);
-                    flag = true;
-                }
-                if (flag)
-                    this.markDirty();
-            } else
-                cookTime = 0;
+        final ItemStack resultItemStack = WebRecipe.INSTANCE.getResultItemStack(inventory.getStackInSlot(0));
+        if (resultItemStack.isEmpty()) {
+            cookTime = 0;
+            return;
         }
-    }
-
-    /**
-     * @return
-     */
-    protected boolean isRecipes(ItemStack items) {
-        ItemStack result = WebRecipe.getInstance().getResultItemStack(items);
-        return !result.isEmpty();
+        cookTime += (1 * calcAdaptation(getWorld(), getPos()));
+        if (cookTime >= 32000) {
+            cookTime = 0;
+            ItemStack copied = resultItemStack.copy();
+            copied.setCount(copied.getCount() * inventory.getStackInSlot(0).getCount());
+            inventory.setStackInSlot(0, copied);
+            flag = true;
+        }
+        if (flag) {
+            markDirty();
+        }
     }
 
     private float calcAdaptation(World world, BlockPos pos) {

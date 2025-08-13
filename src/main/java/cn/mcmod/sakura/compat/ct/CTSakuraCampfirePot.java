@@ -14,13 +14,12 @@ import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
-
 @ZenClass("mods.sakura.campfirePot")
 @ZenRegister
 public class CTSakuraCampfirePot {
     @ZenMethod
     public static void RemoveRecipe(IItemStack output) {
-        SakuraRecipeRegister.getInstance().actions.add(new Removal(CraftTweakerMC.getItemStack(output)));
+        SakuraRecipeRegister.INSTANCE.addAction(new Removal(CraftTweakerMC.getItemStack(output)));
     }
 
     @ZenMethod
@@ -34,13 +33,13 @@ public class CTSakuraCampfirePot {
                     array[i] = ((IOreDictEntry) input[i]).getName();
             }
 
-            SakuraRecipeRegister.getInstance().actions.add(new Addition(array, CraftTweakerMC.getItemStack(output), CraftTweakerMC.getLiquidStack(input_fluid)));
+            SakuraRecipeRegister.INSTANCE.addAction(new Addition(array, CraftTweakerMC.getItemStack(output), CraftTweakerMC.getLiquidStack(input_fluid)));
         }
     }
 
     @ZenMethod
     public static void ClearAllRecipe() {
-        SakuraRecipeRegister.getInstance().actions.add(new ClearAllRecipe());
+        SakuraRecipeRegister.INSTANCE.addAction(new ClearAllRecipe());
     }
 
     private static final class Removal implements IAction {
@@ -52,7 +51,7 @@ public class CTSakuraCampfirePot {
 
         @Override
         public void apply() {
-            PotRecipes.getInstance().ClearRecipe(output);
+            PotRecipes.INSTANCE.clearRecipe(output);
         }
 
         @Override
@@ -74,7 +73,7 @@ public class CTSakuraCampfirePot {
 
         @Override
         public void apply() {
-            PotRecipes.getInstance().addRecipes(itemOutput, itemInput, fluidInput);
+            PotRecipes.INSTANCE.addRecipes(itemOutput, itemInput, fluidInput);
         }
 
         @Override
@@ -87,7 +86,7 @@ public class CTSakuraCampfirePot {
     private static final class ClearAllRecipe implements IAction {
         @Override
         public void apply() {
-            PotRecipes.getInstance().ClearAllRecipe();
+            PotRecipes.INSTANCE.clearAllRecipe();
         }
 
         @Override

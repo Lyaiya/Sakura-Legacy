@@ -1,11 +1,10 @@
 package cn.mcmod.sakura.block;
 
-import cn.mcmod.sakura.CommonProxy;
+import cn.mcmod.sakura.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -19,9 +18,15 @@ public class BlockBambooFence extends BlockFence {
 
     public BlockBambooFence() {
         super(Material.WOOD, MapColor.WOOD);
-        this.setCreativeTab(CommonProxy.tab);
-        this.setHardness(1.2F).setResistance(5.0F);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(UP, Boolean.valueOf(false)).withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false)));
+        setCreativeTab(CommonProxy.TAB);
+        setHardness(1.2F);
+        setResistance(5.0F);
+        setDefaultState(blockState.getBaseState()
+                .withProperty(UP, Boolean.FALSE)
+                .withProperty(NORTH, Boolean.FALSE)
+                .withProperty(EAST, Boolean.FALSE)
+                .withProperty(SOUTH, Boolean.FALSE)
+                .withProperty(WEST, Boolean.FALSE));
     }
 
     private boolean canFenceConnectTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
@@ -41,7 +46,11 @@ public class BlockBambooFence extends BlockFence {
         boolean flag2 = canFenceConnectTo(worldIn, pos, EnumFacing.SOUTH);
         boolean flag3 = canFenceConnectTo(worldIn, pos, EnumFacing.WEST);
         boolean flag4 = flag && !flag1 && flag2 && !flag3 || !flag && flag1 && !flag2 && flag3;
-        return state.withProperty(UP, Boolean.valueOf(!flag4 || !worldIn.isAirBlock(pos.up()))).withProperty(NORTH, Boolean.valueOf(flag)).withProperty(EAST, Boolean.valueOf(flag1)).withProperty(SOUTH, Boolean.valueOf(flag2)).withProperty(WEST, Boolean.valueOf(flag3));
+        return state.withProperty(UP, !flag4 || !worldIn.isAirBlock(pos.up()))
+                .withProperty(NORTH, flag)
+                .withProperty(EAST, flag1)
+                .withProperty(SOUTH, flag2)
+                .withProperty(WEST, flag3);
     }
 
     @Override

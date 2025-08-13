@@ -12,16 +12,16 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 public class ModelKimono extends ModelCustomArmor {
-    ModelRenderer body;
-    ModelRenderer rightArm;
-    ModelRenderer leftArm;
-    ModelRenderer rightLeg;
-    ModelRenderer leftLeg;
+    private final ModelRenderer body;
+    private final ModelRenderer rightArm;
+    private final ModelRenderer leftArm;
+    private final ModelRenderer rightLeg;
+    private final ModelRenderer leftLeg;
 
-    ModelRenderer bodybottom;
-    ModelRenderer bodybottom2;
-    ModelRenderer obi;
-    ModelRenderer obi2;
+    private final ModelRenderer bodybottom;
+    private final ModelRenderer bodybottom2;
+    private final ModelRenderer obi;
+    private final ModelRenderer obi2;
 
     public ModelKimono() {
         super(0.75f, 0, 64, 64);

@@ -6,7 +6,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class CreativeTabsSakura extends CreativeTabs {
-
     public CreativeTabsSakura() {
         super(SakuraMain.MODID + "_tabs");
     }
@@ -15,5 +14,4 @@ public class CreativeTabsSakura extends CreativeTabs {
     public ItemStack createIcon() {
         return new ItemStack(Item.getItemFromBlock(BlockLoader.SAKURA_LEAVES));
     }
-
 }

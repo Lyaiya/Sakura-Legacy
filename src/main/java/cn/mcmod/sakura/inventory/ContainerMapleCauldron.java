@@ -11,13 +11,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerMapleCauldron extends Container {
-    private final TileEntityMapleCauldron tileCampfire;
+    private final TileEntityMapleCauldron teMapleCauldron;
+
     private int cookTime;
     private int mapleTime;
 
-    public ContainerMapleCauldron(InventoryPlayer inventory, TileEntityMapleCauldron tile) {
-        tileCampfire = tile;
-        addSlotToContainer(new Slot(tile, 0, 114, 36) {
+    public ContainerMapleCauldron(InventoryPlayer inventory, TileEntityMapleCauldron te) {
+        teMapleCauldron = te;
+        addSlotToContainer(new Slot(te, 0, 114, 36) {
             @Override
             public boolean isItemValid(ItemStack stack) {
                 return false;
@@ -25,48 +26,50 @@ public class ContainerMapleCauldron extends Container {
         });
         int i, j;
 
-        for (i = 0; i < 3; ++i)
-            for (j = 0; j < 9; ++j)
+        for (i = 0; i < 3; ++i) {
+            for (j = 0; j < 9; ++j) {
                 addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            }
+        }
 
-        for (i = 0; i < 9; ++i)
+        for (i = 0; i < 9; ++i) {
             addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
+        }
     }
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendAllWindowProperties(this, this.tileCampfire);
+        listener.sendAllWindowProperties(this, teMapleCauldron);
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        for (int i = 0; i < this.listeners.size(); ++i) {
-            IContainerListener icontainerlistener = this.listeners.get(i);
 
-            if (this.mapleTime != this.tileCampfire.getField(0)) {
-                icontainerlistener.sendWindowProperty(this, 0, this.tileCampfire.getField(0));
+        for (IContainerListener listener : listeners) {
+            if (mapleTime != teMapleCauldron.getField(TileEntityMapleCauldron.ID_MAPLE_TIME)) {
+                listener.sendWindowProperty(this, 0, teMapleCauldron.getField(TileEntityMapleCauldron.ID_MAPLE_TIME));
             }
 
-            if (this.cookTime != this.tileCampfire.getField(1)) {
-                icontainerlistener.sendWindowProperty(this, 1, this.tileCampfire.getField(1));
+            if (cookTime != teMapleCauldron.getField(TileEntityMapleCauldron.ID_COOK_TIME)) {
+                listener.sendWindowProperty(this, 1, teMapleCauldron.getField(TileEntityMapleCauldron.ID_COOK_TIME));
             }
-
         }
-        this.mapleTime = this.tileCampfire.getField(0);
-        this.cookTime = this.tileCampfire.getField(1);
+
+        mapleTime = teMapleCauldron.getField(TileEntityMapleCauldron.ID_MAPLE_TIME);
+        cookTime = teMapleCauldron.getField(TileEntityMapleCauldron.ID_COOK_TIME);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void updateProgressBar(int id, int value) {
-        this.tileCampfire.setField(id, value);
+        teMapleCauldron.setField(id, value);
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
-        return tileCampfire.isUsableByPlayer(player);
+        return teMapleCauldron.isUsableByPlayer(player);
     }
 
     /**
@@ -79,27 +82,27 @@ public class ContainerMapleCauldron extends Container {
         // 28-36: Hot bar in the player inventory
 
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
+        Slot slot = inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack()) {
             ItemStack itemStack1 = slot.getStack();
             itemStack = itemStack1.copy();
 
             if (index == 0) {
-                if (!this.mergeItemStack(itemStack1, 1, 37, true)) {
+                if (!mergeItemStack(itemStack1, 1, 37, true)) {
                     return ItemStack.EMPTY;
                 }
 
                 slot.onSlotChange(itemStack1, itemStack);
             } else if (index >= 1) {
                 if (index >= 1 && index < 28) {
-                    if (!this.mergeItemStack(itemStack1, 28, 37, false)) {
+                    if (!mergeItemStack(itemStack1, 28, 37, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index >= 28 && index < 37 && !this.mergeItemStack(itemStack1, 1, 28, false)) {
+                } else if (index >= 28 && index < 37 && !mergeItemStack(itemStack1, 1, 28, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemStack1, 1, 37, false)) {
+            } else if (!mergeItemStack(itemStack1, 1, 37, false)) {
                 return ItemStack.EMPTY;
             }
 

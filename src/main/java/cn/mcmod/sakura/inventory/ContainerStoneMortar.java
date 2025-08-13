@@ -11,23 +11,24 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerStoneMortar extends Container {
-    private final TileEntityStoneMortar tileCampfire;
+    private final TileEntityStoneMortar teStoneMortar;
+
     private int processTime;
     private int maxProcessTime;
 
-    public ContainerStoneMortar(InventoryPlayer inventory, TileEntityStoneMortar tile) {
-        tileCampfire = tile;
-        addSlotToContainer(new Slot(tile, 0, 40, 26));
-        addSlotToContainer(new Slot(tile, 1, 58, 26));
-        addSlotToContainer(new Slot(tile, 2, 40, 44));
-        addSlotToContainer(new Slot(tile, 3, 58, 44));
-        addSlotToContainer(new Slot(tile, 4, 108, 37) {
+    public ContainerStoneMortar(InventoryPlayer inventory, TileEntityStoneMortar te) {
+        teStoneMortar = te;
+        addSlotToContainer(new Slot(te, 0, 40, 26));
+        addSlotToContainer(new Slot(te, 1, 58, 26));
+        addSlotToContainer(new Slot(te, 2, 40, 44));
+        addSlotToContainer(new Slot(te, 3, 58, 44));
+        addSlotToContainer(new Slot(te, 4, 108, 37) {
             @Override
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
         });
-        addSlotToContainer(new Slot(tile, 5, 132, 37) {
+        addSlotToContainer(new Slot(te, 5, 132, 37) {
             @Override
             public boolean isItemValid(ItemStack stack) {
                 return false;
@@ -35,49 +36,50 @@ public class ContainerStoneMortar extends Container {
         });
         int i;
 
-        for (i = 0; i < 3; ++i)
-            for (int j = 0; j < 9; ++j)
+        for (i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
                 addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            }
+        }
 
-        for (i = 0; i < 9; ++i)
+        for (i = 0; i < 9; ++i) {
             addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
+        }
     }
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendAllWindowProperties(this, this.tileCampfire);
+        listener.sendAllWindowProperties(this, teStoneMortar);
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
 
-        for (int i = 0; i < this.listeners.size(); ++i) {
-            IContainerListener icontainerlistener = this.listeners.get(i);
-
-            if (this.processTime != this.tileCampfire.getField(0)) {
-                icontainerlistener.sendWindowProperty(this, 0, this.tileCampfire.getField(0));
+        for (IContainerListener listener : listeners) {
+            if (processTime != teStoneMortar.getField(TileEntityStoneMortar.ID_PROCESS_TIMER)) {
+                listener.sendWindowProperty(this, 0, teStoneMortar.getField(TileEntityStoneMortar.ID_PROCESS_TIMER));
             }
 
-            if (this.maxProcessTime != this.tileCampfire.getField(1)) {
-                icontainerlistener.sendWindowProperty(this, 1, this.tileCampfire.getField(1));
+            if (maxProcessTime != teStoneMortar.getField(TileEntityStoneMortar.ID_MAX_PROCESS_TIMER)) {
+                listener.sendWindowProperty(this, 1, teStoneMortar.getField(TileEntityStoneMortar.ID_MAX_PROCESS_TIMER));
             }
         }
 
-        this.processTime = this.tileCampfire.getField(0);
-        this.maxProcessTime = this.tileCampfire.getField(1);
+        processTime = teStoneMortar.getField(TileEntityStoneMortar.ID_PROCESS_TIMER);
+        maxProcessTime = teStoneMortar.getField(TileEntityStoneMortar.ID_MAX_PROCESS_TIMER);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void updateProgressBar(int id, int value) {
-        this.tileCampfire.setField(id, value);
+        teStoneMortar.setField(id, value);
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
-        return tileCampfire.isUsableByPlayer(player);
+        return teStoneMortar.isUsableByPlayer(player);
     }
 
     /**
@@ -90,27 +92,27 @@ public class ContainerStoneMortar extends Container {
         // 33-42: Hot bar in the player inventory
 
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
+        Slot slot = inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack()) {
             ItemStack itemStack1 = slot.getStack();
             itemStack = itemStack1.copy();
 
             if (index >= 0 && index <= 5) {
-                if (!this.mergeItemStack(itemStack1, 6, 42, true)) {
+                if (!mergeItemStack(itemStack1, 6, 42, true)) {
                     return ItemStack.EMPTY;
                 }
 
                 slot.onSlotChange(itemStack1, itemStack);
             } else if (index >= 6) {
                 if (index >= 6 && index < 33) {
-                    if (!this.mergeItemStack(itemStack1, 33, 42, false)) {
+                    if (!mergeItemStack(itemStack1, 33, 42, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index >= 33 && index < 42 && !this.mergeItemStack(itemStack1, 6, 32, false)) {
+                } else if (index >= 33 && index < 42 && !mergeItemStack(itemStack1, 6, 32, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemStack1, 6, 42, false)) {
+            } else if (!mergeItemStack(itemStack1, 6, 42, false)) {
                 return ItemStack.EMPTY;
             }
 
