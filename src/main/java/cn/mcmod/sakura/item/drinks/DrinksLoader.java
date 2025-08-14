@@ -83,7 +83,7 @@ public class DrinksLoader {
                     new PotionEffect[]{
                             new PotionEffect(ForgeRegistries.POTIONS.getValue(new ResourceLocation("minecraft", "resistance")), 600, 0)
                     },
-            }, new ItemStack(ItemLoader.cup, 1, 0)
+            }, new ItemStack(ItemLoader.CUP, 1, 0)
     );
     public static DrinksAlcoholic alcoholic = new DrinksAlcoholic("alcoholic",
             new FoodInfo[]{

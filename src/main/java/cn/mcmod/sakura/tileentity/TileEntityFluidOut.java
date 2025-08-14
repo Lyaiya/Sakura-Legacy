@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.tileentity;
 
-import cn.mcmod.sakura.api.recipes.LiquidToItemRecipe;
+import cn.mcmod.sakura.api.recipes.LiquidToItemRecipes;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -223,9 +223,9 @@ public class TileEntityFluidOut extends TileEntity implements ITickable, IInvent
         ItemStack itemstack = inventory.get(0);
         ItemStack itemstack2 = inventory.get(1);
         if (getTank() != null) {
-            FluidStack fluid = LiquidToItemRecipe.INSTANCE.getResultFluid(getTank().getFluid());
+            FluidStack fluid = LiquidToItemRecipes.INSTANCE.getInput(getTank().getFluid());
             if (fluid != null) {
-                ItemStack itemstack1 = LiquidToItemRecipe.INSTANCE.getResultItemStack(getTank().getFluid(),
+                ItemStack itemstack1 = LiquidToItemRecipes.INSTANCE.getOutput(getTank().getFluid(),
                         itemstack);
                 if (itemstack1.isEmpty())
                     return;

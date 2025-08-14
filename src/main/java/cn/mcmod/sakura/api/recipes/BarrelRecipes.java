@@ -41,11 +41,11 @@ public class BarrelRecipes {
     }
 
     @Nullable
-    public FluidStack getFluidStack(FluidStack fluid) {
+    public FluidStack getInput(FluidStack output) {
         for (List<FluidStack> entry : recipesList.values()) {
-            for (FluidStack fluidStack : entry) {
-                if (fluidStack.isFluidEqual(fluid)) {
-                    return fluidStack;
+            for (FluidStack stack : entry) {
+                if (stack.isFluidEqual(output)) {
+                    return stack;
                 }
             }
         }
@@ -53,36 +53,39 @@ public class BarrelRecipes {
     }
 
     @Nullable
-    public FluidStack getResultFluidStack(FluidStack fluid, ItemStack[] inputs) {
+    public FluidStack getOutput(FluidStack output, ItemStack[] inputs) {
         for (Entry<Pair<FluidStack, Object[]>, List<FluidStack>> entry : recipesList.entrySet()) {
-            for (FluidStack fluidStack : entry.getValue()) {
-                if (fluidStack.isFluidEqual(fluid)) {
-                    boolean flg1 = true;
-                    for (Object obj1 : entry.getKey().getRight()) {
-                        boolean flg2 = false;
-                        for (ItemStack input : inputs) {
-                            if (obj1 instanceof ItemStack itemStack) {
-                                if (ItemStack.areItemsEqual(itemStack, input)) {
-                                    flg2 = true;
-                                    break;
-                                }
-                            } else if (obj1 instanceof String name) {
-                                NonNullList<ItemStack> ore = OreDictionary.getOres(name);
-                                if (!ore.isEmpty() && RecipesUtil.getInstance().containsMatch(false, ore, input)) {
-                                    flg2 = true;
-                                    break;
-                                }
+            for (FluidStack stack : entry.getValue()) {
+                if (!stack.isFluidEqual(output)) continue;
+
+                boolean flg1 = true;
+
+                for (Object additive : entry.getKey().getRight()) {
+                    boolean isEqual = false;
+
+                    for (ItemStack input : inputs) {
+                        if (additive instanceof ItemStack itemStack) {
+                            if (ItemStack.areItemsEqual(itemStack, input)) {
+                                isEqual = true;
+                                break;
                             }
-                        }
-                        if (!flg2) {
-                            flg1 = false;
-                            break;
+                        } else if (additive instanceof String name) {
+                            NonNullList<ItemStack> ore = OreDictionary.getOres(name);
+                            if (!ore.isEmpty() && RecipesUtil.getInstance().containsMatch(false, ore, input)) {
+                                isEqual = true;
+                                break;
+                            }
                         }
                     }
 
-                    if (flg1) {
-                        return entry.getKey().getKey();
+                    if (!isEqual) {
+                        flg1 = false;
+                        break;
                     }
+                }
+
+                if (flg1) {
+                    return entry.getKey().getKey();
                 }
             }
         }

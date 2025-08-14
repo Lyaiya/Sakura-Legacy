@@ -1,12 +1,10 @@
 package cn.mcmod.sakura.tileentity;
 
 import cn.mcmod.sakura.api.recipes.BarrelRecipes;
-import cn.mcmod.sakura.api.recipes.LiquidToItemRecipe;
+import cn.mcmod.sakura.api.recipes.LiquidToItemRecipes;
+import cn.mcmod.sakura.base.ItemStackHandlerWrapper;
+import cn.mcmod.sakura.util.FluidStackUtil;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -14,28 +12,27 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
-public class TileEntityBarrel extends TileEntity implements ITickable, ISidedInventory {
-    private static final String KEY_TANK = "Tank";
-    private static final String KEY_RESULT_TANK = "ResultTank";
-    private static final String KEY_PROCESS_TIMER = "processTimer";
+public class TileEntityBarrel extends TileEntity implements ITickable {
+    private static final String KEY_INVENTORY = "Inventory";
+    private static final String KEY_INPUT_TANK = "InputTank";
+    private static final String KEY_OUTPUT_TANK = "OutputTank";
+    private static final String KEY_PROCESS_TIME = "ProcessTime";
+    // TODO: Total Process Time
+    private static final String KEY_PROCESS_TIME_TOTAL = "ProcessTimeTotal";
 
-    public static final int ID_PROCESS_TIMER = 0;
-
-    private final int[] SLOTS_INPUTS = {0, 1, 2, 3};
-    private final int[] SLOTS_OUTPUTS = {4};
-
-    private final NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
-
-    private int processTimer = 0;
+    private int processTime = 0;
+    private final int totalProcessTime = 1200;
 
     private final FluidTank inputTank = new FluidTank(3000) {
         @Override
@@ -59,11 +56,43 @@ public class TileEntityBarrel extends TileEntity implements ITickable, ISidedInv
         }
     };
 
+    private final ItemStackHandler itemStackHandler = new ItemStackHandler(5) {
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return switch (slot) {
+                case 0, 1, 2 -> true;
+                case 3 -> LiquidToItemRecipes.INSTANCE.hasInput(stack);
+                default -> false;
+            };
+        }
+    };
+
+    @Nullable
+    private ItemStackHandlerWrapper inputWrapper;
+
+    @Nullable
+    private ItemStackHandlerWrapper containerWrapper;
+
+    @Nullable
+    private ItemStackHandlerWrapper outputWrapper;
+
     public TileEntityBarrel() {
     }
 
-    public int getProcessTimer() {
-        return processTimer;
+    public boolean isProcess() {
+        return processTime > 0;
+    }
+
+    public int getProcessTime() {
+        return processTime;
+    }
+
+    public void setProcessTime(int processTime) {
+        this.processTime = processTime;
+    }
+
+    public int getTotalProcessTime() {
+        return totalProcessTime;
     }
 
     public FluidTank getInputTank() {
@@ -84,43 +113,45 @@ public class TileEntityBarrel extends TileEntity implements ITickable, ISidedInv
     @Override
     public void update() {
         if (world.isRemote) return;
-        drainInput();
+        drainOutputTank();
 
-        FluidStack inputFluidStack = inputTank.getFluid();
-        if (inputFluidStack == null) return;
+        FluidStack inputTankFluidStack = inputTank.getFluid();
+        if (inputTankFluidStack == null) return;
 
-        ItemStack[] inputItemStacks = new ItemStack[]{inventory.get(0), inventory.get(1), inventory.get(2)};
+        ItemStack[] inputItemStacks = new ItemStack[]{
+                itemStackHandler.getStackInSlot(0),
+                itemStackHandler.getStackInSlot(1),
+                itemStackHandler.getStackInSlot(2)};
 
-        FluidStack result = BarrelRecipes.INSTANCE.getResultFluidStack(inputFluidStack, inputItemStacks);
-        if (result == null) return;
-        FluidStack fluidStack = BarrelRecipes.INSTANCE.getFluidStack(inputFluidStack);
-        final FluidStack outputFluidStack = outputTank.getFluid();
-        if (outputFluidStack == null
-                || outputTank.canFill()
-                && result.getFluid().equals(outputFluidStack.getFluid())
-        ) {
-            processTimer += 1;
-        } else {
-            processTimer = 0;
+        FluidStack outputReceipeFluidStack = BarrelRecipes.INSTANCE.getOutput(inputTankFluidStack, inputItemStacks);
+        if (outputReceipeFluidStack == null) {
+            processTime = 0;
+            return;
         }
-        if (processTimer >= 1200) {
-            processTimer = 0;
-            outputTank.fill(result, true);
+
+        final FluidStack outputTankFluidStack = outputTank.getFluid();
+        if (outputTankFluidStack == null
+                || outputTank.canFill()
+                && outputReceipeFluidStack.getFluid().equals(outputTankFluidStack.getFluid())
+        ) {
+            processTime++;
+        } else {
+            processTime = 0;
+        }
+
+        if (processTime >= totalProcessTime) {
+            processTime = 0;
+            outputTank.fill(outputReceipeFluidStack, true);
 
             // If pot is a recipe that uses a liquid, it consumes
             // only that amount of liquid
-            if (fluidStack != null && fluidStack.amount > 0) {
-                inputTank.drain(fluidStack, true);
+            FluidStack inputFluidStack = BarrelRecipes.INSTANCE.getInput(inputTankFluidStack);
+            if (inputFluidStack != null && inputFluidStack.amount > 0) {
+                inputTank.drain(inputFluidStack, true);
             }
 
-            ItemStack itemStack;
             for (int i = 0; i < 3; i++) {
-                itemStack = inventory.get(i);
-                if (itemStack.getCount() == 1) {
-                    inventory.set(i, itemStack.getItem().getContainerItem(itemStack).copy());
-                } else {
-                    decrStackSize(i, 1);
-                }
+                itemStackHandler.extractItem(i, 1, false);
             }
             markDirty();
         }
@@ -132,152 +163,55 @@ public class TileEntityBarrel extends TileEntity implements ITickable, ISidedInv
     }
 
     @Override
-    public String getName() {
-        return "container.sakura.barrel";
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        return false;
-    }
-
-    @Override
-    public int getSizeInventory() {
-        return 5;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        for (ItemStack itemstack : inventory) {
-            if (!itemstack.isEmpty()) {
-                return false;
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            if (facing == null) return true;
+            switch (facing) {
+                case DOWN, UP, NORTH, SOUTH -> {
+                    return true;
+                }
+                case WEST, EAST -> {
+                    return false;
+                }
             }
         }
-        return true;
-    }
 
-    @Override
-    public ItemStack getStackInSlot(int index) {
-        return inventory.get(index);
-    }
-
-    @Override
-    public ItemStack decrStackSize(int index, int count) {
-        ItemStack itemstack = ItemStackHelper.getAndSplit(inventory, index, count);
-
-        if (!itemstack.isEmpty()) {
-            markDirty();
-        }
-
-        return itemstack;
-    }
-
-    @Override
-    public ItemStack removeStackFromSlot(int index) {
-        return ItemStackHelper.getAndRemove(inventory, index);
-    }
-
-    @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
-        inventory.set(index, stack);
-        if (stack.getCount() > getInventoryStackLimit()) {
-            stack.setCount(getInventoryStackLimit());
-        }
-        markDirty();
-    }
-
-    @Override
-    public int getInventoryStackLimit() {
-        return 64;
-    }
-
-    @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
-        if (world.getTileEntity(pos) != this) {
-            return false;
-        }
-        return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
-    }
-
-    @Override
-    public void openInventory(EntityPlayer player) {
-        markDirty();
-    }
-
-    @Override
-    public void closeInventory(EntityPlayer player) {
-        markDirty();
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index < 3;
-    }
-
-    @Override
-    public int getField(int id) {
-        if (id == ID_PROCESS_TIMER) {
-            return processTimer;
-        }
-        return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-        if (id == ID_PROCESS_TIMER) {
-            processTimer = value;
-        }
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 1;
-    }
-
-    @Override
-    public void clear() {
-        inventory.clear();
-    }
-
-    @Override
-    public int[] getSlotsForFace(EnumFacing side) {
-        return switch (side) {
-            case DOWN -> SLOTS_OUTPUTS;
-            case UP -> SLOTS_INPUTS;
-            default -> new int[0];
-        };
-    }
-
-    @Override
-    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
-        switch (index) {
-            case 0, 1, 2, 3:
+        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            if (facing == EnumFacing.WEST
+                    || facing == EnumFacing.EAST) {
                 return true;
-            case 4:
-                return false;
+            }
         }
-        return true;
-    }
-
-    @Override
-    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-        return true;
-    }
-
-    public NonNullList<ItemStack> getInventory() {
-        return inventory;
-    }
-
-    @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+        return super.hasCapability(capability, facing);
     }
 
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            if (facing == null) {
+                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemStackHandler);
+            }
+
+            switch (facing) {
+                case UP -> {
+                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getContainerWrapper());
+                }
+                case DOWN -> {
+                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getOutputWrapper());
+                }
+                case NORTH, SOUTH -> {
+                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getInputWrapper());
+                }
+            }
+        }
+
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(inputTank);
+            if (facing == EnumFacing.WEST) {
+                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(outputTank);
+            } else if (facing == EnumFacing.EAST) {
+                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(inputTank);
+            }
         }
         return super.getCapability(capability, facing);
     }
@@ -288,41 +222,37 @@ public class TileEntityBarrel extends TileEntity implements ITickable, ISidedInv
     }
 
     @Override
+    public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+        readPacketNBT(compound);
+    }
+
+    private void readPacketNBT(NBTTagCompound compound) {
+        itemStackHandler.deserializeNBT(compound.getCompoundTag(KEY_INVENTORY));
+        inputTank.readFromNBT(compound.getCompoundTag(KEY_INPUT_TANK));
+        outputTank.readFromNBT(compound.getCompoundTag(KEY_OUTPUT_TANK));
+        processTime = compound.getInteger(KEY_PROCESS_TIME);
+        // totalProcessTime = compound.getInteger(KEY_TOTAL_PROCESS_TIME);
+    }
+
+    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         NBTTagCompound ret = super.writeToNBT(compound);
         writePacketNBT(ret);
         return ret;
     }
 
+    private void writePacketNBT(NBTTagCompound compound) {
+        compound.setTag(KEY_INVENTORY, itemStackHandler.serializeNBT());
+        compound.setTag(KEY_INPUT_TANK, inputTank.writeToNBT(new NBTTagCompound()));
+        compound.setTag(KEY_OUTPUT_TANK, outputTank.writeToNBT(new NBTTagCompound()));
+        compound.setInteger(KEY_PROCESS_TIME, processTime);
+        // compound.setInteger(KEY_TOTAL_PROCESS_TIME, totalProcessTime);
+    }
+
     @Override
     public final NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-        readPacketNBT(compound);
-    }
-
-    private void writePacketNBT(NBTTagCompound compound) {
-        NBTTagCompound tankTag = inputTank.writeToNBT(new NBTTagCompound());
-        ItemStackHelper.saveAllItems(compound, inventory);
-
-        compound.setTag(KEY_TANK, tankTag);
-        NBTTagCompound resultTankTag = outputTank.writeToNBT(new NBTTagCompound());
-        compound.setTag(KEY_RESULT_TANK, resultTankTag);
-        compound.setInteger(KEY_PROCESS_TIMER, processTimer);
-    }
-
-    private void readPacketNBT(NBTTagCompound compound) {
-        inventory.clear();
-        ItemStackHelper.loadAllItems(compound, inventory);
-
-        processTimer = compound.getInteger(KEY_PROCESS_TIMER);
-
-        inputTank.readFromNBT(compound.getCompoundTag(KEY_TANK));
-        outputTank.readFromNBT(compound.getCompoundTag(KEY_RESULT_TANK));
     }
 
     @Override
@@ -338,38 +268,52 @@ public class TileEntityBarrel extends TileEntity implements ITickable, ISidedInv
         readPacketNBT(packet.getNbtCompound());
     }
 
-    private void drainInput() {
-        final FluidStack resultTankFluid = outputTank.getFluid();
-        if (resultTankFluid == null) return;
+    private void drainOutputTank() {
+        final FluidStack outputTankFluidStack = outputTank.getFluid();
+        if (FluidStackUtil.isEmpty(outputTankFluidStack)) return;
 
-        ItemStack itemStack3 = inventory.get(3);
-        ItemStack itemStack4 = inventory.get(4);
+        final FluidStack inputRecipeFluidStack = LiquidToItemRecipes.INSTANCE.getInput(outputTankFluidStack);
+        if (FluidStackUtil.isEmpty(inputRecipeFluidStack)) return;
 
-        FluidStack resultFluid = LiquidToItemRecipe.INSTANCE.getResultFluid(resultTankFluid);
-        if (resultFluid == null) return;
+        // Input
+        final ItemStack itemStack3 = itemStackHandler.getStackInSlot(3);
+        final ItemStack outputRecipeItemStack = LiquidToItemRecipes.INSTANCE.getOutput(outputTankFluidStack, itemStack3);
+        if (outputRecipeItemStack.isEmpty()) return;
 
-        ItemStack resultItemStack = LiquidToItemRecipe.INSTANCE.getResultItemStack(resultTankFluid, itemStack3);
-        if (resultItemStack.isEmpty()) return;
-        if (resultTankFluid.amount < resultFluid.amount) return;
+        if (outputTankFluidStack.amount < inputRecipeFluidStack.amount) return;
 
-        boolean notFull = (itemStack4.getCount() + resultItemStack.getCount() <= getInventoryStackLimit()
-                && itemStack4.getCount() + resultItemStack.getCount() <= itemStack4.getMaxStackSize());
+        // Output
+        final ItemStack itemStack4 = itemStackHandler.getStackInSlot(4);
+
+        final int count = itemStack4.getCount() + outputRecipeItemStack.getCount();
+        boolean notFull = count <= itemStackHandler.getSlotLimit(4)
+                && count <= itemStack4.getMaxStackSize();
         if (!notFull) return;
 
-        if (itemStack4.isEmpty()) {
-            inventory.set(4, resultItemStack.copy());
-        } else if (itemStack4.getItem() == resultItemStack.getItem()) {
-            itemStack4.grow(resultItemStack.getCount());
-        }
+        itemStackHandler.extractItem(3, outputRecipeItemStack.getCount(), false);
+        itemStackHandler.insertItem(4, outputRecipeItemStack, false);
+        outputTank.drain(inputRecipeFluidStack, true);
+    }
 
-        final Item item3 = itemStack3.getItem();
-        if (item3.hasContainerItem(itemStack3)) {
-            inventory.set(3, new ItemStack(item3.getContainerItem()));
-        } else {
-            itemStack3.shrink(1);
+    private IItemHandler getInputWrapper() {
+        if (inputWrapper == null) {
+            inputWrapper = new ItemStackHandlerWrapper(itemStackHandler, 0, 1, 2);
         }
+        return inputWrapper;
+    }
 
-        outputTank.drain(resultFluid, true);
+    private IItemHandler getContainerWrapper() {
+        if (containerWrapper == null) {
+            containerWrapper = new ItemStackHandlerWrapper(itemStackHandler, 3);
+        }
+        return containerWrapper;
+    }
+
+    private IItemHandler getOutputWrapper() {
+        if (outputWrapper == null) {
+            outputWrapper = new ItemStackHandlerWrapper(itemStackHandler, 4);
+        }
+        return outputWrapper;
     }
 
 }

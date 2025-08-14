@@ -7,6 +7,7 @@ import cn.mcmod_mmf.mmlib.util.ClientUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -35,31 +36,36 @@ public class GuiBarrel extends GuiContainer {
         int l2 = getCookProgressScaled(24);
         drawTexturedModalRect(k + 63, l + 35, 176, 0, l2 + 1, 16);
 
-        if (teBarrel.getInputTank().getFluid() != null) {
-            FluidTank fluidTank = teBarrel.getInputTank();
-            int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
+        FluidTank inputFluidTank = teBarrel.getInputTank();
+        FluidStack inputFluidStack = inputFluidTank.getFluid();
+        if (inputFluidStack != null) {
+            int heightInd = (int) (68 * ((float) inputFluidTank.getFluidAmount() / (float) inputFluidTank.getCapacity()));
 
             if (heightInd > 0) {
-                ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 18, l + 78 - heightInd, 16f, heightInd);
+                ClientUtils.getInstance().drawRepeatedFluidSprite(inputFluidStack, k + 18, l + 78 - heightInd, 16f, heightInd);
             }
         }
 
-        if (teBarrel.getOutputTank().getFluid() != null) {
-            FluidTank fluidTank = teBarrel.getOutputTank();
-            int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
+        FluidTank outputFluidTank = teBarrel.getOutputTank();
+        FluidStack outputFluidStack = outputFluidTank.getFluid();
+        if (outputFluidStack != null) {
+            int heightInd = (int) (68 * ((float) outputFluidTank.getFluidAmount() / (float) outputFluidTank.getCapacity()));
             // if (heightInd > 0) {
             //     ClientUtils.drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167 - heightInd, l + 11, heightInd, 16f);
             // }
 
             if (heightInd > 0) {
-                ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 89, l + 78 - heightInd, 16f, heightInd);
+                ClientUtils.getInstance().drawRepeatedFluidSprite(outputFluidStack, k + 89, l + 78 - heightInd, 16f, heightInd);
             }
         }
     }
 
     private int getCookProgressScaled(int pixels) {
-        int i = teBarrel.getField(TileEntityBarrel.ID_PROCESS_TIMER);
-        return i != 0 ? i * pixels / 1000 : 0;
+        int processTime = teBarrel.getProcessTime();
+        if (processTime == 0) return 0;
+        int totalProcessTime = teBarrel.getTotalProcessTime();
+        if (totalProcessTime == 0) return 0;
+        return processTime * pixels / totalProcessTime;
     }
 
     @Override
@@ -68,5 +74,4 @@ public class GuiBarrel extends GuiContainer {
         super.drawScreen(mouseX, mouseY, partialTicks);
         renderHoveredToolTip(mouseX, mouseY);
     }
-
 }

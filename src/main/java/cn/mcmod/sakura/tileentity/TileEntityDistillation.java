@@ -1,7 +1,7 @@
 package cn.mcmod.sakura.tileentity;
 
 import cn.mcmod.sakura.api.recipes.DistillationRecipes;
-import cn.mcmod.sakura.api.recipes.LiquidToItemRecipe;
+import cn.mcmod.sakura.api.recipes.LiquidToItemRecipes;
 import cn.mcmod.sakura.util.HeatUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -322,9 +322,9 @@ public class TileEntityDistillation extends TileEntity implements ITickable, IIn
 
         ItemStack itemStack3 = inventory.get(3);
         ItemStack itemStack4 = inventory.get(4);
-        FluidStack resultFluid = LiquidToItemRecipe.INSTANCE.getResultFluid(resultTankFluid);
+        FluidStack resultFluid = LiquidToItemRecipes.INSTANCE.getInput(resultTankFluid);
         if (resultFluid != null) {
-            ItemStack resultItemStack = LiquidToItemRecipe.INSTANCE.getResultItemStack(resultTankFluid, itemStack3);
+            ItemStack resultItemStack = LiquidToItemRecipes.INSTANCE.getOutput(resultTankFluid, itemStack3);
             if (resultItemStack.isEmpty()) return;
 
             if (resultTankFluid.amount < resultFluid.amount) return;

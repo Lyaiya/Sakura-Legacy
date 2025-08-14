@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.compat.jei;
 
-import cn.mcmod.sakura.api.recipes.LiquidToItemRecipe;
+import cn.mcmod.sakura.api.recipes.LiquidToItemRecipes;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,7 @@ public final class L2ISRecipeMaker {
     public static List<ItemFluidRecipe> getRecipes(IJeiHelpers helpers) {
         IStackHelper stackHelper = helpers.getStackHelper();
         List<ItemFluidRecipe> recipes = new ArrayList<>();
-        for (Entry<FluidStack, Map<Object, ItemStack>> entry : LiquidToItemRecipe.INSTANCE.recipesList.entrySet()) {
+        for (Entry<FluidStack, Map<Object, ItemStack>> entry : LiquidToItemRecipes.INSTANCE.recipes.entrySet()) {
             for (Entry<Object, ItemStack> entry2 : entry.getValue().entrySet()) {
                 List<List<ItemStack>> inputs = new ArrayList<>();
                 List<ItemStack> main = stackHelper.toItemStackList(entry2.getKey());

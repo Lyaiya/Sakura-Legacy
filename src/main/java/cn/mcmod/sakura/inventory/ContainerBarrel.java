@@ -9,33 +9,40 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerBarrel extends Container {
+    private static final int ID_PROCESS_TIME = 0;
+
     private final TileEntityBarrel teBarrel;
 
     private int processTime;
 
     public ContainerBarrel(InventoryPlayer inventory, TileEntityBarrel te) {
         teBarrel = te;
-        int i, j, k;
-        for (k = 0; k < 3; ++k) {
-            addSlotToContainer(new Slot(te, k, 42, 36 + (k - 1) * 18));
+
+        final IItemHandler itemHandler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+
+        for (int i = 0; i < 3; ++i) {
+            addSlotToContainer(new SlotItemHandler(itemHandler, i, 42, 36 + (i - 1) * 18));
         }
-        addSlotToContainer(new Slot(te, 3, 131, 12));
-        addSlotToContainer(new Slot(te, 4, 130, 56) {
+        addSlotToContainer(new SlotItemHandler(itemHandler, 3, 131, 12));
+        addSlotToContainer(new SlotItemHandler(itemHandler, 4, 130, 56) {
             @Override
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
         });
 
-        for (i = 0; i < 3; ++i) {
-            for (j = 0; j < 9; ++j) {
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
                 addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
 
-        for (i = 0; i < 9; ++i) {
+        for (int i = 0; i < 9; ++i) {
             addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
         }
     }
@@ -43,7 +50,7 @@ public class ContainerBarrel extends Container {
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendAllWindowProperties(this, teBarrel);
+        listener.sendWindowProperty(this, ID_PROCESS_TIME, teBarrel.getProcessTime());
     }
 
     @Override
@@ -51,23 +58,25 @@ public class ContainerBarrel extends Container {
         super.detectAndSendChanges();
 
         for (IContainerListener listener : listeners) {
-            if (processTime != teBarrel.getField(TileEntityBarrel.ID_PROCESS_TIMER)) {
-                listener.sendWindowProperty(this, 0, teBarrel.getField(TileEntityBarrel.ID_PROCESS_TIMER));
+            if (processTime != teBarrel.getProcessTime()) {
+                listener.sendWindowProperty(this, ID_PROCESS_TIME, teBarrel.getProcessTime());
             }
         }
 
-        processTime = teBarrel.getField(TileEntityBarrel.ID_PROCESS_TIMER);
+        processTime = teBarrel.getProcessTime();
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public void updateProgressBar(int id, int value) {
-        teBarrel.setField(id, value);
+        if (id == ID_PROCESS_TIME) {
+            teBarrel.setProcessTime(value);
+        }
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
-        return teBarrel.isUsableByPlayer(player);
+        return ContainerUtil.canInteractWith(player, teBarrel);
     }
 
     /**

@@ -92,48 +92,48 @@ public class SakuraRecipeRegister {
     }
 
     private void registerLiquidToItem() {
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.BEER_FLUID, 1000)), new FluidStack(BlockLoader.BEER_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.DOBUROKU_FLUID, 1000)), new FluidStack(BlockLoader.DOBUROKU_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.SAKE_FLUID, 1000)), new FluidStack(BlockLoader.SAKE_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.SHOUCHU_FLUID, 1000)), new FluidStack(BlockLoader.SHOUCHU_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.RED_WINE_FLUID, 1000)), new FluidStack(BlockLoader.RED_WINE_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.WHITE_WINE_FLUID, 1000)), new FluidStack(BlockLoader.WHITE_WINE_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.CHAMPAGNE_FLUID, 1000)), new FluidStack(BlockLoader.CHAMPAGNE_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.RUM_FLUID, 1000)), new FluidStack(BlockLoader.RUM_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.VODKA_FLUID, 1000)), new FluidStack(BlockLoader.VODKA_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.BRANDY_FLUID, 1000)), new FluidStack(BlockLoader.BRANDY_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.WHISKEY_FLUID, 1000)), new FluidStack(BlockLoader.WHISKEY_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.YEAST_FLUID, 1000)), new FluidStack(BlockLoader.YEAST_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.LIQUEUR_FLUID, 1000)), new FluidStack(BlockLoader.LIQUEUR_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.COCOA_LIQUEUR_FLUID, 1000)), new FluidStack(BlockLoader.COCOA_LIQUEUR_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.BEER_FLUID, 1000)), new FluidStack(BlockLoader.BEER_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.DOBUROKU_FLUID, 1000)), new FluidStack(BlockLoader.DOBUROKU_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.SAKE_FLUID, 1000)), new FluidStack(BlockLoader.SAKE_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.SHOUCHU_FLUID, 1000)), new FluidStack(BlockLoader.SHOUCHU_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.RED_WINE_FLUID, 1000)), new FluidStack(BlockLoader.RED_WINE_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.WHITE_WINE_FLUID, 1000)), new FluidStack(BlockLoader.WHITE_WINE_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.CHAMPAGNE_FLUID, 1000)), new FluidStack(BlockLoader.CHAMPAGNE_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.RUM_FLUID, 1000)), new FluidStack(BlockLoader.RUM_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.VODKA_FLUID, 1000)), new FluidStack(BlockLoader.VODKA_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.BRANDY_FLUID, 1000)), new FluidStack(BlockLoader.BRANDY_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.WHISKEY_FLUID, 1000)), new FluidStack(BlockLoader.WHISKEY_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.YEAST_FLUID, 1000)), new FluidStack(BlockLoader.YEAST_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.LIQUEUR_FLUID, 1000)), new FluidStack(BlockLoader.LIQUEUR_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(Items.BUCKET), FluidUtil.getFilledBucket(new FluidStack(BlockLoader.COCOA_LIQUEUR_FLUID, 1000)), new FluidStack(BlockLoader.COCOA_LIQUEUR_FLUID, 1000));
 
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 0), new FluidStack(BlockLoader.BEER_FLUID, 400));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 1), new FluidStack(BlockLoader.DOBUROKU_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 2), new FluidStack(BlockLoader.SAKE_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 3), new FluidStack(BlockLoader.SHOUCHU_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 4), new FluidStack(BlockLoader.RED_WINE_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 5), new FluidStack(BlockLoader.WHITE_WINE_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 6), new FluidStack(BlockLoader.CHAMPAGNE_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 7), new FluidStack(BlockLoader.RUM_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 8), new FluidStack(BlockLoader.VODKA_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 9), new FluidStack(BlockLoader.WHISKEY_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 10), new FluidStack(BlockLoader.BRANDY_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 13), new FluidStack(BlockLoader.LIQUEUR_FLUID, 200));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.cup, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 14), new FluidStack(BlockLoader.COCOA_LIQUEUR_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 0), new FluidStack(BlockLoader.BEER_FLUID, 400));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 1), new FluidStack(BlockLoader.DOBUROKU_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 2), new FluidStack(BlockLoader.SAKE_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 3), new FluidStack(BlockLoader.SHOUCHU_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 4), new FluidStack(BlockLoader.RED_WINE_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 5), new FluidStack(BlockLoader.WHITE_WINE_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 6), new FluidStack(BlockLoader.CHAMPAGNE_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 7), new FluidStack(BlockLoader.RUM_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 8), new FluidStack(BlockLoader.VODKA_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 9), new FluidStack(BlockLoader.WHISKEY_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 10), new FluidStack(BlockLoader.BRANDY_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 13), new FluidStack(BlockLoader.LIQUEUR_FLUID, 200));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.CUP, 1, 0), new ItemStack(DrinksLoader.alcoholic, 1, 14), new FluidStack(BlockLoader.COCOA_LIQUEUR_FLUID, 200));
 
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 0), new FluidStack(BlockLoader.BEER_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 1), new FluidStack(BlockLoader.DOBUROKU_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 2), new FluidStack(BlockLoader.SAKE_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 3), new FluidStack(BlockLoader.SHOUCHU_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 4), new FluidStack(BlockLoader.RED_WINE_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 5), new FluidStack(BlockLoader.WHITE_WINE_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 6), new FluidStack(BlockLoader.CHAMPAGNE_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 7), new FluidStack(BlockLoader.RUM_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 8), new FluidStack(BlockLoader.VODKA_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 9), new FluidStack(BlockLoader.WHISKEY_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 10), new FluidStack(BlockLoader.BRANDY_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 13), new FluidStack(BlockLoader.LIQUEUR_FLUID, 1000));
-        LiquidToItemRecipe.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 14), new FluidStack(BlockLoader.COCOA_LIQUEUR_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 0), new FluidStack(BlockLoader.BEER_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 1), new FluidStack(BlockLoader.DOBUROKU_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 2), new FluidStack(BlockLoader.SAKE_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 3), new FluidStack(BlockLoader.SHOUCHU_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 4), new FluidStack(BlockLoader.RED_WINE_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 5), new FluidStack(BlockLoader.WHITE_WINE_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 6), new FluidStack(BlockLoader.CHAMPAGNE_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 7), new FluidStack(BlockLoader.RUM_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 8), new FluidStack(BlockLoader.VODKA_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 9), new FluidStack(BlockLoader.WHISKEY_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 10), new FluidStack(BlockLoader.BRANDY_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 13), new FluidStack(BlockLoader.LIQUEUR_FLUID, 1000));
+        LiquidToItemRecipes.INSTANCE.addRecipes(new ItemStack(ItemLoader.MATERIAL, 1, 47), new ItemStack(DrinksLoader.bottle_alcoholic, 1, 14), new FluidStack(BlockLoader.COCOA_LIQUEUR_FLUID, 1000));
     }
 
     private void registerFurnace() {
@@ -476,86 +476,86 @@ public class SakuraRecipeRegister {
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 0),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         new ItemStack(ItemLoader.MATERIAL, 1, 40),
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 1),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         "cropTea"
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 2),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         new ItemStack(ItemLoader.MATERIAL, 1, 40),
                         "listAllmilk"
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 3),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         "cropTea",
                         "listAllmilk"
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 4),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         new ItemStack(ItemLoader.MATERIAL, 1, 41)
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 5),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         new ItemStack(ItemLoader.MATERIAL, 1, 41),
                         "listAllmilk"
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 6),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         new ItemStack(ItemLoader.MATERIAL, 1, 42)
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 7),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         new ItemStack(ItemLoader.MATERIAL, 1, 42),
                         "listAllmilk"
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 8),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         new ItemStack(ItemLoader.MATERIAL, 1, 40),
                         "cropLemon"
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 9),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         "cropTea",
                         "cropLemon"
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 10),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         new ItemStack(ItemLoader.MATERIAL, 1, 46)
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 11),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         "listAllgrain",
                         "listAllgrain"
                 },
                 getUniversalFluid("water", 200));
         PotRecipes.INSTANCE.addRecipes(new ItemStack(DrinksLoader.tea, 1, 12),
                 new Object[]{
-                        new ItemStack(ItemLoader.cup, 1, 0),
+                        new ItemStack(ItemLoader.CUP, 1, 0),
                         new ItemStack(ItemLoader.MATERIAL, 1, 44)
                 },
                 getUniversalFluid("water", 200));

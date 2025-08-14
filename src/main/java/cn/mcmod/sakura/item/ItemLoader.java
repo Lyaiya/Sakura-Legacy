@@ -45,7 +45,7 @@ public class ItemLoader {
     public static final ItemArmor.ArmorMaterial SOLDIER_MATERIAL = EnumHelper.addArmorMaterial("SOLDIER_MATERIAL", SakuraMain.MODID + ":textures/models/armor/soldier_armor.png", 16, new int[]{2, 5, 6, 2}, 14, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.5F).setRepairItem(new ItemStack(Items.IRON_INGOT));
 
     public static final ItemArmor.ArmorMaterial KIMONO_MATERIAL = EnumHelper.addArmorMaterial("KIMONO_MATERIAL", SakuraMain.MODID + ":textures/models/armor/kimono_base.png", -1, new int[]{0, 0, 0, 0}, 0, net.minecraft.init.SoundEvents.BLOCK_CLOTH_PLACE, 0);
-    public static ItemBase cup = new ItemBase(SakuraMain.MODID, "cup", 32, "cup");
+    public static ItemBase CUP = new ItemBase(SakuraMain.MODID, "cup", 32, "cup");
 
     public static Item SAKURA_AXE = new ItemAxeBlank(SAKURA_TOOLMATERIAL, 9.0F, -3.3F).setTranslationKey("sakura.sakura_axe");
     public static Item SAKURA_PICKAXE = new ItemPickaxeBlank(SAKURA_TOOLMATERIAL).setTranslationKey("sakura.sakura_pickaxe");
@@ -393,7 +393,7 @@ public class ItemLoader {
     });
 
     public void registerItem() {
-        register(cup);
+        register(CUP);
         register(POT);
         register(KIMONO);
         register(HAORI);
@@ -535,7 +535,7 @@ public class ItemLoader {
         ItemRegister.getInstance().registerRender(SAKURAKATANA);
         ItemRegister.getInstance().registerRender(KATANA_SHEATH);
         ItemRegister.getInstance().registerRender(SAKURAKATANA_SHEATH);
-        ItemRegister.getInstance().registerRender(cup);
+        ItemRegister.getInstance().registerRender(CUP);
     }
 
     private void register(Item item) {

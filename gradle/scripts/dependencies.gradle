@@ -99,9 +99,13 @@ dependencies {
     implementation rfg.deobf("curse.maven:mm_lib-368098:3254750")
 
     compileOnly "vazkii.patchouli:Patchouli:1.0-23.6"
-    compileOnly "blusunrize:ImmersiveEngineering:0.12-92-559"
+    implementation "blusunrize:ImmersiveEngineering:0.12-92-559"
 
     implementation 'mezz:jei:4.28.1'
+    // Just Enough Characters v3.7.2
+    runtimeOnly rfg.deobf("curse.maven:jecharacters-250702:4692184")
+    // Had Enough Characters v1.4.1
+    runtimeOnly rfg.deobf("curse.maven:hecharacters-640802:4874506")
 
     // JEI Integration v1.6.0
     compileOnly rfg.deobf("curse.maven:jeiintegration-265917:2951731")

@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class DrinksAlcoholic extends ItemDrinkBase {
     public DrinksAlcoholic(String name, FoodInfo[] info, PotionEffect[][] effects) {
-        super(SakuraMain.MODID, name, info, effects, new ItemStack(ItemLoader.cup, 1, 0));
+        super(SakuraMain.MODID, name, info, effects, new ItemStack(ItemLoader.CUP, 1, 0));
     }
 
     @Override

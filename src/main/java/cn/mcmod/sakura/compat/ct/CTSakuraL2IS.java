@@ -1,6 +1,6 @@
 package cn.mcmod.sakura.compat.ct;
 
-import cn.mcmod.sakura.api.recipes.LiquidToItemRecipe;
+import cn.mcmod.sakura.api.recipes.LiquidToItemRecipes;
 import cn.mcmod.sakura.util.SakuraRecipeRegister;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
@@ -50,7 +50,7 @@ public class CTSakuraL2IS {
 
         @Override
         public void apply() {
-            LiquidToItemRecipe.INSTANCE.clearRecipe(fluid, itemInput);
+            LiquidToItemRecipes.INSTANCE.clearRecipe(fluid, itemInput);
         }
 
         @Override
@@ -72,7 +72,7 @@ public class CTSakuraL2IS {
 
         @Override
         public void apply() {
-            LiquidToItemRecipe.INSTANCE.addRecipes(itemInput, itemOutput, fluidInput);
+            LiquidToItemRecipes.INSTANCE.addRecipes(itemInput, itemOutput, fluidInput);
         }
 
         @Override
@@ -84,7 +84,7 @@ public class CTSakuraL2IS {
     private static final class ClearAllRecipe implements IAction {
         @Override
         public void apply() {
-            LiquidToItemRecipe.INSTANCE.clearAllRecipe();
+            LiquidToItemRecipes.INSTANCE.clearAllRecipe();
         }
 
         @Override
