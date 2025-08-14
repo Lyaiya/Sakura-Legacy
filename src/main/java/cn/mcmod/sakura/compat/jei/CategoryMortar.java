@@ -58,6 +58,7 @@ public class CategoryMortar implements IRecipeCategory<IRecipeWrapper> {
         items.set(arg2);
     }
 
+    @Override
     public IDrawable getIcon() {
         return icon;
     }

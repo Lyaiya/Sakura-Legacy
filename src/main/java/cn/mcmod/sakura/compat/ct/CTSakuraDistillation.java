@@ -81,7 +81,6 @@ public class CTSakuraDistillation {
         }
     }
 
-
     private static final class ClearAllRecipe implements IAction {
         @Override
         public void apply() {

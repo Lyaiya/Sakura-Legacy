@@ -14,35 +14,34 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiMapleCauldron extends GuiContainer {
-    private static final ResourceLocation GUI_TEXTURE = RLUtil.of("textures/gui/maple_pot.png");
+    private static final ResourceLocation TEXTURES = RLUtil.of("textures/gui/maple_pot.png");
 
-    private final TileEntityMapleCauldron tilePot;
+    private final TileEntityMapleCauldron teMapleCauldron;
 
     public GuiMapleCauldron(InventoryPlayer inventory, TileEntityMapleCauldron te) {
         super(new ContainerMapleCauldron(inventory, te));
-        this.tilePot = te;
+        this.teMapleCauldron = te;
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTickTime, int x, int y) {
-
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(GUI_TEXTURE);
+        this.mc.getTextureManager().bindTexture(TEXTURES);
 
         int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;
 
         this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
 
-        if (this.tilePot.isBurning()) {
+        if (this.teMapleCauldron.isBurning()) {
             this.drawTexturedModalRect(k + 71, l + 59, 176, 17, 14, 14);
         }
 
         int l2 = this.getProgressScaled(44);
         this.drawTexturedModalRect(k + 59, l + 36, 176, 0, l2 + 1, 17);
 
-        if (this.tilePot.getTank().getFluid() != null) {
-            FluidTank fluidTank = this.tilePot.getTank();
+        if (this.teMapleCauldron.getTank().getFluid() != null) {
+            FluidTank fluidTank = this.teMapleCauldron.getTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
             if (heightInd > 0) {
                 ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 35, l + 78 - heightInd, 16f, heightInd);
@@ -51,8 +50,8 @@ public class GuiMapleCauldron extends GuiContainer {
     }
 
     private int getProgressScaled(int pixels) {
-        int i = this.tilePot.getField(1);
-        return i != 0 ? i * pixels / 1200 : 0;
+        int cookTime = this.teMapleCauldron.getField(TileEntityMapleCauldron.ID_COOK_TIME);
+        return cookTime != 0 ? cookTime * pixels / 1200 : 0;
     }
 
     @Override

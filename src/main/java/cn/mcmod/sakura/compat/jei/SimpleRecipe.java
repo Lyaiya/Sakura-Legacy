@@ -16,6 +16,7 @@ public class SimpleRecipe implements IRecipeWrapper {
         this.output = output;
     }
 
+    @Override
     public void getIngredients(IIngredients ingredients) {
         ingredients.setInputLists(VanillaTypes.ITEM, this.inputs);
         ingredients.setOutputLists(VanillaTypes.ITEM, this.output);

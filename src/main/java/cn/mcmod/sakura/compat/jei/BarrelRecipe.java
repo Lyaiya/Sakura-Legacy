@@ -25,5 +25,4 @@ public class BarrelRecipe implements IRecipeWrapper {
         ingredients.setInputLists(VanillaTypes.FLUID, this.inputFluidStacks);
         ingredients.setOutput(VanillaTypes.FLUID, this.outputFluidStack);
     }
-
 }

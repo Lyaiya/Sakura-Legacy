@@ -52,6 +52,7 @@ public class CategoryWeb implements IRecipeCategory<IRecipeWrapper> {
         items.set(arg2);
     }
 
+    @Override
     public IDrawable getIcon() {
         return icon;
     }

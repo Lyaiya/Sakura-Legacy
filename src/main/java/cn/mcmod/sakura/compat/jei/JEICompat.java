@@ -11,7 +11,6 @@ import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.item.ItemStack;
@@ -63,5 +62,4 @@ public class JEICompat implements IModPlugin {
                 new CategoryL2IS(registry.getJeiHelpers().getGuiHelper()),
                 new CategoryWeb(registry.getJeiHelpers().getGuiHelper()));
     }
-
 }

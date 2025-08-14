@@ -22,14 +22,14 @@ public final class BarrelRecipeMaker {
             List<List<FluidStack>> fluidlist = new ArrayList<>();
 
             for (Object obj : entry.getKey().getRight()) {
-                List<ItemStack> subinputs = stackHelper.toItemStackList(obj);
-                inputs.add(subinputs);
+                List<ItemStack> subInputs = stackHelper.toItemStackList(obj);
+                inputs.add(subInputs);
             }
 
             fluidlist.add(entry.getValue());
 
-            BarrelRecipe newrecipe = new BarrelRecipe(inputs, fluidlist, entry.getKey().getLeft());
-            recipes.add(newrecipe);
+            BarrelRecipe newRecipe = new BarrelRecipe(inputs, fluidlist, entry.getKey().getLeft());
+            recipes.add(newRecipe);
         }
         return recipes;
     }

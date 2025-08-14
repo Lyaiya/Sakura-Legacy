@@ -15,19 +15,19 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiDistillation extends GuiContainer {
-    private static final ResourceLocation mortarGuiTextures = RLUtil.of("textures/gui/barrel.png");
+    private static final ResourceLocation TEXTURES = RLUtil.of("textures/gui/barrel.png");
 
-    private final TileEntityDistillation tilePot;
+    private final TileEntityDistillation teDistillation;
 
-    public GuiDistillation(InventoryPlayer inventory, TileEntityDistillation tile) {
-        super(new ContainerDistillation(inventory, tile));
-        this.tilePot = tile;
+    public GuiDistillation(InventoryPlayer inventory, TileEntityDistillation te) {
+        super(new ContainerDistillation(inventory, te));
+        this.teDistillation = te;
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTickTime, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(mortarGuiTextures);
+        this.mc.getTextureManager().bindTexture(TEXTURES);
 
         int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;
@@ -36,18 +36,17 @@ public class GuiDistillation extends GuiContainer {
         int l2 = this.getCookProgressScaled(24);
         this.drawTexturedModalRect(k + 63, l + 35, 176, 0, l2 + 1, 16);
 
-        if (this.tilePot.getInputTank().getFluid() != null) {
-            FluidTank fluidTank = this.tilePot.getInputTank();
+        if (this.teDistillation.getInputTank().getFluid() != null) {
+            FluidTank fluidTank = this.teDistillation.getInputTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
 
             if (heightInd > 0) {
                 ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 18, l + 78 - heightInd, 16f, heightInd);
             }
-
         }
 
-        if (this.tilePot.getOutputTank().getFluid() != null) {
-            FluidTank fluidTank = this.tilePot.getOutputTank();
+        if (this.teDistillation.getOutputTank().getFluid() != null) {
+            FluidTank fluidTank = this.teDistillation.getOutputTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
            /* if (heightInd > 0) {
                 ClientUtils.drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167 - heightInd, l + 11, heightInd, 16f);
@@ -56,13 +55,12 @@ public class GuiDistillation extends GuiContainer {
             if (heightInd > 0) {
                 ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 89, l + 78 - heightInd, 16f, heightInd);
             }
-
         }
     }
 
     private int getCookProgressScaled(int pixels) {
-        int i = this.tilePot.getField(0);
-        return i != 0 ? i * pixels / 1000 : 0;
+        int processTimer = this.teDistillation.getField(TileEntityDistillation.ID_PROCESS_TIMER);
+        return processTimer != 0 ? processTimer * pixels / 1000 : 0;
     }
 
     @Override

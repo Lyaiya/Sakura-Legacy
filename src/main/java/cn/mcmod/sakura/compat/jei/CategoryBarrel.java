@@ -60,6 +60,7 @@ public class CategoryBarrel implements IRecipeCategory<IRecipeWrapper> {
         fiuld.set(1, arg2.getOutputs(VanillaTypes.FLUID).get(0));
     }
 
+    @Override
     public IDrawable getIcon() {
         return icon;
     }

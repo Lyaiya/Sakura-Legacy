@@ -17,16 +17,16 @@ public final class MortarRecipeMaker {
         for (Entry<Object[], ItemStack[]> entry : MortarRecipes.INSTANCE.recipesList.entrySet()) {
             List<List<ItemStack>> inputs = new ArrayList<>();
             for (Object obj : entry.getKey()) {
-                List<ItemStack> subinputs = stackHelper.toItemStackList(obj);
-                inputs.add(subinputs);
+                List<ItemStack> subInputs = stackHelper.toItemStackList(obj);
+                inputs.add(subInputs);
             }
             List<List<ItemStack>> outputs = new ArrayList<>();
             for (ItemStack obj : entry.getValue()) {
-                List<ItemStack> suboutputs = stackHelper.toItemStackList(obj);
-                outputs.add(suboutputs);
+                List<ItemStack> subOutputs = stackHelper.toItemStackList(obj);
+                outputs.add(subOutputs);
             }
-            SimpleRecipe newrecipe = new SimpleRecipe(inputs, outputs);
-            recipes.add(newrecipe);
+            SimpleRecipe newRecipe = new SimpleRecipe(inputs, outputs);
+            recipes.add(newRecipe);
         }
         return recipes;
     }

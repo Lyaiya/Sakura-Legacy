@@ -19,16 +19,16 @@ public final class PotRecipeMaker {
         List<ItemFluidRecipe> recipes = new ArrayList<>();
         for (Entry<Pair<Object[], ItemStack>, List<FluidStack>> entry : PotRecipes.INSTANCE.recipesList.entrySet()) {
             List<List<ItemStack>> inputs = new ArrayList<>();
-            List<List<FluidStack>> fluidlist = new ArrayList<>();
+            List<List<FluidStack>> fluidList = new ArrayList<>();
             for (Object obj : entry.getKey().getLeft()) {
-                List<ItemStack> subinputs = stackHelper.toItemStackList(obj);
-                inputs.add(subinputs);
+                List<ItemStack> subInputs = stackHelper.toItemStackList(obj);
+                inputs.add(subInputs);
             }
             if (!entry.getValue().isEmpty())
-                fluidlist.add(entry.getValue());
+                fluidList.add(entry.getValue());
             else
-                fluidlist.add(Lists.newArrayList(new FluidStack(FluidRegistry.WATER, 0)));
-            ItemFluidRecipe newrecipe = new ItemFluidRecipe(inputs, fluidlist, entry.getKey().getRight());
+                fluidList.add(Lists.newArrayList(new FluidStack(FluidRegistry.WATER, 0)));
+            ItemFluidRecipe newrecipe = new ItemFluidRecipe(inputs, fluidList, entry.getKey().getRight());
             recipes.add(newrecipe);
         }
         return recipes;

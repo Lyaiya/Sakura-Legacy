@@ -17,13 +17,12 @@ public class CampfirePotPlugin implements IWailaDataProvider {
     }
 
     @Override
-    public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
+    public List<String> getWailaBody(ItemStack itemStack, List<String> tooltip, IWailaDataAccessor accessor,
                                      IWailaConfigHandler config) {
-        if (accessor.getTileEntity() instanceof TileEntityCampfirePot) {
-            TileEntityCampfirePot te_campfire = (TileEntityCampfirePot) accessor.getTileEntity();
-            currenttip.add(I18n.format("sakura.tooltip.campfire.fire_remain", te_campfire.getField(0)));
+        if (accessor.getTileEntity() instanceof TileEntityCampfirePot te) {
+            tooltip.add(I18n.format("sakura.tooltip.campfire.fire_remain", te.getField(TileEntityCampfirePot.ID_BURN_TIME)));
         }
-        return currenttip;
+        return tooltip;
     }
 
 }

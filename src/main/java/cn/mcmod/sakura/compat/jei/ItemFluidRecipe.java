@@ -19,6 +19,7 @@ public class ItemFluidRecipe implements IRecipeWrapper {
         this.output = output;
     }
 
+    @Override
     public void getIngredients(IIngredients ingredients) {
         ingredients.setInputLists(VanillaTypes.ITEM, this.inputs);
         ingredients.setInputLists(VanillaTypes.FLUID, this.fluid);

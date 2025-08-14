@@ -52,11 +52,12 @@ public class CategoryL2IS implements IRecipeCategory<IRecipeWrapper> {
         items.init(0, true, 13, 14);
         items.init(1, false, 62, 14);
         items.set(arg2);
-        IGuiFluidStackGroup fiuld = arg0.getFluidStacks();
-        fiuld.init(0, true, 14, 47, 65, 20, arg2.getInputs(VanillaTypes.FLUID).get(0).get(0).amount, false, null);
-        fiuld.set(0, arg2.getInputs(VanillaTypes.FLUID).get(0));
+        IGuiFluidStackGroup group = arg0.getFluidStacks();
+        group.init(0, true, 14, 47, 65, 20, arg2.getInputs(VanillaTypes.FLUID).get(0).get(0).amount, false, null);
+        group.set(0, arg2.getInputs(VanillaTypes.FLUID).get(0));
     }
 
+    @Override
     public IDrawable getIcon() {
         return icon;
     }

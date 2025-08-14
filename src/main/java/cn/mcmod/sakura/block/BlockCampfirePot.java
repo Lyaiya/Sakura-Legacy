@@ -119,7 +119,7 @@ public class BlockCampfirePot extends BlockContainer implements ITileEntityProvi
                 }
 
                 if (WorldUtil.getInstance().isItemFuel(stack)) {
-                    teCampfire.setField(0, (teCampfire.getField(0) + TileEntityFurnace.getItemBurnTime(stack)));
+                    teCampfire.setField(TileEntityCampfirePot.ID_BURN_TIME, (teCampfire.getField(TileEntityCampfirePot.ID_BURN_TIME) + TileEntityFurnace.getItemBurnTime(stack)));
                     setState(true, worldIn, pos);
                     if (!stack.getItem().hasContainerItem(stack)) {
                         stack.shrink(1);
@@ -128,7 +128,7 @@ public class BlockCampfirePot extends BlockContainer implements ITileEntityProvi
                 }
 
                 if (stack.getItem() == Items.FLINT_AND_STEEL) {
-                    teCampfire.setField(0, (teCampfire.getField(0) + 10000));
+                    teCampfire.setField(TileEntityCampfirePot.ID_BURN_TIME, (teCampfire.getField(TileEntityCampfirePot.ID_BURN_TIME) + 10000));
                     setState(true, worldIn, pos);
                     stack.damageItem(1, playerIn);
                     return true;

@@ -59,12 +59,14 @@ public class CategoryPot implements IRecipeCategory<IRecipeWrapper> {
         items.init(9, false, 122, 38);
 
         items.set(arg2);
-        IGuiFluidStackGroup fiuld = arg0.getFluidStacks();
-        fiuld.init(0, true, 88, 4, 72, 16, arg2.getInputs(VanillaTypes.FLUID).get(0).get(0).amount, false, null);
-        if (arg2.getInputs(VanillaTypes.FLUID).get(0).get(0) != null && arg2.getInputs(VanillaTypes.FLUID).get(0).get(0).amount > 0)
-            fiuld.set(0, arg2.getInputs(VanillaTypes.FLUID).get(0));
+        IGuiFluidStackGroup group = arg0.getFluidStacks();
+        group.init(0, true, 88, 4, 72, 16, arg2.getInputs(VanillaTypes.FLUID).get(0).get(0).amount, false, null);
+        if (arg2.getInputs(VanillaTypes.FLUID).get(0).get(0) != null && arg2.getInputs(VanillaTypes.FLUID).get(0).get(0).amount > 0) {
+            group.set(0, arg2.getInputs(VanillaTypes.FLUID).get(0));
+        }
     }
 
+    @Override
     public IDrawable getIcon() {
         return icon;
     }

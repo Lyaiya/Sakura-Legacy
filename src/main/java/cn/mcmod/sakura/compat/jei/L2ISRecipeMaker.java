@@ -26,11 +26,10 @@ public final class L2ISRecipeMaker {
                 fluid.add(entry.getKey());
                 fluidlist.add(fluid);
 
-                ItemFluidRecipe newrecipe = new ItemFluidRecipe(inputs, fluidlist, entry2.getValue());
-                recipes.add(newrecipe);
+                ItemFluidRecipe newRecipe = new ItemFluidRecipe(inputs, fluidlist, entry2.getValue());
+                recipes.add(newRecipe);
             }
         }
         return recipes;
-
     }
 }

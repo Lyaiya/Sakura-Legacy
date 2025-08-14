@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiFluidOut extends GuiContainer {
-    private static final ResourceLocation mortarGuiTextures = RLUtil.of("textures/gui/barrel_out.png");
+    private static final ResourceLocation TEXTURES = RLUtil.of("textures/gui/barrel_out.png");
 
     private final TileEntityFluidOut teFluidOut;
 
@@ -26,7 +26,7 @@ public class GuiFluidOut extends GuiContainer {
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTickTime, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(mortarGuiTextures);
+        this.mc.getTextureManager().bindTexture(TEXTURES);
 
         int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;

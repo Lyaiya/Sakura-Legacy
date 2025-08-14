@@ -28,7 +28,7 @@ public class TileEntityBarrel extends TileEntity implements ITickable, ISidedInv
     private static final String KEY_RESULT_TANK = "ResultTank";
     private static final String KEY_PROCESS_TIMER = "processTimer";
 
-    public static final int ID_PROCESS_TIMER = 1;
+    public static final int ID_PROCESS_TIMER = 0;
 
     private final int[] SLOTS_INPUTS = {0, 1, 2, 3};
     private final int[] SLOTS_OUTPUTS = {4};

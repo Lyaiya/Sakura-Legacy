@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiStoneMortar extends GuiContainer {
-    private static final ResourceLocation mortarGuiTextures = RLUtil.of("textures/gui/stonemortar.png");
+    private static final ResourceLocation TEXTURES = RLUtil.of("textures/gui/stonemortar.png");
 
     private final TileEntityStoneMortar tileMortar;
     private final IInventory playerInventory;
@@ -35,7 +35,7 @@ public class GuiStoneMortar extends GuiContainer {
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTickTime, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(mortarGuiTextures);
+        this.mc.getTextureManager().bindTexture(TEXTURES);
 
         int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;
@@ -46,9 +46,9 @@ public class GuiStoneMortar extends GuiContainer {
     }
 
     private int getCookProgressScaled(int pixels) {
-        int i = this.tileMortar.getField(0);
-        int j = this.tileMortar.getField(1);
-        return j != 0 && i != 0 ? i * pixels / j : 0;
+        int processTimer = this.tileMortar.getField(TileEntityStoneMortar.ID_PROCESS_TIMER);
+        int maxProcessTimer = this.tileMortar.getField(TileEntityStoneMortar.ID_MAX_PROCESS_TIMER);
+        return maxProcessTimer != 0 && processTimer != 0 ? processTimer * pixels / maxProcessTimer : 0;
     }
 
     @Override

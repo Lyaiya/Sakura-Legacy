@@ -15,19 +15,16 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiCampfirePot extends GuiContainer {
+    private static final ResourceLocation TEXTURES = RLUtil.of("textures/gui/pot.png");
 
-    private static final ResourceLocation mortarGuiTextures = RLUtil.of("textures/gui/pot.png");
-
-    private final TileEntityCampfirePot tilePot;
+    private final TileEntityCampfirePot teCampfirePot;
     private final IInventory playerInventory;
 
-    public GuiCampfirePot(InventoryPlayer inventory, TileEntityCampfirePot tile) {
+    public GuiCampfirePot(InventoryPlayer inventory, TileEntityCampfirePot te) {
+        super(new ContainerCampfirePot(inventory, te));
 
-        super(new ContainerCampfirePot(inventory, tile));
-
-        this.tilePot = tile;
+        this.teCampfirePot = te;
         this.playerInventory = inventory;
-
     }
 
     @Override
@@ -37,9 +34,8 @@ public class GuiCampfirePot extends GuiContainer {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTickTime, int x, int y) {
-
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(mortarGuiTextures);
+        this.mc.getTextureManager().bindTexture(TEXTURES);
 
         int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;
@@ -49,8 +45,8 @@ public class GuiCampfirePot extends GuiContainer {
         int var7;
 
         // Flame
-        if (this.tilePot.isBurning()) {
-            var7 = this.tilePot.getBurnTimeRemainingScaled(12);
+        if (this.teCampfirePot.isBurning()) {
+            var7 = this.teCampfirePot.getBurnTimeRemainingScaled(12);
 
             this.drawTexturedModalRect(k + 100, l + 67 - var7, 176, 12 - var7, 14, var7 + 2);
         }
@@ -58,30 +54,26 @@ public class GuiCampfirePot extends GuiContainer {
         int l2 = this.getCookProgressScaled(24);
         this.drawTexturedModalRect(k + 96, l + 37, 176, 14, l2 + 1, 16);
 
-        if (this.tilePot.getTank().getFluid() != null) {
-            FluidTank fluidTank = this.tilePot.getTank();
+        if (this.teCampfirePot.getTank().getFluid() != null) {
+            FluidTank fluidTank = this.teCampfirePot.getTank();
             int heightInd = (int) (72 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
             if (heightInd > 0) {
                 ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167 - heightInd, l + 11, heightInd, 16f);
             }
-
         }
     }
 
     private int getCookProgressScaled(int pixels) {
-        int i = this.tilePot.getField(1);
-        int j = this.tilePot.getField(2);
-        return j != 0 && i != 0 ? i * pixels / j : 0;
+        int cookTime = this.teCampfirePot.getField(TileEntityCampfirePot.ID_COOK_TIME);
+        int maxCookTime = this.teCampfirePot.getField(TileEntityCampfirePot.ID_MAX_COOK_TIMER);
+        return maxCookTime != 0 && cookTime != 0 ? cookTime * pixels / maxCookTime : 0;
     }
-
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
-
     }
 
 }

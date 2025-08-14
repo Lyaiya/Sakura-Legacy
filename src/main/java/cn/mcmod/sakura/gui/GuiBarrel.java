@@ -14,61 +14,59 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class GuiBarrel extends GuiContainer {
-    private static final ResourceLocation mortarGuiTextures = RLUtil.of("textures/gui/barrel.png");
+    private static final ResourceLocation TEXTURES = RLUtil.of("textures/gui/barrel.png");
 
     private final TileEntityBarrel teBarrel;
 
     public GuiBarrel(InventoryPlayer inventory, TileEntityBarrel te) {
         super(new ContainerBarrel(inventory, te));
-        this.teBarrel = te;
+        teBarrel = te;
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTickTime, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(mortarGuiTextures);
+        mc.getTextureManager().bindTexture(TEXTURES);
 
-        int k = (this.width - this.xSize) / 2;
-        int l = (this.height - this.ySize) / 2;
+        int k = (width - xSize) / 2;
+        int l = (height - ySize) / 2;
 
-        this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
-        int l2 = this.getCookProgressScaled(24);
-        this.drawTexturedModalRect(k + 63, l + 35, 176, 0, l2 + 1, 16);
+        drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
+        int l2 = getCookProgressScaled(24);
+        drawTexturedModalRect(k + 63, l + 35, 176, 0, l2 + 1, 16);
 
-        if (this.teBarrel.getInputTank().getFluid() != null) {
-            FluidTank fluidTank = this.teBarrel.getInputTank();
+        if (teBarrel.getInputTank().getFluid() != null) {
+            FluidTank fluidTank = teBarrel.getInputTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
 
             if (heightInd > 0) {
                 ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 18, l + 78 - heightInd, 16f, heightInd);
             }
-
         }
 
-        if (this.teBarrel.getOutputTank().getFluid() != null) {
-            FluidTank fluidTank = this.teBarrel.getOutputTank();
+        if (teBarrel.getOutputTank().getFluid() != null) {
+            FluidTank fluidTank = teBarrel.getOutputTank();
             int heightInd = (int) (68 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
-           /* if (heightInd > 0) {
-                ClientUtils.drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167 - heightInd, l + 11, heightInd, 16f);
-            }*/
+            // if (heightInd > 0) {
+            //     ClientUtils.drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167 - heightInd, l + 11, heightInd, 16f);
+            // }
 
             if (heightInd > 0) {
                 ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 89, l + 78 - heightInd, 16f, heightInd);
             }
-
         }
     }
 
     private int getCookProgressScaled(int pixels) {
-        int i = this.teBarrel.getField(0);
+        int i = teBarrel.getField(TileEntityBarrel.ID_PROCESS_TIMER);
         return i != 0 ? i * pixels / 1000 : 0;
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.drawDefaultBackground();
+        drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        this.renderHoveredToolTip(mouseX, mouseY);
+        renderHoveredToolTip(mouseX, mouseY);
     }
 
 }

@@ -99,7 +99,7 @@ public class TileEntityCampfirePot extends TileEntity implements ITickable, IInv
     }
 
     public boolean isBurning() {
-        return getField(0) > 0;
+        return burnTime > 0;
     }
 
     private void refresh() {
