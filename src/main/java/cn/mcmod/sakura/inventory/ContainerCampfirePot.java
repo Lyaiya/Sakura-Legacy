@@ -1,85 +1,87 @@
 package cn.mcmod.sakura.inventory;
 
+import cn.mcmod.sakura.base.ContainerBase;
 import cn.mcmod.sakura.tileentity.TileEntityCampfirePot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerCampfirePot extends Container {
-    private final TileEntityCampfirePot teCampfirePot;
+public class ContainerCampfirePot extends ContainerBase<TileEntityCampfirePot> {
+    private static final int ID_BURN_TIME = 0;
+    private static final int ID_COOK_TIME = 1;
+    private static final int ID_TOTAL_COOK_TIMER = 2;
 
-    private int processTime;
-    private int maxProcessTime;
     private int burnTime;
+    private int cookTime;
+    private int totalCookTime;
 
-    public ContainerCampfirePot(InventoryPlayer inventory, TileEntityCampfirePot te) {
-        teCampfirePot = te;
-        addSlotToContainer(new Slot(te, 0, 45, 19));
-        int i, j, k, l;
-        for (k = 1; k < 5; ++k) {
-            addSlotToContainer(new Slot(te, k, 18 + (k - 1) * 18, 37));
+    public ContainerCampfirePot(InventoryPlayer playerInventory, TileEntityCampfirePot te) {
+        super(playerInventory, te);
+    }
+
+    @Override
+    protected void addSlots(IItemHandler itemHandler) {
+        addSlotToContainer(new SlotItemHandler(itemHandler, 0, 45, 19));
+        for (int i = 1; i < 5; ++i) {
+            addSlotToContainer(new SlotItemHandler(itemHandler, i, 18 + (i - 1) * 18, 37));
         }
-        for (l = 5; l < 9; ++l) {
-            addSlotToContainer(new Slot(te, l, 18 + (l - 5) * 18, 55));
+        for (int i = 5; i < 9; ++i) {
+            addSlotToContainer(new SlotItemHandler(itemHandler, i, 18 + (i - 5) * 18, 55));
         }
-        addSlotToContainer(new Slot(te, 9, 130, 46) {
-            @Override
-            public boolean isItemValid(ItemStack stack) {
-                return false;
-            }
-        });
-
-        for (i = 0; i < 3; ++i)
-            for (j = 0; j < 9; ++j)
-                addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-
-        for (i = 0; i < 9; ++i)
-            addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
+        addSlotToContainer(new SlotItemHandler(itemHandler, 9, 130, 46));
     }
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendAllWindowProperties(this, this.teCampfirePot);
+        listener.sendWindowProperty(this, ID_BURN_TIME, te.getBurnTime());
+        listener.sendWindowProperty(this, ID_COOK_TIME, te.getCookTime());
+        listener.sendWindowProperty(this, ID_TOTAL_COOK_TIMER, te.getTotalCookTime());
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
 
-        for (IContainerListener icontainerlistener : this.listeners) {
-            if (this.burnTime != this.teCampfirePot.getField(TileEntityCampfirePot.ID_BURN_TIME)) {
-                icontainerlistener.sendWindowProperty(this, 0, this.teCampfirePot.getField(TileEntityCampfirePot.ID_BURN_TIME));
+        for (IContainerListener listener : listeners) {
+            if (burnTime != te.getBurnTime()) {
+                listener.sendWindowProperty(this, ID_BURN_TIME, te.getBurnTime());
             }
 
-            if (this.processTime != this.teCampfirePot.getField(TileEntityCampfirePot.ID_COOK_TIME)) {
-                icontainerlistener.sendWindowProperty(this, 1, this.teCampfirePot.getField(TileEntityCampfirePot.ID_COOK_TIME));
+            if (cookTime != te.getCookTime()) {
+                listener.sendWindowProperty(this, ID_COOK_TIME, te.getCookTime());
             }
 
-            if (this.maxProcessTime != this.teCampfirePot.getField(TileEntityCampfirePot.ID_MAX_COOK_TIMER)) {
-                icontainerlistener.sendWindowProperty(this, 2, this.teCampfirePot.getField(TileEntityCampfirePot.ID_MAX_COOK_TIMER));
+            if (totalCookTime != te.getTotalCookTime()) {
+                listener.sendWindowProperty(this, ID_TOTAL_COOK_TIMER, te.getTotalCookTime());
             }
         }
 
-        this.burnTime = this.teCampfirePot.getField(TileEntityCampfirePot.ID_BURN_TIME);
-        this.processTime = this.teCampfirePot.getField(TileEntityCampfirePot.ID_COOK_TIME);
-        this.maxProcessTime = this.teCampfirePot.getField(TileEntityCampfirePot.ID_MAX_COOK_TIMER);
+        burnTime = te.getBurnTime();
+        cookTime = te.getCookTime();
+        totalCookTime = te.getTotalCookTime();
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public void updateProgressBar(int id, int value) {
-        this.teCampfirePot.setField(id, value);
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player) {
-        return teCampfirePot.isUsableByPlayer(player);
+        switch (id) {
+            case ID_BURN_TIME:
+                te.setBurnTime(value);
+                break;
+            case ID_COOK_TIME:
+                te.setCookTime(value);
+                break;
+            case ID_TOTAL_COOK_TIMER:
+                te.setTotalCookTime(value);
+                break;
+        }
     }
 
     @Override
@@ -89,27 +91,27 @@ public class ContainerCampfirePot extends Container {
         // 37-46: Hot bar in the player inventory
 
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
+        Slot slot = inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack()) {
             ItemStack itemStack1 = slot.getStack();
             itemStack = itemStack1.copy();
 
             if (index >= 0 && index <= 9) {
-                if (!this.mergeItemStack(itemStack1, 10, 46, true)) {
+                if (!mergeItemStack(itemStack1, 10, 46, true)) {
                     return ItemStack.EMPTY;
                 }
 
                 slot.onSlotChange(itemStack1, itemStack);
             } else if (index >= 10) {
                 if (index >= 10 && index < 37) {
-                    if (!this.mergeItemStack(itemStack1, 37, 46, false)) {
+                    if (!mergeItemStack(itemStack1, 37, 46, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index >= 37 && index < 46 && !this.mergeItemStack(itemStack1, 10, 37, false)) {
+                } else if (index >= 37 && index < 46 && !mergeItemStack(itemStack1, 10, 37, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemStack1, 10, 46, false)) {
+            } else if (!mergeItemStack(itemStack1, 10, 46, false)) {
                 return ItemStack.EMPTY;
             }
 

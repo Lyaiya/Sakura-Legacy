@@ -22,7 +22,7 @@ public class DrinksLoader {
     private DrinksLoader() {
     }
 
-    public static ItemDrinkBase tea = new ItemDrinkBase(SakuraMain.MODID, "tea",
+    public static ItemDrinkBase TEA = new ItemDrinkBase(SakuraMain.MODID, "tea",
             new FoodInfo[]{
                     new FoodInfo("black_tea", 1, 0.5F, false, 50F, 0, 0, 1F, 0, 0, 5F, 0, 0),
                     new FoodInfo("green_tea", 1, 0.5F, false, 50F, 0, 0, 1F, 0, 0, 5F, 0, 0),
@@ -85,7 +85,7 @@ public class DrinksLoader {
                     },
             }, new ItemStack(ItemLoader.CUP, 1, 0)
     );
-    public static DrinksAlcoholic alcoholic = new DrinksAlcoholic("alcoholic",
+    public static DrinksAlcoholic ALCOHOLIC = new DrinksAlcoholic("alcoholic",
             new FoodInfo[]{
                     new FoodInfo("glass_beer", 2, 0.5F, false, 50F, 2F, 0, 0, 0, 0, 0, 0, 0),
                     new FoodInfo("glass_doburoku", 2, 0.5F, false, 50F, 2F, 0, 0, 0, 0, 0, 0, 0),
@@ -153,7 +153,7 @@ public class DrinksLoader {
                     }
             }
     );
-    public static DrinksAlcoholic cocktail = new DrinksAlcoholic("cocktail",
+    public static DrinksAlcoholic COCKTAIL = new DrinksAlcoholic("cocktail",
             new FoodInfo[]{
                     new FoodInfo("glass_kir", 2, 0.5F, false, 50F, 2F, 1F, 0F, 0F, 0, 0, 0, 0),
                     new FoodInfo("glass_royal_kir", 2, 0.5F, false, 50F, 2F, 1F, 0F, 0F, 0, 0, 0, 0),
@@ -368,7 +368,7 @@ public class DrinksLoader {
                     },
             }
     );
-    public static ItemMetaDurability bottle_alcoholic = new ItemMetaDurability(SakuraMain.MODID,
+    public static ItemMetaDurability BOTTLE_ALCOHOLIC = new ItemMetaDurability(SakuraMain.MODID,
             "bottle_alcoholic", 4, new ItemStack(ItemLoader.MATERIAL, 1, 47),
             new String[]{
                     "beer_bottle",
@@ -389,18 +389,18 @@ public class DrinksLoader {
             });
 
     public void registerItems() {
-        register(bottle_alcoholic);
-        register(tea);
-        register(alcoholic);
-        register(cocktail);
+        register(BOTTLE_ALCOHOLIC);
+        register(TEA);
+        register(ALCOHOLIC);
+        register(COCKTAIL);
     }
 
     @SideOnly(Side.CLIENT)
     public void registerRender() {
-        ItemRegister.getInstance().registerRender(tea);
-        ItemRegister.getInstance().registerRender(alcoholic);
-        ItemRegister.getInstance().registerRender(cocktail);
-        ItemRegister.getInstance().registerRender(bottle_alcoholic);
+        ItemRegister.getInstance().registerRender(TEA);
+        ItemRegister.getInstance().registerRender(ALCOHOLIC);
+        ItemRegister.getInstance().registerRender(COCKTAIL);
+        ItemRegister.getInstance().registerRender(BOTTLE_ALCOHOLIC);
     }
 
     private void register(Item item) {

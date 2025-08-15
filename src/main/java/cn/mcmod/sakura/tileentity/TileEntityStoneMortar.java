@@ -1,10 +1,13 @@
 package cn.mcmod.sakura.tileentity;
 
 import cn.mcmod.sakura.api.recipes.MortarRecipes;
+import cn.mcmod.sakura.base.ItemStackHandlerBase;
 import cn.mcmod.sakura.base.TileEntityBase;
 import cn.mcmod.sakura.base.wrapper.ItemHandlerWrapper;
 import cn.mcmod.sakura.inventory.ContainerStoneMortar;
 import cn.mcmod.sakura.util.CapabilityUtil;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,35 +19,22 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class TileEntityStoneMortar extends TileEntityBase {
-    private static final String KEY_INVENTORY = "Inventory";
+    private static final String KEY_ITEMS = "Items";
     private static final String KEY_PROCESS_TIME = "ProcessTime";
     private static final String KEY_TOTAL_PROCESS_TIME = "ProcessTimeTotal";
 
     private int processTime = 0;
     private int totalProcessTime = 200;
 
-    private final ItemStackHandler itemStackHandler = new ItemStackHandler(6) {
-        @Override
-        public boolean isItemValid(int slot, ItemStack stack) {
-            return switch (slot) {
-                case 0, 1, 2, 3 -> true;
-                case 4, 5 -> false;
-                default -> false;
-            };
-        }
-    };
-
-    private final ItemHandlerWrapper inputWrapper = new ItemHandlerWrapper(itemStackHandler, 0, 1, 2, 3);
-    private final ItemHandlerWrapper outputWrapper = new ItemHandlerWrapper(itemStackHandler, 4, 5);
+    private final MyItemHandler itemHandler = new MyItemHandler();
 
     public TileEntityStoneMortar() {
-        super("stonemortar");
+        setName("stonemortar");
     }
 
     public int getProcessTime() {
@@ -69,7 +59,7 @@ public class TileEntityStoneMortar extends TileEntityBase {
 
         final List<ItemStack> inputs = Lists.newArrayList();
         for (int i = 0; i < 4; i++) {
-            ItemStack itemStack = itemStackHandler.getStackInSlot(i);
+            ItemStack itemStack = itemHandler.getStackInSlot(i);
             if (itemStack.isEmpty()) continue;
             inputs.add(itemStack.copy());
         }
@@ -93,12 +83,12 @@ public class TileEntityStoneMortar extends TileEntityBase {
 
         run:
         {
-            if (!itemStackHandler.insertItem(4, output1, true).isEmpty()) {
+            if (!itemHandler.insertItem(4, output1, true).isEmpty()) {
                 break run;
             }
 
             if (output2 != null) {
-                if (!itemStackHandler.insertItem(5, output2, true).isEmpty()) {
+                if (!itemHandler.insertItem(5, output2, true).isEmpty()) {
                     break run;
                 }
             }
@@ -114,15 +104,15 @@ public class TileEntityStoneMortar extends TileEntityBase {
         if (processTime < totalProcessTime) return;
         processTime = 0;
 
-        itemStackHandler.insertItem(4, output1, false);
+        itemHandler.insertItem(4, output1, false);
         if (output2 != null) {
-            itemStackHandler.insertItem(5, output2, false);
+            itemHandler.insertItem(5, output2, false);
         }
 
-        itemStackHandler.extractItem(0, 1, false);
-        itemStackHandler.extractItem(1, 1, false);
-        itemStackHandler.extractItem(2, 1, false);
-        itemStackHandler.extractItem(3, 1, false);
+        itemHandler.extractItem(0, 1, false);
+        itemHandler.extractItem(1, 1, false);
+        itemHandler.extractItem(2, 1, false);
+        itemHandler.extractItem(3, 1, false);
 
         markDirty();
     }
@@ -141,14 +131,14 @@ public class TileEntityStoneMortar extends TileEntityBase {
 
     @Override
     protected void onReadFromNBT(NBTTagCompound compound) {
-        itemStackHandler.deserializeNBT(compound.getCompoundTag(KEY_INVENTORY));
+        itemHandler.deserializeNBT(compound.getCompoundTag(KEY_ITEMS));
         totalProcessTime = compound.getInteger(KEY_TOTAL_PROCESS_TIME);
         processTime = compound.getInteger(KEY_PROCESS_TIME);
     }
 
     @Override
     protected void onWriteToNBT(NBTTagCompound compound) {
-        compound.setTag(KEY_INVENTORY, itemStackHandler.serializeNBT());
+        compound.setTag(KEY_ITEMS, itemHandler.serializeNBT());
         compound.setInteger(KEY_TOTAL_PROCESS_TIME, totalProcessTime);
         compound.setInteger(KEY_PROCESS_TIME, processTime);
     }
@@ -181,7 +171,7 @@ public class TileEntityStoneMortar extends TileEntityBase {
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         if (CapabilityUtil.isItemHandler(capability)) {
-            return true;
+            return itemHandler.hasHandler(facing);
         }
         return super.hasCapability(capability, facing);
     }
@@ -190,16 +180,45 @@ public class TileEntityStoneMortar extends TileEntityBase {
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (CapabilityUtil.isItemHandler(capability)) {
+            return itemHandler.getHandler(facing);
+        }
+        return super.getCapability(capability, facing);
+    }
+
+    private static class MyItemHandler extends ItemStackHandlerBase {
+        private final Supplier<ItemHandlerWrapper> inputWrapper = Suppliers.memoize(
+                () -> new ItemHandlerWrapper(this, 0, 1, 2, 3)
+        );
+
+        private final Supplier<ItemHandlerWrapper> outputWrapper = Suppliers.memoize(
+                () -> new ItemHandlerWrapper(this, 4, 5)
+        );
+
+        public MyItemHandler() {
+            super(6);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return switch (slot) {
+                case 0, 1, 2, 3 -> true;
+                case 4, 5 -> false;
+                default -> false;
+            };
+        }
+
+        @Nullable
+        @Override
+        public <T> T getHandler(@Nullable EnumFacing facing) {
             if (facing == null) {
-                return CapabilityUtil.castItemHandler(itemStackHandler);
+                return CapabilityUtil.castItemHandler(this);
             }
 
             if (facing == EnumFacing.DOWN) {
-                return CapabilityUtil.castItemHandler(outputWrapper);
+                return CapabilityUtil.castItemHandler(outputWrapper.get());
             } else {
-                return CapabilityUtil.castItemHandler(inputWrapper);
+                return CapabilityUtil.castItemHandler(inputWrapper.get());
             }
         }
-        return super.getCapability(capability, facing);
     }
 }

@@ -107,7 +107,7 @@ public class BlockMapleSpile extends BlockFacing {
             double d3 = 0D;
             double d4 = ((rand.nextFloat()) * 0.055D) + 0.015D;
             double d5 = 0D;
-            SakuraMain.proxy.spawnParticle(SakuraParticleType.SYRUP_DROP, d0, d1, d2, d3, -d4, d5);
+            SakuraMain.PROXY.spawnParticle(SakuraParticleType.SYRUP_DROP, d0, d1, d2, d3, -d4, d5);
         }
     }
 }

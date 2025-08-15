@@ -15,17 +15,12 @@ public abstract class TileEntityBase extends TileEntity implements ITickable, IW
     public static final String KEY_CUSTOM_NAME = "CustomName";
 
     @Nullable
-    private final String name;
+    private String name;
 
     @Nullable
     private String customName;
 
     public TileEntityBase() {
-        this(null);
-    }
-
-    public TileEntityBase(@Nullable String name) {
-        this.name = name;
     }
 
     @Nullable
@@ -45,6 +40,10 @@ public abstract class TileEntityBase extends TileEntity implements ITickable, IW
     @Override
     public String getName() {
         return "container." + SakuraMain.MODID + "." + name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

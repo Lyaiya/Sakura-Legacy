@@ -20,15 +20,15 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BlockContainerBase extends BlockContainer implements ITileEntityProvider {
+public abstract class BlockContainerBase<T extends TileEntity> extends BlockContainer implements ITileEntityProvider {
     private static final int GUI_ID_NONE = -1;
 
     private int guiId = GUI_ID_NONE;
-    private boolean checkPlaceFullBlock = false;
+    private final boolean checkPlaceFullBlock = false;
 
-    private final Class<? extends TileEntity> teClass;
+    private final Class<T> teClass;
 
-    protected BlockContainerBase(Material materialIn, Class<? extends TileEntity> teClass) {
+    protected BlockContainerBase(Material materialIn, Class<T> teClass) {
         super(materialIn);
         this.teClass = teClass;
     }
@@ -37,7 +37,7 @@ public abstract class BlockContainerBase extends BlockContainer implements ITile
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote) return true;
-        final TileEntity te = getTileEntity(worldIn, pos);
+        final T te = getTileEntity(worldIn, pos);
         if (onBlockActivatedExt(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ, te)) {
             return true;
         }
@@ -51,7 +51,6 @@ public abstract class BlockContainerBase extends BlockContainer implements ITile
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        breadBlockExt(worldIn, pos, state);
         final TileEntity te = getTileEntity(worldIn, pos);
         if (te != null) {
             dropInventoryItems(worldIn, pos, te);
@@ -61,7 +60,7 @@ public abstract class BlockContainerBase extends BlockContainer implements ITile
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        final TileEntity te = getTileEntity(worldIn, pos);
+        final T te = getTileEntity(worldIn, pos);
         onBlockPlacedByExt(worldIn, pos, state, placer, stack, te);
         if (te != null) {
             trySetCustomName(stack, te);
@@ -83,15 +82,12 @@ public abstract class BlockContainerBase extends BlockContainer implements ITile
 
     protected boolean onBlockActivatedExt(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                           EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ,
-                                          @Nullable TileEntity te) {
+                                          @Nullable T te) {
         return false;
     }
 
-    protected void breadBlockExt(World worldIn, BlockPos pos, IBlockState state) {
-    }
-
     protected void onBlockPlacedByExt(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer,
-                                      ItemStack stack, @Nullable TileEntity te) {
+                                      ItemStack stack, @Nullable T te) {
     }
 
     protected void setGuiId(int guiId) {
@@ -102,10 +98,9 @@ public abstract class BlockContainerBase extends BlockContainer implements ITile
         return guiId != GUI_ID_NONE;
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
-    private <T extends TileEntity> T getTileEntity(World world, BlockPos pos) {
-        return (T) WorldUtil.getTileEntity(world, pos, teClass);
+    protected T getTileEntity(World world, BlockPos pos) {
+        return WorldUtil.getTileEntity(world, pos, teClass);
     }
 
     private boolean tryOpenGui(EntityPlayer player, World world, BlockPos pos) {
@@ -124,7 +119,7 @@ public abstract class BlockContainerBase extends BlockContainer implements ITile
         player.openGui(SakuraMain.INSTANCE, guiId, world, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    private static void dropInventoryItems(World world, BlockPos pos, TileEntity te) {
+    public static void dropInventoryItems(World world, BlockPos pos, TileEntity te) {
         final IItemHandler itemHandler = CapabilityUtil.getItemHandler(te, null);
         if (itemHandler != null) {
             ItemStack itemStack;

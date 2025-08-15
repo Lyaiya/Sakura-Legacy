@@ -39,7 +39,7 @@ public class ItemSakuraDiamond extends Item {
             double d4 = (worldIn.rand.nextFloat() * 0.055D) + 0.015D;
             double d5 = worldIn.rand.nextFloat() * k * 0.1D;
 
-            SakuraMain.proxy.spawnParticle(SakuraParticleType.LEAVES_SAKURA, d0, d1, d2, d3, -d4, d5);
+            SakuraMain.PROXY.spawnParticle(SakuraParticleType.LEAVES_SAKURA, d0, d1, d2, d3, -d4, d5);
         }
         return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
     }

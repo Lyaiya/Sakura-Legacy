@@ -23,59 +23,62 @@ import java.util.Map.Entry;
 public class PotRecipes {
     public static final PotRecipes INSTANCE = new PotRecipes();
 
-    public final Map<Pair<Object[], ItemStack>, List<FluidStack>> recipesList = Maps.newHashMap();
+    // key: Input Items, Output Item, value: Input Fluid
+    public final Map<Pair<Object[], ItemStack>, List<FluidStack>> recipes = Maps.newHashMap();
 
     private int recipeCount = 0;
 
     private PotRecipes() {
     }
 
-    public void addRecipes(ItemStack result, Object[] list, FluidStack fluidStack) {
-        addRecipes(result, list, Lists.newArrayList(fluidStack));
+    public void addRecipes(ItemStack output, Object[] inputs, FluidStack inputFluid) {
+        addRecipes(output, inputs, Lists.newArrayList(inputFluid));
     }
 
-    public void addRecipes(ItemStack result, Object[] list) {
-        addRecipes(result, list, RecipesUtil.getInstance().EMPTY_FLUID);
+    public void addRecipes(ItemStack output, Object[] inputs) {
+        addRecipes(output, inputs, RecipesUtil.getInstance().EMPTY_FLUID);
     }
 
-    public void addRecipes(ItemStack result, Object[] list, List<FluidStack> fluidList) {
-        if (fluidList.isEmpty()) {
-            SakuraMain.logger.warn("Some one using an empty fluid list!!! When Craft{}", result.getDisplayName());
+    public void addRecipes(ItemStack output, Object[] inputs, List<FluidStack> inputFluids) {
+        if (inputFluids.isEmpty()) {
+            SakuraMain.LOGGER.warn("Some one using an empty fluid list!!! When Craft{}", output.getDisplayName());
             return;
         }
-        Pair<Object[], ItemStack> items = Pair.of(list, result);
-        recipesList.put(items, fluidList);
+        Pair<Object[], ItemStack> items = Pair.of(inputs, output);
+        recipes.put(items, inputFluids);
         if (Loader.isModLoaded(CompatConst.PROJECT_POTMAN)) {
-            registerPotmanRecipe(result, list, fluidList);
+            registerPotmanRecipe(output, inputs, inputFluids);
         }
         recipeCount++;
     }
 
     @Method(modid = CompatConst.PROJECT_POTMAN)
-    private void registerPotmanRecipe(ItemStack result, Object[] list, List<FluidStack> fluidList) {
-        PotmanRegistry.POT_RECIPE.register(new BasicPotRecipe(list, fluidList, result, 200, 8000, 18000).setRegistryName(SakuraMain.MODID, String.format("sakura_pot_recipe_%d", recipeCount)));
+    private void registerPotmanRecipe(ItemStack output, Object[] inputs, List<FluidStack> inputFluids) {
+        PotmanRegistry.POT_RECIPE.register(
+                new BasicPotRecipe(inputs, inputFluids, output, 200, 8000, 18000)
+                        .setRegistryName(SakuraMain.MODID, String.format("sakura_pot_recipe_%d", recipeCount)));
     }
 
     @Nullable
-    public FluidStack getResultFluid(FluidStack fluid, List<ItemStack> inputs) {
-        return getResultFluid(fluid, checkItems(inputs));
+    public FluidStack getInputFluid(FluidStack inputFluid, List<ItemStack> inputs) {
+        return getInputFluid(inputFluid, checkItems(inputs));
     }
 
     @Nullable
-    public FluidStack getResultFluid(FluidStack fluid, @Nullable Pair<Object[], ItemStack> recipe) {
-        if (recipe != null) {
-            for (FluidStack k : recipesList.get(recipe)) {
-                if (k.isFluidEqual(fluid)) {
-                    return k;
-                }
-            }
+    public FluidStack getInputFluid(FluidStack inputFluid, @Nullable Pair<Object[], ItemStack> pair) {
+        if (pair == null) return null;
+
+        for (FluidStack recipeInput : recipes.get(pair)) {
+            if (!recipeInput.isFluidEqual(inputFluid)) continue;
+            return recipeInput;
         }
+
         return null;
     }
 
     @Nullable
     private Pair<Object[], ItemStack> checkItems(List<ItemStack> inputs) {
-        for (Entry<Pair<Object[], ItemStack>, List<FluidStack>> entry : recipesList.entrySet()) {
+        for (Entry<Pair<Object[], ItemStack>, List<FluidStack>> entry : recipes.entrySet()) {
             boolean flg1 = true;
             if ((inputs.size() != entry.getKey().getLeft().length)) continue;
 
@@ -108,29 +111,33 @@ public class PotRecipes {
         return null;
     }
 
-    public ItemStack getResultItemStack(FluidStack fluid, List<ItemStack> inputs) {
+    public ItemStack getOutput(FluidStack inputFluid, List<ItemStack> inputs) {
         Pair<Object[], ItemStack> recipe = checkItems(inputs);
         if (recipe != null) {
-            if (getResultFluid(fluid, recipe) != null || recipesList.get(recipe).isEmpty()) {
+            if (getInputFluid(inputFluid, recipe) != null || recipes.get(recipe).isEmpty()) {
                 return recipe.getRight();
             }
         }
         return ItemStack.EMPTY;
     }
 
-    public void clearRecipe(ItemStack itemOutput) {
-        for (Entry<Pair<Object[], ItemStack>, List<FluidStack>> entry : recipesList.entrySet()) {
+    public void clearRecipe(ItemStack output) {
+        Pair<Object[], ItemStack> keyToRemove = null;
+        for (Entry<Pair<Object[], ItemStack>, List<FluidStack>> entry : recipes.entrySet()) {
             Pair<Object[], ItemStack> recipe = entry.getKey();
-            if (RecipesUtil.getInstance().compareItems(itemOutput, recipe.getRight())) {
-                recipesList.remove(entry.getKey());
-                return;
+            if (RecipesUtil.getInstance().compareItems(output, recipe.getRight())) {
+                keyToRemove = recipe;
+                break;
             }
         }
-        throw new NullPointerException("NO RECIPE HERE");
+        if (keyToRemove == null) {
+            throw new NullPointerException(output + " NO RECIPE HERE");
+        }
+        recipes.remove(keyToRemove);
     }
 
     public void clearAllRecipe() {
-        recipesList.clear();
+        recipes.clear();
     }
 
 }

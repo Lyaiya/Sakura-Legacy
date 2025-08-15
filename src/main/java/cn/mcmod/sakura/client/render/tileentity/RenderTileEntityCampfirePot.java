@@ -2,6 +2,7 @@ package cn.mcmod.sakura.client.render.tileentity;
 
 import cn.mcmod.sakura.client.model.tileentity.ModelPot;
 import cn.mcmod.sakura.tileentity.TileEntityCampfirePot;
+import cn.mcmod.sakura.util.CapabilityUtil;
 import cn.mcmod.sakura.util.RLUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -18,6 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
@@ -106,7 +108,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             int b = color & 0xFF;
             int a = color >> 24 & 0xFF;
 
-            double height = 0.6 + 0.4 * ((double) fluid.amount / te.getTank().getCapacity());
+            double height = 0.6 + 0.4 * ((double) fluid.amount / te.getInputTank().getCapacity());
 
             GlStateManager.translate(x + 0.1, y, z + 0.1);
             GlStateManager.scale(0.8, 0.8, 0.8);
@@ -124,8 +126,11 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
     }
 
     protected void renderItem(TileEntityCampfirePot te, double posX, double posY, double posZ, float partialTicks) {
-        ItemStack itemstack = te.getStackInSlot(0);
-        if (itemstack != ItemStack.EMPTY) {
+        final IItemHandler itemHandler = CapabilityUtil.getItemHandler(te, null);
+        if (itemHandler == null) return;
+
+        ItemStack itemStack1 = itemHandler.getStackInSlot(0);
+        if (itemStack1 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
 
@@ -135,12 +140,12 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             rot = rot * 2;
             GlStateManager.rotate(rot, 1.0F, 1.0F, 0.0F);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(itemstack, ItemCameraTransforms.TransformType.FIXED);
+            Minecraft.getMinecraft().getRenderItem().renderItem(itemStack1, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemstack2 = te.getStackInSlot(1);
-        if (itemstack2 != ItemStack.EMPTY) {
+        ItemStack itemStack2 = itemHandler.getStackInSlot(1);
+        if (itemStack2 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
 
@@ -150,12 +155,12 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             rot = rot * 2;
             GlStateManager.rotate(rot, 0.0F, 1.0F, 0.0F);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(itemstack2, ItemCameraTransforms.TransformType.FIXED);
+            Minecraft.getMinecraft().getRenderItem().renderItem(itemStack2, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemstack3 = te.getStackInSlot(2);
-        if (itemstack3 != ItemStack.EMPTY) {
+        ItemStack itemStack3 = itemHandler.getStackInSlot(2);
+        if (itemStack3 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
 
@@ -165,12 +170,12 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             rot = rot * 2;
             GlStateManager.rotate(rot, 0.3F, 1.0F, 0F);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(itemstack3, ItemCameraTransforms.TransformType.FIXED);
+            Minecraft.getMinecraft().getRenderItem().renderItem(itemStack3, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemstack4 = te.getStackInSlot(3);
-        if (itemstack4 != ItemStack.EMPTY) {
+        ItemStack itemStack4 = itemHandler.getStackInSlot(3);
+        if (itemStack4 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
 
@@ -180,12 +185,12 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             rot = rot * 2;
             GlStateManager.rotate(rot, 0.0F, 1.0F, 0.0F);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(itemstack4, ItemCameraTransforms.TransformType.FIXED);
+            Minecraft.getMinecraft().getRenderItem().renderItem(itemStack4, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemstack5 = te.getStackInSlot(4);
-        if (itemstack5 != ItemStack.EMPTY) {
+        ItemStack itemStack5 = itemHandler.getStackInSlot(4);
+        if (itemStack5 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
 
@@ -194,12 +199,12 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             float rot = te.getWorld().getTotalWorldTime() % 360;
             rot = rot * 2;
             GlStateManager.rotate(rot, 0.0F, 1.0F, 0.0F);
-            Minecraft.getMinecraft().getRenderItem().renderItem(itemstack5, ItemCameraTransforms.TransformType.FIXED);
+            Minecraft.getMinecraft().getRenderItem().renderItem(itemStack5, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemstack6 = te.getStackInSlot(5);
-        if (itemstack6 != ItemStack.EMPTY) {
+        ItemStack itemStack6 = itemHandler.getStackInSlot(5);
+        if (itemStack6 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
 
@@ -209,12 +214,12 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             rot = rot * 2;
             GlStateManager.rotate(rot, 0.0F, 1.0F, 0.0F);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(itemstack6, ItemCameraTransforms.TransformType.FIXED);
+            Minecraft.getMinecraft().getRenderItem().renderItem(itemStack6, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemstack7 = te.getStackInSlot(6);
-        if (itemstack7 != ItemStack.EMPTY) {
+        ItemStack itemStack7 = itemHandler.getStackInSlot(6);
+        if (itemStack7 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
 
@@ -224,12 +229,12 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             rot = rot * 2;
             GlStateManager.rotate(rot, 0.3F, 1.0F, 0F);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(itemstack7, ItemCameraTransforms.TransformType.FIXED);
+            Minecraft.getMinecraft().getRenderItem().renderItem(itemStack7, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemstack8 = te.getStackInSlot(7);
-        if (itemstack8 != ItemStack.EMPTY) {
+        ItemStack itemStack8 = itemHandler.getStackInSlot(7);
+        if (itemStack8 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
 
@@ -239,12 +244,12 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             rot = rot * 2;
             GlStateManager.rotate(rot, 0.0F, 1.0F, 0.0F);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(itemstack8, ItemCameraTransforms.TransformType.FIXED);
+            Minecraft.getMinecraft().getRenderItem().renderItem(itemStack8, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemstack9 = te.getStackInSlot(8);
-        if (itemstack9 != ItemStack.EMPTY) {
+        ItemStack itemStack9 = itemHandler.getStackInSlot(8);
+        if (itemStack9 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
 
@@ -253,7 +258,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             float rot = te.getWorld().getTotalWorldTime() % 360;
             rot = rot * 2;
             GlStateManager.rotate(rot, 0.0F, 1.0F, 0.0F);
-            Minecraft.getMinecraft().getRenderItem().renderItem(itemstack9, ItemCameraTransforms.TransformType.FIXED);
+            Minecraft.getMinecraft().getRenderItem().renderItem(itemStack9, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
     }

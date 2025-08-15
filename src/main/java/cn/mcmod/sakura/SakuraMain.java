@@ -33,14 +33,14 @@ public class SakuraMain {
     public static SakuraMain INSTANCE;
 
     @UnknownNullability
-    public static Logger logger;
+    public static Logger LOGGER;
 
     @UnknownNullability
     @SidedProxy(
             clientSide = "cn.mcmod.sakura.proxy.ClientProxy",
             serverSide = "cn.mcmod.sakura.proxy.CommonProxy"
     )
-    public static IProxy proxy;
+    public static IProxy PROXY;
 
     @EventHandler
     public void onConstruct(FMLConstructionEvent event) {
@@ -57,18 +57,18 @@ public class SakuraMain {
 
     @EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
-        proxy.onPreInit(event);
-        logger = event.getModLog();
+        PROXY.onPreInit(event);
+        LOGGER = event.getModLog();
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new SakuraGuiHandler());
     }
 
     @EventHandler
     public void onInit(FMLInitializationEvent event) {
-        proxy.onInit(event);
+        PROXY.onInit(event);
     }
 
     @EventHandler
     public void onPostInit(FMLPostInitializationEvent event) {
-        proxy.onPostInit(event);
+        PROXY.onPostInit(event);
     }
 }

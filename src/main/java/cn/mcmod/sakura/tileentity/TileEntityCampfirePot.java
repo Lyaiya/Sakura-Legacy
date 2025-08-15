@@ -1,24 +1,24 @@
 package cn.mcmod.sakura.tileentity;
 
 import cn.mcmod.sakura.api.recipes.PotRecipes;
+import cn.mcmod.sakura.base.ItemStackHandlerBase;
+import cn.mcmod.sakura.base.TileEntityBase;
+import cn.mcmod.sakura.base.wrapper.ItemHandlerWrapper;
 import cn.mcmod.sakura.block.BlockCampfirePot;
+import cn.mcmod.sakura.util.CapabilityUtil;
+import cn.mcmod.sakura.util.ItemHandlerUtil;
 import cn.mcmod_mmf.mmlib.item.ItemMetaDurability;
-import cn.mcmod_mmf.mmlib.util.RecipesUtil;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -31,29 +31,28 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class TileEntityCampfirePot extends TileEntity implements ITickable, IInventory {
-    public static final int ID_BURN_TIME = 0;
-    public static final int ID_COOK_TIME = 1;
-    public static final int ID_MAX_COOK_TIMER = 2;
-
+public class TileEntityCampfirePot extends TileEntityBase {
+    private static final String KEY_ITEMS = "Items";
     private static final String KEY_BURN_TIME = "BurnTime";
     private static final String KEY_COOK_TIME = "CookTime";
     private static final String KEY_TANK = "Tank";
 
-    private NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+    private final MyItemHandler itemHandler = new MyItemHandler() {
+        @Override
+        protected void onContentsChanged(int slot) {
+            refresh();
+        }
+    };
 
     @Nullable
     private FluidStack liquidForRendering = null;
 
     private int burnTime;
-    /**
-     * The number of ticks that a fresh copy of the currently-burning item would keep the furnace burning for
-     */
     private int currentItemBurnTime;
     private int cookTime;
-    private int maxCookTimer = 200;
+    private int totalCookTime = 200;
 
-    private final FluidTank tank = new FluidTank(2000) {
+    private final FluidTank inputTank = new FluidTank(2000) {
         @Override
         protected void onContentsChanged() {
             refresh();
@@ -61,17 +60,42 @@ public class TileEntityCampfirePot extends TileEntity implements ITickable, IInv
     };
 
     public TileEntityCampfirePot() {
+        setName("campfirepot");
     }
 
-    public FluidTank getTank() {
-        return tank;
+    public FluidTank getInputTank() {
+        return inputTank;
+    }
+
+    public int getBurnTime() {
+        return burnTime;
+    }
+
+    public void setBurnTime(int burnTime) {
+        this.burnTime = burnTime;
+    }
+
+    public int getCookTime() {
+        return cookTime;
+    }
+
+    public void setCookTime(int cookTime) {
+        this.cookTime = cookTime;
+    }
+
+    public int getTotalCookTime() {
+        return totalCookTime;
+    }
+
+    public void setTotalCookTime(int totalCookTime) {
+        this.totalCookTime = totalCookTime;
     }
 
     // Render only
     @Nullable
     @SideOnly(Side.CLIENT)
     public FluidStack getFluidForRendering(float partialTicks) {
-        final FluidStack actual = tank.getFluid();
+        final FluidStack actual = inputTank.getFluid();
         int actualAmount;
         if (actual != null && !actual.equals(liquidForRendering)) {
             liquidForRendering = new FluidStack(actual, 0);
@@ -118,196 +142,86 @@ public class TileEntityCampfirePot extends TileEntity implements ITickable, IInv
             --burnTime;
         }
         // check can cook
-        if (!world.isRemote) {
-            List<ItemStack> inventoryList = Lists.newArrayList();
-            for (int i = 0; i < 9; i++) {
-                if (!inventory.get(i).isEmpty()) {
-                    inventoryList.add(inventory.get(i).copy());
-                }
-            }
-            ItemStack itemstack = inventory.get(9);
-            FluidStack tankFluid = tank.getFluid();
-            if (tankFluid != null && isRecipes(tankFluid, inventoryList)) {
-                ItemStack result = PotRecipes.INSTANCE.getResultItemStack(tankFluid, inventoryList);
-                FluidStack fluidStack = PotRecipes.INSTANCE.getResultFluid(tankFluid, inventoryList);
-                if (RecipesUtil.getInstance().canIncrease(result, itemstack) && isBurning()) {
-                    cookTime += 1;
-                } else {
-                    cookTime = 0;
-                }
+        if (!world.isRemote) return;
 
-                if (cookTime >= maxCookTimer) {
-                    cookTime = 0;
-                    if (itemstack.isEmpty()) {
-                        inventory.set(9, result.copy());
-                    } else if (itemstack.isItemEqual(result)) {
-                        itemstack.grow(result.getCount());
-                    }
+        List<ItemStack> inputs = Lists.newArrayList();
 
-                    // If pot is a recipe that uses a liquid, it consumes only that amount of liquid
-                    if (fluidStack != null && fluidStack.amount > 0) {
-                        tank.drain(fluidStack, true);
-                    }
+        ItemStack temp;
+        for (int i = 0; i < 9; i++) {
+            temp = itemHandler.getStackInSlot(i);
+            if (temp.isEmpty()) continue;
+            inputs.add(temp.copy());
+        }
 
-                    ItemStack itemStack;
-                    Item item;
-                    for (int i = 0; i < 9; i++) {
-                        itemStack = inventory.get(i);
-                        item = itemStack.getItem();
-                        if (!(item.getContainerItem(itemStack).isEmpty())) {
-                            if (itemStack.getCount() == 1) {
-                                inventory.set(i, item.getContainerItem(itemStack).copy());
-                            } else {
-                                decrStackSize(i, 1);
-                            }
+        boolean updateCook = false;
+        run:
+        {
+            ItemStack itemstack = itemHandler.getStackInSlot(9);
 
-                            if (!(item instanceof ItemMetaDurability)) {
-                                Block.spawnAsEntity(getWorld(), getPos(), item.getContainerItem(itemStack.copy()));
-                            }
-                        } else {
-                            decrStackSize(i, 1);
-                        }
-                    }
-                    flag1 = true;
-                }
+            FluidStack inputTankFluidStack = inputTank.getFluid();
+            if (inputTankFluidStack == null) break run;
+
+            ItemStack output = PotRecipes.INSTANCE.getOutput(inputTankFluidStack, inputs);
+            if (output.isEmpty()) break run;
+
+            if (ItemHandlerUtil.canInsertItem(itemHandler, 9, output) && isBurning()) {
+                cookTime += 1;
             } else {
                 cookTime = 0;
             }
-            if (flag != isBurning()) {
+
+            if (cookTime >= totalCookTime) {
+                cookTime = 0;
+                itemHandler.insertItem(9, output, false);
+
+                // If pot is a recipe that uses a liquid, it consumes only that amount of liquid
+                FluidStack inputFluid = PotRecipes.INSTANCE.getInputFluid(inputTankFluidStack, inputs);
+                if (inputFluid != null && inputFluid.amount > 0) {
+                    inputTank.drain(inputFluid, true);
+                }
+
+                ItemStack itemStack;
+                Item item;
+                for (int i = 0; i < 9; i++) {
+                    itemStack = itemHandler.getStackInSlot(i);
+                    item = itemStack.getItem();
+
+                    if (item.hasContainerItem(itemStack)) {
+                        final ItemStack containerItem = item.getContainerItem(itemStack);
+
+                        if (itemStack.getCount() == 1) {
+                            itemHandler.setStackInSlot(i, containerItem.copy());
+                        } else {
+                            itemHandler.extractItem(i, 1, false);
+                        }
+
+                        if (!(item instanceof ItemMetaDurability)) {
+                            Block.spawnAsEntity(world, pos, containerItem.copy());
+                        }
+                    } else {
+                        itemHandler.extractItem(i, 1, false);
+                    }
+                }
                 flag1 = true;
-                BlockCampfirePot.setState(isBurning(), world, pos);
             }
-            if (flag1) {
-                markDirty();
-            }
+        }
+
+        if (!updateCook) {
+            cookTime = 0;
+        }
+
+        if (flag != isBurning()) {
+            flag1 = true;
+            BlockCampfirePot.setState(isBurning(), world, pos);
+        }
+        if (flag1) {
+            markDirty();
         }
     }
 
     @Override
     public void markDirty() {
         super.markDirty();
-    }
-
-    @Override
-    public String getName() {
-        return "container.sakura.campfirepot";
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        return false;
-    }
-
-    @Override
-    public int getSizeInventory() {
-        return 10;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        for (ItemStack itemstack : inventory) {
-            if (!itemstack.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public ItemStack getStackInSlot(int index) {
-        return inventory.get(index);
-    }
-
-    @Override
-    public ItemStack decrStackSize(int index, int count) {
-        ItemStack itemstack = ItemStackHelper.getAndSplit(inventory, index, count);
-
-        if (!itemstack.isEmpty()) {
-            markDirty();
-        }
-
-        return itemstack;
-    }
-
-    @Override
-    public ItemStack removeStackFromSlot(int index) {
-        return ItemStackHelper.getAndRemove(inventory, index);
-    }
-
-    @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
-        inventory.set(index, stack);
-        if (stack.getCount() > getInventoryStackLimit()) {
-            stack.setCount(getInventoryStackLimit());
-        }
-        markDirty();
-    }
-
-    @Override
-    public int getInventoryStackLimit() {
-        return 64;
-    }
-
-    @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
-        if (world.getTileEntity(pos) != this) {
-            return false;
-        }
-        return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
-    }
-
-    @Override
-    public void openInventory(EntityPlayer player) {
-        markDirty();
-    }
-
-    @Override
-    public void closeInventory(EntityPlayer player) {
-        markDirty();
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index < 9;
-    }
-
-    @Override
-    public int getField(int id) {
-        return switch (id) {
-            case ID_BURN_TIME -> burnTime;
-            case ID_COOK_TIME -> cookTime;
-            case ID_MAX_COOK_TIMER -> maxCookTimer;
-            default -> 0;
-        };
-    }
-
-    @Override
-    public void setField(int id, int value) {
-        switch (id) {
-            case ID_BURN_TIME:
-                burnTime = value;
-                break;
-            case ID_COOK_TIME:
-                cookTime = value;
-                break;
-            case ID_MAX_COOK_TIMER:
-                maxCookTimer = value;
-                break;
-        }
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 3;
-    }
-
-    @Override
-    public void clear() {
-        inventory.clear();
-    }
-
-    public NonNullList<ItemStack> getInventory() {
-        return inventory;
     }
 
     @SideOnly(Side.CLIENT)
@@ -319,21 +233,28 @@ public class TileEntityCampfirePot extends TileEntity implements ITickable, IInv
         return burnTime * par1 / currentItemBurnTime;
     }
 
-    private boolean isRecipes(FluidStack fluid, List<ItemStack> items) {
-        ItemStack result = PotRecipes.INSTANCE.getResultItemStack(fluid, items);
-        return !result.isEmpty();
-    }
-
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+        if (CapabilityUtil.isItemHandler(capability)) {
+            return itemHandler.hasHandler(facing);
+        }
+
+        if (CapabilityUtil.isFluidHandler(capability)) {
+            return true;
+        }
+
+        return super.hasCapability(capability, facing);
     }
 
     @Override
     @Nullable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        if (CapabilityUtil.isItemHandler(capability)) {
+            return itemHandler.getHandler(facing);
+        }
+
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(inputTank);
         }
         return super.getCapability(capability, facing);
     }
@@ -344,53 +265,76 @@ public class TileEntityCampfirePot extends TileEntity implements ITickable, IInv
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        NBTTagCompound ret = super.writeToNBT(compound);
-        writePacketNBT(ret);
-        return ret;
+    protected void onReadFromNBT(NBTTagCompound compound) {
+        itemHandler.deserializeNBT(compound.getCompoundTag(KEY_ITEMS));
+        inputTank.readFromNBT(compound.getCompoundTag(KEY_TANK));
+        burnTime = compound.getInteger(KEY_BURN_TIME);
+        cookTime = compound.getInteger(KEY_COOK_TIME);
     }
 
     @Override
-    public final NBTTagCompound getUpdateTag() {
+    protected void onWriteToNBT(NBTTagCompound compound) {
+        compound.setTag(KEY_ITEMS, itemHandler.serializeNBT());
+        compound.setTag(KEY_TANK, inputTank.writeToNBT(new NBTTagCompound()));
+        compound.setInteger(KEY_BURN_TIME, burnTime);
+        compound.setInteger(KEY_COOK_TIME, cookTime);
+        if (inputTank.getFluid() != null) {
+            liquidForRendering = inputTank.getFluid().copy();
+        }
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-        readPacketNBT(compound);
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        NBTTagCompound compound = new NBTTagCompound();
+        onWriteToNBT(compound);
+        return new SPacketUpdateTileEntity(pos, -999, compound);
     }
 
-    private void writePacketNBT(NBTTagCompound cmp) {
-        ItemStackHelper.saveAllItems(cmp, inventory);
-        cmp.setInteger(KEY_BURN_TIME, burnTime);
-        cmp.setInteger(KEY_COOK_TIME, cookTime);
-        NBTTagCompound tankTag = tank.writeToNBT(new NBTTagCompound());
-        cmp.setTag(KEY_TANK, tankTag);
-        if (tank.getFluid() != null) {
-            liquidForRendering = tank.getFluid().copy();
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        super.onDataPacket(net, pkt);
+        onReadFromNBT(pkt.getNbtCompound());
+    }
+
+    private static class MyItemHandler extends ItemStackHandlerBase {
+        private final Supplier<ItemHandlerWrapper> upWrapper = Suppliers.memoize(
+                () -> new ItemHandlerWrapper(this, 0)
+        );
+
+        private final Supplier<ItemHandlerWrapper> sideWrapper = Suppliers.memoize(
+                () -> new ItemHandlerWrapper(this, 1, 2, 3, 4, 5, 6, 7, 8)
+        );
+
+        private final Supplier<ItemHandlerWrapper> downWrapper = Suppliers.memoize(
+                () -> new ItemHandlerWrapper(this, 9)
+        );
+
+        public MyItemHandler() {
+            super(10);
         }
-    }
 
-    private void readPacketNBT(NBTTagCompound cmp) {
-        inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(cmp, inventory);
-        burnTime = cmp.getInteger(KEY_BURN_TIME);
-        cookTime = cmp.getInteger(KEY_COOK_TIME);
-        tank.readFromNBT(cmp.getCompoundTag(KEY_TANK));
-    }
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return slot >= 0 && slot < 9;
+        }
 
-    @Override
-    public final SPacketUpdateTileEntity getUpdatePacket() {
-        NBTTagCompound tag = new NBTTagCompound();
-        writePacketNBT(tag);
-        return new SPacketUpdateTileEntity(pos, -999, tag);
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        super.onDataPacket(net, packet);
-        readPacketNBT(packet.getNbtCompound());
+        @Nullable
+        @Override
+        public <T> T getHandler(@Nullable EnumFacing facing) {
+            if (facing == null) {
+                return CapabilityUtil.castItemHandler(this);
+            }
+            return switch (facing) {
+                case UP -> CapabilityUtil.castItemHandler(upWrapper.get());
+                case DOWN -> CapabilityUtil.castItemHandler(sideWrapper.get());
+                default -> CapabilityUtil.castItemHandler(downWrapper.get());
+            };
+        }
     }
 
 }

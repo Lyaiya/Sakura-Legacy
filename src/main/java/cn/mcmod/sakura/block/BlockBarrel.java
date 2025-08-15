@@ -40,13 +40,14 @@ public class BlockBarrel extends BlockContainerBase {
     protected boolean onBlockActivatedExt(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                           EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ,
                                           @Nullable TileEntity te) {
-        return tryFillByHandItem(playerIn, hand, facing, te);
+        if (te == null) return false;
+        final ItemStack heldItem = playerIn.getHeldItem(hand);
+        return tryFillByHandItem(playerIn, hand, facing, te, heldItem);
     }
 
-    private boolean tryFillByHandItem(EntityPlayer playerIn, EnumHand hand, EnumFacing facing, @Nullable TileEntity te) {
-        if (te == null) return false;
-        ItemStack stack = playerIn.getHeldItem(hand);
-        IFluidHandlerItem handler = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(stack, 1));
+    private boolean tryFillByHandItem(EntityPlayer playerIn, EnumHand hand, EnumFacing facing, TileEntity te,
+                                      ItemStack heldItem) {
+        IFluidHandlerItem handler = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(heldItem, 1));
         if (handler == null) return false;
 
         final IFluidHandler fluidHandler = CapabilityUtil.getFluidHandler(te, facing);

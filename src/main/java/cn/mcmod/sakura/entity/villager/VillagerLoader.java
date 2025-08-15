@@ -123,39 +123,39 @@ public class VillagerLoader {
 
     private static void registerWineTrader() {
         final VillagerRegistry.VillagerCareer trader = new VillagerRegistry.VillagerCareer(WA_VILLAGER, "wine_trader");
-        trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 0), new PriceInfo(20, 30)));
-        trader.addTrade(1, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 0), new PriceInfo(10, 20)));
-        trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 1), new PriceInfo(20, 30)));
-        trader.addTrade(1, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 1), new PriceInfo(10, 20)));
-        trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 4), new PriceInfo(20, 30)));
-        trader.addTrade(1, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 4), new PriceInfo(10, 20)));
-        trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 5), new PriceInfo(20, 30)));
-        trader.addTrade(1, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 5), new PriceInfo(10, 20)));
+        trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 0), new PriceInfo(20, 30)));
+        trader.addTrade(1, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 0), new PriceInfo(10, 20)));
+        trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 1), new PriceInfo(20, 30)));
+        trader.addTrade(1, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 1), new PriceInfo(10, 20)));
+        trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 4), new PriceInfo(20, 30)));
+        trader.addTrade(1, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 4), new PriceInfo(10, 20)));
+        trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 5), new PriceInfo(20, 30)));
+        trader.addTrade(1, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 5), new PriceInfo(10, 20)));
 
-        trader.addTrade(2, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 2), new PriceInfo(40, 60)));
-        trader.addTrade(2, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 2), new PriceInfo(20, 35)));
-        trader.addTrade(2, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 6), new PriceInfo(40, 60)));
-        trader.addTrade(2, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 6), new PriceInfo(20, 35)));
+        trader.addTrade(2, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 2), new PriceInfo(40, 60)));
+        trader.addTrade(2, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 2), new PriceInfo(20, 35)));
+        trader.addTrade(2, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 6), new PriceInfo(40, 60)));
+        trader.addTrade(2, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 6), new PriceInfo(20, 35)));
 
-        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 3), new PriceInfo(60, 80)));
-        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 3), new PriceInfo(30, 45)));
-        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 7), new PriceInfo(60, 80)));
-        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 7), new PriceInfo(30, 45)));
-        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 8), new PriceInfo(60, 80)));
-        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 8), new PriceInfo(30, 45)));
-        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 9), new PriceInfo(60, 80)));
-        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 9), new PriceInfo(30, 45)));
-        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 10), new PriceInfo(60, 80)));
-        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 10), new PriceInfo(30, 45)));
+        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 3), new PriceInfo(60, 80)));
+        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 3), new PriceInfo(30, 45)));
+        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 7), new PriceInfo(60, 80)));
+        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 7), new PriceInfo(30, 45)));
+        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 8), new PriceInfo(60, 80)));
+        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 8), new PriceInfo(30, 45)));
+        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 9), new PriceInfo(60, 80)));
+        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 9), new PriceInfo(30, 45)));
+        trader.addTrade(3, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 10), new PriceInfo(60, 80)));
+        trader.addTrade(3, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 10), new PriceInfo(30, 45)));
 
-        trader.addTrade(4, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 11), new PriceInfo(50, 100)));
-        trader.addTrade(4, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 11), new PriceInfo(40, 64)));
-        trader.addTrade(4, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 12), new PriceInfo(50, 100)));
-        trader.addTrade(4, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 12), new PriceInfo(40, 64)));
-        trader.addTrade(4, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 13), new PriceInfo(75, 120)));
-        trader.addTrade(4, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 13), new PriceInfo(40, 64)));
-        trader.addTrade(4, new SimpleBuy(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 14), new PriceInfo(75, 120)));
-        trader.addTrade(4, new SimpleSell(new ItemStack(DrinksLoader.bottle_alcoholic, 1, 14), new PriceInfo(40, 64)));
+        trader.addTrade(4, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 11), new PriceInfo(50, 100)));
+        trader.addTrade(4, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 11), new PriceInfo(40, 64)));
+        trader.addTrade(4, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 12), new PriceInfo(50, 100)));
+        trader.addTrade(4, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 12), new PriceInfo(40, 64)));
+        trader.addTrade(4, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 13), new PriceInfo(75, 120)));
+        trader.addTrade(4, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 13), new PriceInfo(40, 64)));
+        trader.addTrade(4, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 14), new PriceInfo(75, 120)));
+        trader.addTrade(4, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 14), new PriceInfo(40, 64)));
     }
 
     private static class SimpleBuy implements ITradeList {

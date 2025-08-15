@@ -7,6 +7,8 @@ import cn.mcmod.sakura.base.wrapper.FluidHandlerWrapper;
 import cn.mcmod.sakura.base.wrapper.ItemHandlerWrapper;
 import cn.mcmod.sakura.util.CapabilityUtil;
 import cn.mcmod.sakura.util.FluidStackUtil;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,13 +21,12 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class TileEntityBarrel extends TileEntityBase {
-    private static final String KEY_INVENTORY = "Inventory";
+    private static final String KEY_ITEMS = "Items";
     private static final String KEY_INPUT_TANK = "InputTank";
     private static final String KEY_OUTPUT_TANK = "OutputTank";
     private static final String KEY_PROCESS_TIME = "ProcessTime";
@@ -210,7 +211,7 @@ public class TileEntityBarrel extends TileEntityBase {
 
     @Override
     protected void onReadFromNBT(NBTTagCompound compound) {
-        itemStackHandler.deserializeNBT(compound.getCompoundTag(KEY_INVENTORY));
+        itemStackHandler.deserializeNBT(compound.getCompoundTag(KEY_ITEMS));
         inputTank.readFromNBT(compound.getCompoundTag(KEY_INPUT_TANK));
         outputTank.readFromNBT(compound.getCompoundTag(KEY_OUTPUT_TANK));
         processTime = compound.getInteger(KEY_PROCESS_TIME);
@@ -219,7 +220,7 @@ public class TileEntityBarrel extends TileEntityBase {
 
     @Override
     protected void onWriteToNBT(NBTTagCompound compound) {
-        compound.setTag(KEY_INVENTORY, itemStackHandler.serializeNBT());
+        compound.setTag(KEY_ITEMS, itemStackHandler.serializeNBT());
         compound.setTag(KEY_INPUT_TANK, inputTank.writeToNBT(new NBTTagCompound()));
         compound.setTag(KEY_OUTPUT_TANK, outputTank.writeToNBT(new NBTTagCompound()));
         compound.setInteger(KEY_PROCESS_TIME, processTime);
@@ -272,14 +273,17 @@ public class TileEntityBarrel extends TileEntityBase {
     }
 
     private static class BarrelItemStackHandler extends ItemStackHandler {
-        @Nullable
-        private ItemHandlerWrapper inputWrapper;
+        private final Supplier<ItemHandlerWrapper> inputWrapper = Suppliers.memoize(
+                () -> new ItemHandlerWrapper(this, 0, 1, 2)
+        );
 
-        @Nullable
-        private ItemHandlerWrapper containerWrapper;
+        private final Supplier<ItemHandlerWrapper> containerWrapper = Suppliers.memoize(
+                () -> new ItemHandlerWrapper(this, 3)
+        );
 
-        @Nullable
-        private ItemHandlerWrapper outputWrapper;
+        private final Supplier<ItemHandlerWrapper> outputWrapper = Suppliers.memoize(
+                () -> new ItemHandlerWrapper(this, 4)
+        );
 
         public BarrelItemStackHandler(int size) {
             super(size);
@@ -315,45 +319,23 @@ public class TileEntityBarrel extends TileEntityBase {
 
             switch (facing) {
                 case UP -> {
-                    return CapabilityUtil.castItemHandler(getContainerWrapper());
+                    return CapabilityUtil.castItemHandler(containerWrapper.get());
                 }
                 case DOWN -> {
-                    return CapabilityUtil.castItemHandler(getOutputWrapper());
+                    return CapabilityUtil.castItemHandler(outputWrapper.get());
                 }
                 case NORTH, SOUTH -> {
-                    return CapabilityUtil.castItemHandler(getInputWrapper());
+                    return CapabilityUtil.castItemHandler(inputWrapper.get());
                 }
             }
             return null;
-        }
-
-        private IItemHandler getInputWrapper() {
-            if (inputWrapper == null) {
-                inputWrapper = new ItemHandlerWrapper(this, 0, 1, 2);
-            }
-            return inputWrapper;
-        }
-
-        private IItemHandler getContainerWrapper() {
-            if (containerWrapper == null) {
-                containerWrapper = new ItemHandlerWrapper(this, 3);
-            }
-            return containerWrapper;
-        }
-
-        private IItemHandler getOutputWrapper() {
-            if (outputWrapper == null) {
-                outputWrapper = new ItemHandlerWrapper(this, 4);
-            }
-            return outputWrapper;
         }
     }
 
     private static abstract class BarrelFluidTank extends FluidTank {
         private final EnumFacing[] facings;
 
-        @Nullable
-        private IFluidHandler wrapper;
+        private final Supplier<IFluidHandler> wrapper = Suppliers.memoize(this::createWrapper);
 
         public BarrelFluidTank(int capacity, EnumFacing... facings) {
             super(capacity);
@@ -367,14 +349,7 @@ public class TileEntityBarrel extends TileEntityBase {
         @Nullable
         public <T> T getHandler(@Nullable EnumFacing facing) {
             if (!hasHandler(facing)) return null;
-            return CapabilityUtil.castFluidHandler(getWrapper());
-        }
-
-        private IFluidHandler getWrapper() {
-            if (wrapper == null) {
-                wrapper = createWrapper();
-            }
-            return wrapper;
+            return CapabilityUtil.castFluidHandler(wrapper.get());
         }
 
         abstract protected FluidHandlerWrapper createWrapper();

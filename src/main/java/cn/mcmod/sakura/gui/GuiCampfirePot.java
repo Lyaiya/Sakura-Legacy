@@ -23,39 +23,39 @@ public class GuiCampfirePot extends GuiContainer {
     public GuiCampfirePot(InventoryPlayer inventory, TileEntityCampfirePot te) {
         super(new ContainerCampfirePot(inventory, te));
 
-        this.teCampfirePot = te;
-        this.playerInventory = inventory;
+        teCampfirePot = te;
+        playerInventory = inventory;
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        this.fontRenderer.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+        fontRenderer.drawString(playerInventory.getDisplayName().getUnformattedText(), 8, ySize - 96 + 2, 4210752);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTickTime, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(TEXTURES);
+        mc.getTextureManager().bindTexture(TEXTURES);
 
-        int k = (this.width - this.xSize) / 2;
-        int l = (this.height - this.ySize) / 2;
+        int k = (width - xSize) / 2;
+        int l = (height - ySize) / 2;
 
-        this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
+        drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
 
         int var7;
 
         // Flame
-        if (this.teCampfirePot.isBurning()) {
-            var7 = this.teCampfirePot.getBurnTimeRemainingScaled(12);
+        if (teCampfirePot.isBurning()) {
+            var7 = teCampfirePot.getBurnTimeRemainingScaled(12);
 
-            this.drawTexturedModalRect(k + 100, l + 67 - var7, 176, 12 - var7, 14, var7 + 2);
+            drawTexturedModalRect(k + 100, l + 67 - var7, 176, 12 - var7, 14, var7 + 2);
         }
 
-        int l2 = this.getCookProgressScaled(24);
-        this.drawTexturedModalRect(k + 96, l + 37, 176, 14, l2 + 1, 16);
+        int l2 = getCookProgressScaled(24);
+        drawTexturedModalRect(k + 96, l + 37, 176, 14, l2 + 1, 16);
 
-        if (this.teCampfirePot.getTank().getFluid() != null) {
-            FluidTank fluidTank = this.teCampfirePot.getTank();
+        if (teCampfirePot.getInputTank().getFluid() != null) {
+            FluidTank fluidTank = teCampfirePot.getInputTank();
             int heightInd = (int) (72 * ((float) fluidTank.getFluidAmount() / (float) fluidTank.getCapacity()));
             if (heightInd > 0) {
                 ClientUtils.getInstance().drawRepeatedFluidSprite(fluidTank.getFluid(), k + 167 - heightInd, l + 11, heightInd, 16f);
@@ -64,16 +64,18 @@ public class GuiCampfirePot extends GuiContainer {
     }
 
     private int getCookProgressScaled(int pixels) {
-        int cookTime = this.teCampfirePot.getField(TileEntityCampfirePot.ID_COOK_TIME);
-        int maxCookTime = this.teCampfirePot.getField(TileEntityCampfirePot.ID_MAX_COOK_TIMER);
-        return maxCookTime != 0 && cookTime != 0 ? cookTime * pixels / maxCookTime : 0;
+        int cookTime = teCampfirePot.getCookTime();
+        if (cookTime == 0) return 0;
+        int totalCookTime = teCampfirePot.getTotalCookTime();
+        if (totalCookTime == 0) return 0;
+        return cookTime * pixels / totalCookTime;
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.drawDefaultBackground();
+        drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        this.renderHoveredToolTip(mouseX, mouseY);
+        renderHoveredToolTip(mouseX, mouseY);
     }
 
 }
