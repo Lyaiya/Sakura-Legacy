@@ -2,28 +2,29 @@ package cn.mcmod.sakura.tileentity;
 
 import cn.mcmod.sakura.api.recipes.BarrelRecipes;
 import cn.mcmod.sakura.api.recipes.LiquidToItemRecipes;
-import cn.mcmod.sakura.base.ItemStackHandlerWrapper;
+import cn.mcmod.sakura.base.TileEntityBase;
+import cn.mcmod.sakura.base.wrapper.FluidHandlerWrapper;
+import cn.mcmod.sakura.base.wrapper.ItemHandlerWrapper;
+import cn.mcmod.sakura.util.CapabilityUtil;
 import cn.mcmod.sakura.util.FluidStackUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
-public class TileEntityBarrel extends TileEntity implements ITickable {
+public class TileEntityBarrel extends TileEntityBase {
     private static final String KEY_INVENTORY = "Inventory";
     private static final String KEY_INPUT_TANK = "InputTank";
     private static final String KEY_OUTPUT_TANK = "OutputTank";
@@ -34,10 +35,10 @@ public class TileEntityBarrel extends TileEntity implements ITickable {
     private int processTime = 0;
     private final int totalProcessTime = 1200;
 
-    private final FluidTank inputTank = new FluidTank(3000) {
+    private final BarrelFluidTank inputTank = new BarrelFluidTank(3000, EnumFacing.EAST) {
         @Override
-        protected void onContentsChanged() {
-            refresh();
+        protected FluidHandlerWrapper createWrapper() {
+            return new FluidHandlerWrapper(this, true, true);
         }
 
         @Override
@@ -47,34 +48,26 @@ public class TileEntityBarrel extends TileEntity implements ITickable {
             }
             return fluid.getFluid().getTemperature(fluid) < 500;
         }
-    };
 
-    private final FluidTank outputTank = new FluidTank(3000) {
         @Override
         protected void onContentsChanged() {
             refresh();
         }
     };
 
-    private final ItemStackHandler itemStackHandler = new ItemStackHandler(5) {
+    private final BarrelFluidTank outputTank = new BarrelFluidTank(3000, EnumFacing.WEST) {
         @Override
-        public boolean isItemValid(int slot, ItemStack stack) {
-            return switch (slot) {
-                case 0, 1, 2 -> true;
-                case 3 -> LiquidToItemRecipes.INSTANCE.hasInput(stack);
-                default -> false;
-            };
+        protected FluidHandlerWrapper createWrapper() {
+            return new FluidHandlerWrapper(this, false, true);
+        }
+
+        @Override
+        protected void onContentsChanged() {
+            refresh();
         }
     };
 
-    @Nullable
-    private ItemStackHandlerWrapper inputWrapper;
-
-    @Nullable
-    private ItemStackHandlerWrapper containerWrapper;
-
-    @Nullable
-    private ItemStackHandlerWrapper outputWrapper;
+    private final BarrelItemStackHandler itemStackHandler = new BarrelItemStackHandler(5);
 
     public TileEntityBarrel() {
     }
@@ -114,9 +107,15 @@ public class TileEntityBarrel extends TileEntity implements ITickable {
     public void update() {
         if (world.isRemote) return;
         drainOutputTank();
+        process();
+    }
 
+    private void process() {
         FluidStack inputTankFluidStack = inputTank.getFluid();
-        if (inputTankFluidStack == null) return;
+        if (inputTankFluidStack == null) {
+            processTime = 0;
+            return;
+        }
 
         ItemStack[] inputItemStacks = new ItemStack[]{
                 itemStackHandler.getStackInSlot(0),
@@ -164,21 +163,16 @@ public class TileEntityBarrel extends TileEntity implements ITickable {
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (facing == null) return true;
-            switch (facing) {
-                case DOWN, UP, NORTH, SOUTH -> {
-                    return true;
-                }
-                case WEST, EAST -> {
-                    return false;
-                }
-            }
+        if (CapabilityUtil.isItemHandler(capability)) {
+            return itemStackHandler.hasHandler(facing);
         }
 
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            if (facing == EnumFacing.WEST
-                    || facing == EnumFacing.EAST) {
+        if (CapabilityUtil.isFluidHandler(capability)) {
+            if (inputTank.hasHandler(facing)) {
+                return true;
+            }
+
+            if (outputTank.hasHandler(facing)) {
                 return true;
             }
         }
@@ -188,31 +182,24 @@ public class TileEntityBarrel extends TileEntity implements ITickable {
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (facing == null) {
-                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemStackHandler);
-            }
+        if (CapabilityUtil.isItemHandler(capability)) {
+            final T handler = itemStackHandler.getHandler(facing);
+            if (handler != null) return handler;
+        }
 
-            switch (facing) {
-                case UP -> {
-                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getContainerWrapper());
-                }
-                case DOWN -> {
-                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getOutputWrapper());
-                }
-                case NORTH, SOUTH -> {
-                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getInputWrapper());
-                }
+        if (CapabilityUtil.isFluidHandler(capability)) {
+            T handler;
+
+            handler = inputTank.getHandler(facing);
+            if (handler != null) {
+                return handler;
+            }
+            handler = outputTank.getHandler(facing);
+            if (handler != null) {
+                return handler;
             }
         }
 
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            if (facing == EnumFacing.WEST) {
-                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(outputTank);
-            } else if (facing == EnumFacing.EAST) {
-                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(inputTank);
-            }
-        }
         return super.getCapability(capability, facing);
     }
 
@@ -222,12 +209,7 @@ public class TileEntityBarrel extends TileEntity implements ITickable {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-        readPacketNBT(compound);
-    }
-
-    private void readPacketNBT(NBTTagCompound compound) {
+    protected void onReadFromNBT(NBTTagCompound compound) {
         itemStackHandler.deserializeNBT(compound.getCompoundTag(KEY_INVENTORY));
         inputTank.readFromNBT(compound.getCompoundTag(KEY_INPUT_TANK));
         outputTank.readFromNBT(compound.getCompoundTag(KEY_OUTPUT_TANK));
@@ -236,13 +218,7 @@ public class TileEntityBarrel extends TileEntity implements ITickable {
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        NBTTagCompound ret = super.writeToNBT(compound);
-        writePacketNBT(ret);
-        return ret;
-    }
-
-    private void writePacketNBT(NBTTagCompound compound) {
+    protected void onWriteToNBT(NBTTagCompound compound) {
         compound.setTag(KEY_INVENTORY, itemStackHandler.serializeNBT());
         compound.setTag(KEY_INPUT_TANK, inputTank.writeToNBT(new NBTTagCompound()));
         compound.setTag(KEY_OUTPUT_TANK, outputTank.writeToNBT(new NBTTagCompound()));
@@ -258,14 +234,14 @@ public class TileEntityBarrel extends TileEntity implements ITickable {
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound tag = new NBTTagCompound();
-        writePacketNBT(tag);
+        onWriteToNBT(tag);
         return new SPacketUpdateTileEntity(pos, -999, tag);
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        super.onDataPacket(net, packet);
-        readPacketNBT(packet.getNbtCompound());
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        super.onDataPacket(net, pkt);
+        onReadFromNBT(pkt.getNbtCompound());
     }
 
     private void drainOutputTank() {
@@ -295,25 +271,113 @@ public class TileEntityBarrel extends TileEntity implements ITickable {
         outputTank.drain(inputRecipeFluidStack, true);
     }
 
-    private IItemHandler getInputWrapper() {
-        if (inputWrapper == null) {
-            inputWrapper = new ItemStackHandlerWrapper(itemStackHandler, 0, 1, 2);
+    private static class BarrelItemStackHandler extends ItemStackHandler {
+        @Nullable
+        private ItemHandlerWrapper inputWrapper;
+
+        @Nullable
+        private ItemHandlerWrapper containerWrapper;
+
+        @Nullable
+        private ItemHandlerWrapper outputWrapper;
+
+        public BarrelItemStackHandler(int size) {
+            super(size);
         }
-        return inputWrapper;
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return switch (slot) {
+                case 0, 1, 2 -> true;
+                case 3 -> LiquidToItemRecipes.INSTANCE.hasInput(stack);
+                default -> false;
+            };
+        }
+
+        public boolean hasHandler(@Nullable EnumFacing facing) {
+            if (facing == null) return true;
+            switch (facing) {
+                case DOWN, UP, NORTH, SOUTH -> {
+                    return true;
+                }
+                case WEST, EAST -> {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        @Nullable
+        public <T> T getHandler(@Nullable EnumFacing facing) {
+            if (facing == null) {
+                return CapabilityUtil.castItemHandler(this);
+            }
+
+            switch (facing) {
+                case UP -> {
+                    return CapabilityUtil.castItemHandler(getContainerWrapper());
+                }
+                case DOWN -> {
+                    return CapabilityUtil.castItemHandler(getOutputWrapper());
+                }
+                case NORTH, SOUTH -> {
+                    return CapabilityUtil.castItemHandler(getInputWrapper());
+                }
+            }
+            return null;
+        }
+
+        private IItemHandler getInputWrapper() {
+            if (inputWrapper == null) {
+                inputWrapper = new ItemHandlerWrapper(this, 0, 1, 2);
+            }
+            return inputWrapper;
+        }
+
+        private IItemHandler getContainerWrapper() {
+            if (containerWrapper == null) {
+                containerWrapper = new ItemHandlerWrapper(this, 3);
+            }
+            return containerWrapper;
+        }
+
+        private IItemHandler getOutputWrapper() {
+            if (outputWrapper == null) {
+                outputWrapper = new ItemHandlerWrapper(this, 4);
+            }
+            return outputWrapper;
+        }
     }
 
-    private IItemHandler getContainerWrapper() {
-        if (containerWrapper == null) {
-            containerWrapper = new ItemStackHandlerWrapper(itemStackHandler, 3);
-        }
-        return containerWrapper;
-    }
+    private static abstract class BarrelFluidTank extends FluidTank {
+        private final EnumFacing[] facings;
 
-    private IItemHandler getOutputWrapper() {
-        if (outputWrapper == null) {
-            outputWrapper = new ItemStackHandlerWrapper(itemStackHandler, 4);
+        @Nullable
+        private IFluidHandler wrapper;
+
+        public BarrelFluidTank(int capacity, EnumFacing... facings) {
+            super(capacity);
+            this.facings = facings;
         }
-        return outputWrapper;
+
+        public boolean hasHandler(@Nullable EnumFacing facing) {
+            return ArrayUtils.contains(facings, facing);
+        }
+
+        @Nullable
+        public <T> T getHandler(@Nullable EnumFacing facing) {
+            if (!hasHandler(facing)) return null;
+            return CapabilityUtil.castFluidHandler(getWrapper());
+        }
+
+        private IFluidHandler getWrapper() {
+            if (wrapper == null) {
+                wrapper = createWrapper();
+            }
+            return wrapper;
+        }
+
+        abstract protected FluidHandlerWrapper createWrapper();
     }
 
 }

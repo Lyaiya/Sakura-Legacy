@@ -1,15 +1,14 @@
-package cn.mcmod.sakura.base;
+package cn.mcmod.sakura.base.wrapper;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.ArrayUtils;
 
-public class ItemStackHandlerWrapper implements IItemHandler {
-    private final ItemStackHandler handler;
+public class ItemHandlerWrapper implements IItemHandler {
+    private final IItemHandler handler;
     private final int[] slots;
 
-    public ItemStackHandlerWrapper(ItemStackHandler handler, int... slots) {
+    public ItemHandlerWrapper(IItemHandler handler, int... slots) {
         this.handler = handler;
         this.slots = slots;
     }

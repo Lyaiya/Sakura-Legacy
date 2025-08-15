@@ -1,56 +1,39 @@
 package cn.mcmod.sakura.inventory;
 
+import cn.mcmod.sakura.base.ContainerBase;
 import cn.mcmod.sakura.tileentity.TileEntityBarrel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerBarrel extends Container {
+public class ContainerBarrel extends ContainerBase<TileEntityBarrel> {
     private static final int ID_PROCESS_TIME = 0;
-
-    private final TileEntityBarrel teBarrel;
 
     private int processTime;
 
-    public ContainerBarrel(InventoryPlayer inventory, TileEntityBarrel te) {
-        teBarrel = te;
+    public ContainerBarrel(InventoryPlayer playerInventory, TileEntityBarrel te) {
+        super(playerInventory, te);
+    }
 
-        final IItemHandler itemHandler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-
+    @Override
+    protected void addSlots(IItemHandler itemHandler) {
         for (int i = 0; i < 3; ++i) {
             addSlotToContainer(new SlotItemHandler(itemHandler, i, 42, 36 + (i - 1) * 18));
         }
         addSlotToContainer(new SlotItemHandler(itemHandler, 3, 131, 12));
-        addSlotToContainer(new SlotItemHandler(itemHandler, 4, 130, 56) {
-            @Override
-            public boolean isItemValid(ItemStack stack) {
-                return false;
-            }
-        });
-
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-            }
-        }
-
-        for (int i = 0; i < 9; ++i) {
-            addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
-        }
+        addSlotToContainer(new SlotItemHandler(itemHandler, 4, 130, 56));
     }
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendWindowProperty(this, ID_PROCESS_TIME, teBarrel.getProcessTime());
+        listener.sendWindowProperty(this, ID_PROCESS_TIME, te.getProcessTime());
     }
 
     @Override
@@ -58,25 +41,20 @@ public class ContainerBarrel extends Container {
         super.detectAndSendChanges();
 
         for (IContainerListener listener : listeners) {
-            if (processTime != teBarrel.getProcessTime()) {
-                listener.sendWindowProperty(this, ID_PROCESS_TIME, teBarrel.getProcessTime());
+            if (processTime != te.getProcessTime()) {
+                listener.sendWindowProperty(this, ID_PROCESS_TIME, te.getProcessTime());
             }
         }
 
-        processTime = teBarrel.getProcessTime();
+        processTime = te.getProcessTime();
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public void updateProgressBar(int id, int value) {
         if (id == ID_PROCESS_TIME) {
-            teBarrel.setProcessTime(value);
+            te.setProcessTime(value);
         }
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player) {
-        return ContainerUtil.canInteractWith(player, teBarrel);
     }
 
     /**

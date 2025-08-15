@@ -17,7 +17,8 @@ import java.util.Map.Entry;
 public class BarrelRecipes {
     public static final BarrelRecipes INSTANCE = new BarrelRecipes();
 
-    public final Map<Pair<FluidStack, Object[]>, List<FluidStack>> recipesList = Maps.newHashMap();
+    // key: Output Fluid, Input Item, value: Input Fluid
+    public final Map<Pair<FluidStack, Object[]>, List<FluidStack>> recipes = Maps.newHashMap();
 
     private BarrelRecipes() {
     }
@@ -28,7 +29,7 @@ public class BarrelRecipes {
 
     public void register(FluidStack input, FluidStack output, Object[] additives) {
         Pair<FluidStack, Object[]> items = Pair.of(output, additives);
-        recipesList.put(items, Lists.newArrayList(input));
+        recipes.put(items, Lists.newArrayList(input));
     }
 
     public void register(List<FluidStack> input, FluidStack output) {
@@ -37,12 +38,12 @@ public class BarrelRecipes {
 
     public void register(List<FluidStack> input, FluidStack output, Object[] additives) {
         Pair<FluidStack, Object[]> items = Pair.of(output, additives);
-        recipesList.put(items, input);
+        recipes.put(items, input);
     }
 
     @Nullable
     public FluidStack getInput(FluidStack output) {
-        for (List<FluidStack> entry : recipesList.values()) {
+        for (List<FluidStack> entry : recipes.values()) {
             for (FluidStack stack : entry) {
                 if (stack.isFluidEqual(output)) {
                     return stack;
@@ -53,17 +54,17 @@ public class BarrelRecipes {
     }
 
     @Nullable
-    public FluidStack getOutput(FluidStack output, ItemStack[] inputs) {
-        for (Entry<Pair<FluidStack, Object[]>, List<FluidStack>> entry : recipesList.entrySet()) {
-            for (FluidStack stack : entry.getValue()) {
-                if (!stack.isFluidEqual(output)) continue;
+    public FluidStack getOutput(FluidStack inputFluid, ItemStack[] inputItems) {
+        for (Entry<Pair<FluidStack, Object[]>, List<FluidStack>> entry : recipes.entrySet()) {
+            for (FluidStack fluidStack : entry.getValue()) {
+                if (!fluidStack.isFluidEqual(inputFluid)) continue;
 
                 boolean flg1 = true;
 
                 for (Object additive : entry.getKey().getRight()) {
                     boolean isEqual = false;
 
-                    for (ItemStack input : inputs) {
+                    for (ItemStack input : inputItems) {
                         if (additive instanceof ItemStack itemStack) {
                             if (ItemStack.areItemsEqual(itemStack, input)) {
                                 isEqual = true;
@@ -93,18 +94,22 @@ public class BarrelRecipes {
         return null;
     }
 
-    public void clearRecipe(FluidStack inputFluidStack) {
-        for (Entry<Pair<FluidStack, Object[]>, List<FluidStack>> entry : recipesList.entrySet()) {
-            Pair<FluidStack, Object[]> recipe = entry.getKey();
-            if (recipe.getLeft().isFluidEqual(inputFluidStack)) {
-                recipesList.remove(entry.getKey());
-                return;
+    public void clearRecipe(FluidStack output) {
+        Pair<FluidStack, Object[]> keyToRemove = null;
+        for (Entry<Pair<FluidStack, Object[]>, List<FluidStack>> entry : recipes.entrySet()) {
+            Pair<FluidStack, Object[]> pair = entry.getKey();
+            if (pair.getLeft().isFluidEqual(output)) {
+                keyToRemove = pair;
+                break;
             }
         }
-        throw new NullPointerException("NO RECIPE HERE");
+        if (keyToRemove == null) {
+            throw new NullPointerException(output + "NO RECIPE HERE");
+        }
+        recipes.remove(keyToRemove);
     }
 
     public void clearAllRecipe() {
-        recipesList.clear();
+        recipes.clear();
     }
 }

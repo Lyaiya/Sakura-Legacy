@@ -1,56 +1,46 @@
 package cn.mcmod.sakura.inventory;
 
+import cn.mcmod.sakura.base.ContainerBase;
 import cn.mcmod.sakura.tileentity.TileEntityStoneMortar;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerStoneMortar extends Container {
-    private final TileEntityStoneMortar teStoneMortar;
+public class ContainerStoneMortar extends ContainerBase<TileEntityStoneMortar> {
+    private static final int ID_PROCESS_TIME = 0;
+    private static final int ID_TOTAL_PROCESS_TIME = 1;
 
     private int processTime;
-    private int maxProcessTime;
+    private int totalProcessTime;
 
-    public ContainerStoneMortar(InventoryPlayer inventory, TileEntityStoneMortar te) {
-        teStoneMortar = te;
-        addSlotToContainer(new Slot(te, 0, 40, 26));
-        addSlotToContainer(new Slot(te, 1, 58, 26));
-        addSlotToContainer(new Slot(te, 2, 40, 44));
-        addSlotToContainer(new Slot(te, 3, 58, 44));
-        addSlotToContainer(new Slot(te, 4, 108, 37) {
-            @Override
-            public boolean isItemValid(ItemStack stack) {
-                return false;
-            }
-        });
-        addSlotToContainer(new Slot(te, 5, 132, 37) {
-            @Override
-            public boolean isItemValid(ItemStack stack) {
-                return false;
-            }
-        });
-        int i;
+    public ContainerStoneMortar(InventoryPlayer playerInventory, TileEntityStoneMortar te) {
+        super(playerInventory, te);
+    }
 
-        for (i = 0; i < 3; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                addSlotToContainer(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-            }
-        }
+    @Override
+    protected void addSlots(IItemHandler itemHandler) {
+        // Input
+        addSlotToContainer(new SlotItemHandler(itemHandler, 0, 40, 26));
+        addSlotToContainer(new SlotItemHandler(itemHandler, 1, 58, 26));
+        addSlotToContainer(new SlotItemHandler(itemHandler, 2, 40, 44));
+        addSlotToContainer(new SlotItemHandler(itemHandler, 3, 58, 44));
 
-        for (i = 0; i < 9; ++i) {
-            addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
-        }
+        // Output
+        addSlotToContainer(new SlotItemHandler(itemHandler, 4, 108, 37));
+        addSlotToContainer(new SlotItemHandler(itemHandler, 5, 132, 37));
     }
 
     @Override
     public void addListener(IContainerListener listener) {
         super.addListener(listener);
-        listener.sendAllWindowProperties(this, teStoneMortar);
+        listener.sendWindowProperty(this, ID_PROCESS_TIME, te.getProcessTime());
+        listener.sendWindowProperty(this, ID_TOTAL_PROCESS_TIME, te.getTotalProcessTime());
     }
 
     @Override
@@ -58,28 +48,30 @@ public class ContainerStoneMortar extends Container {
         super.detectAndSendChanges();
 
         for (IContainerListener listener : listeners) {
-            if (processTime != teStoneMortar.getField(TileEntityStoneMortar.ID_PROCESS_TIMER)) {
-                listener.sendWindowProperty(this, 0, teStoneMortar.getField(TileEntityStoneMortar.ID_PROCESS_TIMER));
+            if (processTime != te.getProcessTime()) {
+                listener.sendWindowProperty(this, ID_PROCESS_TIME, te.getProcessTime());
             }
 
-            if (maxProcessTime != teStoneMortar.getField(TileEntityStoneMortar.ID_MAX_PROCESS_TIMER)) {
-                listener.sendWindowProperty(this, 1, teStoneMortar.getField(TileEntityStoneMortar.ID_MAX_PROCESS_TIMER));
+            if (totalProcessTime != te.getTotalProcessTime()) {
+                listener.sendWindowProperty(this, ID_TOTAL_PROCESS_TIME, te.getTotalProcessTime());
             }
         }
 
-        processTime = teStoneMortar.getField(TileEntityStoneMortar.ID_PROCESS_TIMER);
-        maxProcessTime = teStoneMortar.getField(TileEntityStoneMortar.ID_MAX_PROCESS_TIMER);
+        processTime = te.getProcessTime();
+        totalProcessTime = te.getTotalProcessTime();
     }
 
-    @Override
     @SideOnly(Side.CLIENT)
-    public void updateProgressBar(int id, int value) {
-        teStoneMortar.setField(id, value);
-    }
-
     @Override
-    public boolean canInteractWith(EntityPlayer player) {
-        return teStoneMortar.isUsableByPlayer(player);
+    public void updateProgressBar(int id, int value) {
+        switch (id) {
+            case ID_PROCESS_TIME:
+                te.setProcessTime(value);
+                break;
+            case ID_TOTAL_PROCESS_TIME:
+                te.setTotalProcessTime(value);
+                break;
+        }
     }
 
     /**

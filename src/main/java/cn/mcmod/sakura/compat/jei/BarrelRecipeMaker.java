@@ -17,7 +17,7 @@ public final class BarrelRecipeMaker {
 
         List<BarrelRecipe> recipes = new ArrayList<>();
 
-        for (Entry<Pair<FluidStack, Object[]>, List<FluidStack>> entry : BarrelRecipes.INSTANCE.recipesList.entrySet()) {
+        for (Entry<Pair<FluidStack, Object[]>, List<FluidStack>> entry : BarrelRecipes.INSTANCE.recipes.entrySet()) {
             List<List<ItemStack>> inputs = new ArrayList<>();
             List<List<FluidStack>> fluidlist = new ArrayList<>();
 

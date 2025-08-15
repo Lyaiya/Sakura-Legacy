@@ -1,108 +1,130 @@
 package cn.mcmod.sakura.tileentity;
 
 import cn.mcmod.sakura.api.recipes.MortarRecipes;
+import cn.mcmod.sakura.base.TileEntityBase;
+import cn.mcmod.sakura.base.wrapper.ItemHandlerWrapper;
 import cn.mcmod.sakura.inventory.ContainerStoneMortar;
-import cn.mcmod_mmf.mmlib.util.RecipesUtil;
+import cn.mcmod.sakura.util.CapabilityUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.NonNullList;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class TileEntityStoneMortar extends TileEntity implements ITickable, ISidedInventory {
-    public static final int ID_PROCESS_TIMER = 0;
-    public static final int ID_MAX_PROCESS_TIMER = 1;
+public class TileEntityStoneMortar extends TileEntityBase {
+    private static final String KEY_INVENTORY = "Inventory";
+    private static final String KEY_PROCESS_TIME = "ProcessTime";
+    private static final String KEY_TOTAL_PROCESS_TIME = "ProcessTimeTotal";
 
-    private static final String KEY_PROCESS_TIMER = "processTimer";
-    private static final String KEY_MAX_PROCESS_TIMER = "maxProcessTimer";
+    private int processTime = 0;
+    private int totalProcessTime = 200;
 
-    private static final int[] SLOTS_INPUT = {0, 1, 2, 3};
-    private static final int[] SLOTS_OUTPUT = {4, 5};
+    private final ItemStackHandler itemStackHandler = new ItemStackHandler(6) {
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return switch (slot) {
+                case 0, 1, 2, 3 -> true;
+                case 4, 5 -> false;
+                default -> false;
+            };
+        }
+    };
 
-    private final NonNullList<ItemStack> inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
-
-    private int processTimer = 0;
-    private int maxProcessTimer = 200;
+    private final ItemHandlerWrapper inputWrapper = new ItemHandlerWrapper(itemStackHandler, 0, 1, 2, 3);
+    private final ItemHandlerWrapper outputWrapper = new ItemHandlerWrapper(itemStackHandler, 4, 5);
 
     public TileEntityStoneMortar() {
+        super("stonemortar");
     }
 
-    public int getProcessTimer() {
-        return processTimer;
+    public int getProcessTime() {
+        return processTime;
+    }
+
+    public void setProcessTime(int processTime) {
+        this.processTime = processTime;
+    }
+
+    public int getTotalProcessTime() {
+        return totalProcessTime;
+    }
+
+    public void setTotalProcessTime(int totalProcessTime) {
+        this.totalProcessTime = totalProcessTime;
     }
 
     @Override
     public void update() {
         if (world.isRemote) return;
-        ItemStack input1 = inventory.get(0);
-        ItemStack input2 = inventory.get(1);
-        ItemStack input3 = inventory.get(2);
-        ItemStack input4 = inventory.get(3);
-        ItemStack output1 = inventory.get(4);
-        ItemStack output2 = inventory.get(5);
 
-        List<ItemStack> inventoryList = Lists.newArrayList();
+        final List<ItemStack> inputs = Lists.newArrayList();
         for (int i = 0; i < 4; i++) {
-            if (!inventory.get(i).isEmpty()) {
-                inventoryList.add(inventory.get(i).copy());
-            }
+            ItemStack itemStack = itemStackHandler.getStackInSlot(i);
+            if (itemStack.isEmpty()) continue;
+            inputs.add(itemStack.copy());
         }
 
-        ItemStack[] result = MortarRecipes.INSTANCE.getResult(inventoryList);
-        if (result.length > 0) {
-            if (RecipesUtil.getInstance().canIncrease(result[0], output1)) {
-                if (result.length > 1) {
-                    if (RecipesUtil.getInstance().canIncrease(result[1], output2)) {
-                        processTimer += 1;
-                    } else {
-                        processTimer = 0;
-                    }
-                } else {
-                    processTimer += 1;
-                }
-            } else {
-                processTimer = 0;
-            }
+        final ItemStack[] output = MortarRecipes.INSTANCE.getOutput(inputs);
+
+        if (output.length == 0) {
+            processTime = 0;
+            return;
+        }
+
+        final ItemStack output1 = output[0];
+        final ItemStack output2;
+        if (output.length == 2) {
+            output2 = output[1];
         } else {
-            processTimer = 0;
+            output2 = null;
         }
 
-        if (processTimer >= maxProcessTimer) {
-            processTimer = 0;
+        boolean canInsert = false;
 
-            if (output1.isEmpty()) {
-                inventory.set(4, result[0].copy());
-            } else if (output1.getItem() == result[0].getItem()) {
-                output1.grow(result[0].getCount());
+        run:
+        {
+            if (!itemStackHandler.insertItem(4, output1, true).isEmpty()) {
+                break run;
             }
-            if (result.length > 1) {
-                if (output2.isEmpty()) {
-                    inventory.set(5, result[1].copy());
-                } else if (output2.getItem() == result[1].getItem()) {
-                    output2.grow(result[1].getCount());
+
+            if (output2 != null) {
+                if (!itemStackHandler.insertItem(5, output2, true).isEmpty()) {
+                    break run;
                 }
             }
 
-            input1.shrink(1);
-            input2.shrink(1);
-            input3.shrink(1);
-            input4.shrink(1);
-
-            markDirty();
+            canInsert = true;
         }
+        if (canInsert) {
+            processTime++;
+        } else {
+            processTime = 0;
+        }
+
+        if (processTime < totalProcessTime) return;
+        processTime = 0;
+
+        itemStackHandler.insertItem(4, output1, false);
+        if (output2 != null) {
+            itemStackHandler.insertItem(5, output2, false);
+        }
+
+        itemStackHandler.extractItem(0, 1, false);
+        itemStackHandler.extractItem(1, 1, false);
+        itemStackHandler.extractItem(2, 1, false);
+        itemStackHandler.extractItem(3, 1, false);
+
+        markDirty();
     }
 
     private void refresh() {
@@ -118,155 +140,17 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
     }
 
     @Override
-    public String getName() {
-        return "container.sakura.stonemortar";
+    protected void onReadFromNBT(NBTTagCompound compound) {
+        itemStackHandler.deserializeNBT(compound.getCompoundTag(KEY_INVENTORY));
+        totalProcessTime = compound.getInteger(KEY_TOTAL_PROCESS_TIME);
+        processTime = compound.getInteger(KEY_PROCESS_TIME);
     }
 
     @Override
-    public boolean hasCustomName() {
-        return false;
-    }
-
-    @Override
-    public int getSizeInventory() {
-        return 6;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        for (ItemStack itemstack : inventory) {
-            if (!itemstack.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public ItemStack getStackInSlot(int index) {
-        return inventory.get(index);
-    }
-
-    @Override
-    public ItemStack decrStackSize(int index, int count) {
-        ItemStack itemstack = ItemStackHelper.getAndSplit(inventory, index, count);
-
-        if (!itemstack.isEmpty()) {
-            markDirty();
-        }
-
-        return itemstack;
-    }
-
-    @Override
-    public ItemStack removeStackFromSlot(int index) {
-        return ItemStackHelper.getAndRemove(inventory, index);
-    }
-
-    @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
-        inventory.set(index, stack);
-        if (stack.getCount() > getInventoryStackLimit()) {
-            stack.setCount(getInventoryStackLimit());
-        }
-        markDirty();
-    }
-
-    @Override
-    public int getInventoryStackLimit() {
-        return 64;
-    }
-
-    @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
-        if (world.getTileEntity(pos) != this) {
-            return false;
-        }
-        return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
-    }
-
-    @Override
-    public void openInventory(EntityPlayer player) {
-        markDirty();
-    }
-
-    @Override
-    public void closeInventory(EntityPlayer player) {
-        markDirty();
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index < 4;
-    }
-
-    @Override
-    public int getField(int id) {
-        return switch (id) {
-            case ID_PROCESS_TIMER -> processTimer;
-            case ID_MAX_PROCESS_TIMER -> maxProcessTimer;
-            default -> 0;
-        };
-    }
-
-    @Override
-    public void setField(int id, int value) {
-        switch (id) {
-            case ID_PROCESS_TIMER:
-                processTimer = value;
-                break;
-            case ID_MAX_PROCESS_TIMER:
-                maxProcessTimer = value;
-                break;
-        }
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 2;
-    }
-
-    @Override
-    public void clear() {
-        inventory.clear();
-    }
-
-    @Override
-    public int[] getSlotsForFace(EnumFacing enumFacing) {
-        return switch (enumFacing) {
-            case DOWN -> SLOTS_OUTPUT;
-            case UP -> SLOTS_INPUT;
-            default -> new int[0];
-        };
-    }
-
-    @Override
-    public boolean canInsertItem(int i, ItemStack itemStack, EnumFacing enumFacing) {
-        return true;
-    }
-
-    @Override
-    public boolean canExtractItem(int i, ItemStack itemStack, EnumFacing enumFacing) {
-        return true;
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-        inventory.clear();
-        ItemStackHelper.loadAllItems(compound, inventory);
-
-        maxProcessTimer = compound.getInteger(KEY_MAX_PROCESS_TIMER);
-        processTimer = compound.getInteger(KEY_PROCESS_TIMER);
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        compound = super.writeToNBT(compound);
-        ItemStackHelper.saveAllItems(compound, inventory);
-        compound.setInteger(KEY_MAX_PROCESS_TIMER, maxProcessTimer);
-        compound.setInteger(KEY_PROCESS_TIMER, processTimer);
-        return compound;
+    protected void onWriteToNBT(NBTTagCompound compound) {
+        compound.setTag(KEY_INVENTORY, itemStackHandler.serializeNBT());
+        compound.setInteger(KEY_TOTAL_PROCESS_TIME, totalProcessTime);
+        compound.setInteger(KEY_PROCESS_TIME, processTime);
     }
 
     @Override
@@ -294,4 +178,28 @@ public class TileEntityStoneMortar extends TileEntity implements ITickable, ISid
         readFromNBT(pkt.getNbtCompound());
     }
 
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+        if (CapabilityUtil.isItemHandler(capability)) {
+            return true;
+        }
+        return super.hasCapability(capability, facing);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+        if (CapabilityUtil.isItemHandler(capability)) {
+            if (facing == null) {
+                return CapabilityUtil.castItemHandler(itemStackHandler);
+            }
+
+            if (facing == EnumFacing.DOWN) {
+                return CapabilityUtil.castItemHandler(outputWrapper);
+            } else {
+                return CapabilityUtil.castItemHandler(inputWrapper);
+            }
+        }
+        return super.getCapability(capability, facing);
+    }
 }

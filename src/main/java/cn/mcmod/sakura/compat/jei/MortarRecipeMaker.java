@@ -14,7 +14,7 @@ public final class MortarRecipeMaker {
         IStackHelper stackHelper = helpers.getStackHelper();
         List<SimpleRecipe> recipes = new ArrayList<>();
 
-        for (Entry<Object[], ItemStack[]> entry : MortarRecipes.INSTANCE.recipesList.entrySet()) {
+        for (Entry<Object[], ItemStack[]> entry : MortarRecipes.INSTANCE.recipes.entrySet()) {
             List<List<ItemStack>> inputs = new ArrayList<>();
             for (Object obj : entry.getKey()) {
                 List<ItemStack> subInputs = stackHelper.toItemStackList(obj);
