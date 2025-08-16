@@ -1,6 +1,7 @@
 package cn.mcmod.sakura.client.render.tileentity;
 
 import cn.mcmod.sakura.tileentity.TileEntityCampfire;
+import cn.mcmod.sakura.util.CapabilityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -8,6 +9,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
 
 @SideOnly(Side.CLIENT)
 public class RenderTileEntityCampfire extends TileEntitySpecialRenderer<TileEntityCampfire> {
@@ -24,7 +26,9 @@ public class RenderTileEntityCampfire extends TileEntitySpecialRenderer<TileEnti
     }
 
     private void renderItem(TileEntityCampfire te, double posX, double posY, double posZ, float partialTicks) {
-        ItemStack stack = te.getInventory().getStackInSlot(0);
+        final IItemHandler itemHandler = CapabilityUtil.getItemHandler(te, null);
+        if (itemHandler == null) return;
+        ItemStack stack = itemHandler.getStackInSlot(0);
         GlStateManager.scale(0.65F, 0.65F, 0.65F);
         GlStateManager.translate(0.0F, 1.8F, 0.0F);
 

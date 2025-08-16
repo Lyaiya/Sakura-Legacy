@@ -26,7 +26,9 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockBarrel extends BlockContainerBase {
+public class BlockBarrel extends BlockContainerBase<TileEntityBarrel> {
+    private static final PropertyDirection FACING = BlockHorizontal.FACING;
+
     protected BlockBarrel() {
         super(Material.WOOD, TileEntityBarrel.class);
         setHardness(2.5F);
@@ -39,7 +41,7 @@ public class BlockBarrel extends BlockContainerBase {
     @Override
     protected boolean onBlockActivatedExt(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                           EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ,
-                                          @Nullable TileEntity te) {
+                                          @Nullable TileEntityBarrel te) {
         if (te == null) return false;
         final ItemStack heldItem = playerIn.getHeldItem(hand);
         return tryFillByHandItem(playerIn, hand, facing, te, heldItem);
@@ -80,8 +82,6 @@ public class BlockBarrel extends BlockContainerBase {
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
         return BlockFaceShape.UNDEFINED;
     }
-
-    private static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     /**
      * Called after the block is set in the Chunk data, but before the Tile Entity is set
@@ -127,7 +127,7 @@ public class BlockBarrel extends BlockContainerBase {
      */
     @Override
     protected void onBlockPlacedByExt(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer,
-                                      ItemStack stack, @Nullable TileEntity te) {
+                                      ItemStack stack, @Nullable TileEntityBarrel te) {
         worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
     }
 

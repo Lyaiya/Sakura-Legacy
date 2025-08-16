@@ -20,7 +20,7 @@ public class CampfirePlugin implements IWailaDataProvider {
     public List<String> getWailaBody(ItemStack itemStack, List<String> tooltip, IWailaDataAccessor accessor,
                                      IWailaConfigHandler config) {
         if (accessor.getTileEntity() instanceof TileEntityCampfire te) {
-            tooltip.add(I18n.format("sakura.tooltip.campfire.fire_remain", te.getBurningTime()));
+            tooltip.add(I18n.format("sakura.tooltip.campfire.fire_remain", te.getBurnTime()));
         }
         return tooltip;
     }

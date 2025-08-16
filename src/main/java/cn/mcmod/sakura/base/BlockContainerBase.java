@@ -46,7 +46,7 @@ public abstract class BlockContainerBase<T extends TileEntity> extends BlockCont
                 return true;
             }
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return true;
     }
 
     @Override
@@ -54,6 +54,7 @@ public abstract class BlockContainerBase<T extends TileEntity> extends BlockCont
         final TileEntity te = getTileEntity(worldIn, pos);
         if (te != null) {
             dropInventoryItems(worldIn, pos, te);
+            worldIn.updateComparatorOutputLevel(pos, this);
         }
         super.breakBlock(worldIn, pos, state);
     }

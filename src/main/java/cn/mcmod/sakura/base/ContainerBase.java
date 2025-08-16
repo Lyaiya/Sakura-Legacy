@@ -16,6 +16,7 @@ public abstract class ContainerBase<T extends TileEntity> extends Container {
     public ContainerBase(InventoryPlayer playerInventory, T te) {
         this.playerInventory = playerInventory;
         this.te = te;
+
         final IItemHandler handler = CapabilityUtil.getItemHandler(te, null);
         if (handler != null) {
             addSlots(handler);

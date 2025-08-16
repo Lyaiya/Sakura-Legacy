@@ -1,5 +1,6 @@
 package cn.mcmod.sakura.base;
 
+import cn.mcmod.sakura.util.CapabilityUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
@@ -24,6 +25,6 @@ public class ItemStackHandlerBase extends ItemStackHandler {
 
     @Nullable
     public <T> T getHandler(@Nullable EnumFacing facing) {
-        return null;
+        return CapabilityUtil.castItemHandler(this);
     }
 }

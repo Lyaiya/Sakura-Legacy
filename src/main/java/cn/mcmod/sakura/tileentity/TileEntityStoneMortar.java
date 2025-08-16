@@ -9,7 +9,6 @@ import cn.mcmod.sakura.util.CapabilityUtil;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -59,9 +58,10 @@ public class TileEntityStoneMortar extends TileEntityBase {
 
         final List<ItemStack> inputs = Lists.newArrayList();
         for (int i = 0; i < 4; i++) {
-            ItemStack itemStack = itemHandler.getStackInSlot(i);
-            if (itemStack.isEmpty()) continue;
-            inputs.add(itemStack.copy());
+            final ItemStack itemStack = itemHandler.getStackInSlot(i);
+            if (!itemStack.isEmpty()) {
+                inputs.add(itemStack.copy());
+            }
         }
 
         final ItemStack[] output = MortarRecipes.INSTANCE.getOutput(inputs);
@@ -76,26 +76,24 @@ public class TileEntityStoneMortar extends TileEntityBase {
         if (output.length == 2) {
             output2 = output[1];
         } else {
-            output2 = null;
+            output2 = ItemStack.EMPTY;
         }
 
-        boolean canInsert = false;
+        boolean canInsertItem = false;
 
         run:
         {
-            if (!itemHandler.insertItem(4, output1, true).isEmpty()) {
-                break run;
+            final ItemStack simulated1 = itemHandler.insertItem(4, output1, true);
+            if (!simulated1.isEmpty()) break run;
+
+            if (!output2.isEmpty()) {
+                final ItemStack simulated2 = itemHandler.insertItem(5, output2, true);
+                if (!simulated2.isEmpty()) break run;
             }
 
-            if (output2 != null) {
-                if (!itemHandler.insertItem(5, output2, true).isEmpty()) {
-                    break run;
-                }
-            }
-
-            canInsert = true;
+            canInsertItem = true;
         }
-        if (canInsert) {
+        if (canInsertItem) {
             processTime++;
         } else {
             processTime = 0;
@@ -105,7 +103,7 @@ public class TileEntityStoneMortar extends TileEntityBase {
         processTime = 0;
 
         itemHandler.insertItem(4, output1, false);
-        if (output2 != null) {
+        if (!output2.isEmpty()) {
             itemHandler.insertItem(5, output2, false);
         }
 
@@ -115,13 +113,6 @@ public class TileEntityStoneMortar extends TileEntityBase {
         itemHandler.extractItem(3, 1, false);
 
         markDirty();
-    }
-
-    private void refresh() {
-        if (hasWorld() && !world.isRemote) {
-            IBlockState state = world.getBlockState(pos);
-            world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
-        }
     }
 
     @Override

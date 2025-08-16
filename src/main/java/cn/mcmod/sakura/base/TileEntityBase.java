@@ -2,6 +2,7 @@ package cn.mcmod.sakura.base;
 
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.util.StringUtil;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
@@ -9,6 +10,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IWorldNameable;
+import net.minecraftforge.common.util.Constants;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class TileEntityBase extends TileEntity implements ITickable, IWorldNameable {
@@ -79,6 +81,21 @@ public abstract class TileEntityBase extends TileEntity implements ITickable, IW
         final String name = customName;
         if (StringUtil.isNullOrEmpty(name)) return;
         compound.setString(KEY_CUSTOM_NAME, name);
+    }
+
+    protected void refresh(int flags) {
+        if (hasWorld() && !world.isRemote) {
+            IBlockState state = world.getBlockState(pos);
+            world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, flags);
+        }
+    }
+
+    protected void refresh() {
+        refresh(Constants.BlockFlags.DEFAULT);
+    }
+
+    protected void refreshRerender() {
+        refresh(Constants.BlockFlags.DEFAULT_AND_RERENDER);
     }
 
 }

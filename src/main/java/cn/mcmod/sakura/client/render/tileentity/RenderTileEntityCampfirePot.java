@@ -29,8 +29,8 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
     private final ModelPot model = new ModelPot();
 
     @Override
-    public void render(TileEntityCampfirePot te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        super.render(te, x, y, z, partialTicks, destroyStage, alpha);
+    public void render(TileEntityCampfirePot te, double x, double y, double z, float partialTicks, int destroyStage,
+                       float alpha) {
         GlStateManager.enableDepth();
         GlStateManager.depthFunc(515);
         GlStateManager.depthMask(true);

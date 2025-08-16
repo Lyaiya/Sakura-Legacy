@@ -6,7 +6,6 @@ import cn.mcmod.sakura.base.TileEntityBase;
 import cn.mcmod.sakura.base.wrapper.ItemHandlerWrapper;
 import cn.mcmod.sakura.block.BlockCampfirePot;
 import cn.mcmod.sakura.util.CapabilityUtil;
-import cn.mcmod.sakura.util.ItemHandlerUtil;
 import cn.mcmod_mmf.mmlib.item.ItemMetaDurability;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -33,16 +32,9 @@ import java.util.List;
 
 public class TileEntityCampfirePot extends TileEntityBase {
     private static final String KEY_ITEMS = "Items";
+    private static final String KEY_INPUT_TANK = "InputTank";
     private static final String KEY_BURN_TIME = "BurnTime";
     private static final String KEY_COOK_TIME = "CookTime";
-    private static final String KEY_TANK = "Tank";
-
-    private final MyItemHandler itemHandler = new MyItemHandler() {
-        @Override
-        protected void onContentsChanged(int slot) {
-            refresh();
-        }
-    };
 
     @Nullable
     private FluidStack liquidForRendering = null;
@@ -51,6 +43,13 @@ public class TileEntityCampfirePot extends TileEntityBase {
     private int currentItemBurnTime;
     private int cookTime;
     private int totalCookTime = 200;
+
+    private final MyItemHandler itemHandler = new MyItemHandler() {
+        @Override
+        protected void onContentsChanged(int slot) {
+            refresh();
+        }
+    };
 
     private final FluidTank inputTank = new FluidTank(2000) {
         @Override
@@ -73,6 +72,12 @@ public class TileEntityCampfirePot extends TileEntityBase {
 
     public void setBurnTime(int burnTime) {
         this.burnTime = burnTime;
+    }
+
+    public void addBurnTime(int burnTime) {
+        this.burnTime += burnTime;
+        markDirty();
+        refresh();
     }
 
     public int getCookTime() {
@@ -126,13 +131,6 @@ public class TileEntityCampfirePot extends TileEntityBase {
         return burnTime > 0;
     }
 
-    private void refresh() {
-        if (hasWorld() && !world.isRemote) {
-            IBlockState state = world.getBlockState(pos);
-            world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
-        }
-    }
-
     @Override
     public void update() {
         boolean flag = isBurning();
@@ -156,15 +154,15 @@ public class TileEntityCampfirePot extends TileEntityBase {
         boolean updateCook = false;
         run:
         {
-            ItemStack itemstack = itemHandler.getStackInSlot(9);
-
             FluidStack inputTankFluidStack = inputTank.getFluid();
             if (inputTankFluidStack == null) break run;
 
-            ItemStack output = PotRecipes.INSTANCE.getOutput(inputTankFluidStack, inputs);
+            final ItemStack output = PotRecipes.INSTANCE.getOutput(inputTankFluidStack, inputs);
             if (output.isEmpty()) break run;
 
-            if (ItemHandlerUtil.canInsertItem(itemHandler, 9, output) && isBurning()) {
+            final ItemStack simulated = itemHandler.insertItem(9, output, true);
+
+            if (simulated.isEmpty() && isBurning()) {
                 cookTime += 1;
             } else {
                 cookTime = 0;
@@ -267,7 +265,7 @@ public class TileEntityCampfirePot extends TileEntityBase {
     @Override
     protected void onReadFromNBT(NBTTagCompound compound) {
         itemHandler.deserializeNBT(compound.getCompoundTag(KEY_ITEMS));
-        inputTank.readFromNBT(compound.getCompoundTag(KEY_TANK));
+        inputTank.readFromNBT(compound.getCompoundTag(KEY_INPUT_TANK));
         burnTime = compound.getInteger(KEY_BURN_TIME);
         cookTime = compound.getInteger(KEY_COOK_TIME);
     }
@@ -275,7 +273,7 @@ public class TileEntityCampfirePot extends TileEntityBase {
     @Override
     protected void onWriteToNBT(NBTTagCompound compound) {
         compound.setTag(KEY_ITEMS, itemHandler.serializeNBT());
-        compound.setTag(KEY_TANK, inputTank.writeToNBT(new NBTTagCompound()));
+        compound.setTag(KEY_INPUT_TANK, inputTank.writeToNBT(new NBTTagCompound()));
         compound.setInteger(KEY_BURN_TIME, burnTime);
         compound.setInteger(KEY_COOK_TIME, cookTime);
         if (inputTank.getFluid() != null) {
@@ -331,8 +329,8 @@ public class TileEntityCampfirePot extends TileEntityBase {
             }
             return switch (facing) {
                 case UP -> CapabilityUtil.castItemHandler(upWrapper.get());
-                case DOWN -> CapabilityUtil.castItemHandler(sideWrapper.get());
-                default -> CapabilityUtil.castItemHandler(downWrapper.get());
+                case DOWN -> CapabilityUtil.castItemHandler(downWrapper.get());
+                default -> CapabilityUtil.castItemHandler(sideWrapper.get());
             };
         }
     }

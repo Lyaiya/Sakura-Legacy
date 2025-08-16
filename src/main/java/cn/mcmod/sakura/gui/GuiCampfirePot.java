@@ -17,14 +17,14 @@ import org.lwjgl.opengl.GL11;
 public class GuiCampfirePot extends GuiContainer {
     private static final ResourceLocation TEXTURES = RLUtil.of("textures/gui/pot.png");
 
-    private final TileEntityCampfirePot teCampfirePot;
     private final IInventory playerInventory;
+    private final TileEntityCampfirePot teCampfirePot;
 
     public GuiCampfirePot(InventoryPlayer inventory, TileEntityCampfirePot te) {
         super(new ContainerCampfirePot(inventory, te));
 
-        teCampfirePot = te;
         playerInventory = inventory;
+        teCampfirePot = te;
     }
 
     @Override

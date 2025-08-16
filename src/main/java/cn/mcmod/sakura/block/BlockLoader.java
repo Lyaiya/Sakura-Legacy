@@ -125,8 +125,7 @@ public class BlockLoader {
     public static Block BAMBOO_PLANK = new BlockSakuraPlank(Material.WOOD);
     public static Block MAPLE_PLANK = new BlockSakuraPlank(Material.WOOD);
     public static Block MAPLE_CAULDRON = new BlockMapleSyrupCauldron();
-    public static Block CAMPFIRE_IDLE = new BlockCampfire(false);
-    public static Block CAMPFIRE_LIT = new BlockCampfire(true);
+    public static Block CAMPFIRE = new BlockCampfire();
     public static Block CAMPFIRE_POT_IDLE = new BlockCampfirePot(false);
     public static Block CAMPFIRE_POT_LIT = new BlockCampfirePot(true);
     public static Block RICECROP = new BlockRiceCrop();
@@ -409,7 +408,7 @@ public class BlockLoader {
         register(BARREL_DISTILLATION, new ItemBlock(BARREL_DISTILLATION), "barrel_distillation");
         register(BARREL_OUT, new ItemBlock(BARREL_OUT), "barrel_out");
         // BARREL_OUT
-        register(CAMPFIRE_IDLE, new ItemBlock(CAMPFIRE_IDLE), "campfire_idle");
+        register(CAMPFIRE, new ItemBlock(CAMPFIRE), "campfire");
         register(PEPPER_SPLINT, new ItemBlock(PEPPER_SPLINT), "pepper_splint");
         register(VANILLA_SPLINT, new ItemBlock(VANILLA_SPLINT), "vanilla_splint");
         register(GRAPE_SPLINT_STAND, new ItemBlock(GRAPE_SPLINT_STAND), "grape_splint_stand");
@@ -444,7 +443,6 @@ public class BlockLoader {
         registerNoItem(SEAWEED, "seaweed");
         registerNoItem(FUTON, "futon");
         registerNoItem(TARO_CROP, "taro_crop");
-        registerNoItem(CAMPFIRE_LIT, "campfire_lit");
         registerNoItem(CAMPFIRE_POT_IDLE, "campfire_pot_idle");
         registerNoItem(CAMPFIRE_POT_LIT, "campfire_pot_lit");
         registerNoItem(RICECROP, "ricecrop");
@@ -612,7 +610,7 @@ public class BlockLoader {
         registerRender(MAPLE_PLANK);
         registerRender(STONEMORTAR);
         registerRender(BARREL);
-        registerRender(CAMPFIRE_IDLE);
+        registerRender(CAMPFIRE);
 
         registerRender(PEPPER_SPLINT);
         registerRender(VANILLA_SPLINT);

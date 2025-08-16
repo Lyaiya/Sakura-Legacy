@@ -97,13 +97,6 @@ public class TileEntityBarrel extends TileEntityBase {
         return outputTank;
     }
 
-    private void refresh() {
-        if (hasWorld() && !world.isRemote) {
-            IBlockState state = world.getBlockState(pos);
-            world.markAndNotifyBlock(pos, world.getChunk(pos), state, state, 11);
-        }
-    }
-
     @Override
     public void update() {
         if (world.isRemote) return;

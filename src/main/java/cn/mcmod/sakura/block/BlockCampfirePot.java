@@ -36,10 +36,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 
 public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> {
-    protected static final AxisAlignedBB CAMPFIRE_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.3125D, 1.0D);
+    private static boolean KEEP_INVENTORY;
 
-    private static boolean keepInventory;
-
+    // TODO: PropertyBool 替换
     private final boolean isBurning;
 
     public BlockCampfirePot(boolean isBurning) {
@@ -63,7 +62,7 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return CAMPFIRE_AABB;
+        return FULL_BLOCK_AABB;
     }
 
     @Override
@@ -88,6 +87,9 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
 
     @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+        if (face == EnumFacing.UP) {
+            return BlockFaceShape.BOWL;
+        }
         return BlockFaceShape.UNDEFINED;
     }
 
@@ -114,10 +116,10 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
     protected boolean onBlockActivatedExt(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                           EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ,
                                           @Nullable TileEntityCampfirePot te) {
-        if (te == null) return false;
+        if (te == null) return true;
         final ItemStack heldItem = playerIn.getHeldItem(hand);
-        if (hand != EnumHand.MAIN_HAND) {
-            if (tryFillByHandItem(playerIn, hand, facing, te, heldItem)) {
+        if (hand == EnumHand.MAIN_HAND) {
+            if (tryFillByHeldItem(playerIn, hand, facing, te, heldItem)) {
                 return true;
             }
 
@@ -132,7 +134,7 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
         return false;
     }
 
-    private boolean tryFillByHandItem(EntityPlayer playerIn, EnumHand hand, EnumFacing facing, TileEntity te,
+    private boolean tryFillByHeldItem(EntityPlayer playerIn, EnumHand hand, EnumFacing facing, TileEntity te,
                                       ItemStack heldItem) {
         IFluidHandlerItem handler = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(heldItem, 1));
         if (handler == null) return false;
@@ -142,9 +144,9 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
         return FluidUtil.interactWithFluidHandler(playerIn, hand, fluidHandler);
     }
 
-    private boolean tryAddFuelByHeldItem(World worldIn, BlockPos pos, TileEntityCampfirePot teCampfire, ItemStack heldItem) {
+    private boolean tryAddFuelByHeldItem(World worldIn, BlockPos pos, TileEntityCampfirePot te, ItemStack heldItem) {
         if (!WorldUtil.getInstance().isItemFuel(heldItem)) return false;
-        teCampfire.setBurnTime(teCampfire.getBurnTime() + TileEntityFurnace.getItemBurnTime(heldItem));
+        te.addBurnTime(TileEntityFurnace.getItemBurnTime(heldItem));
         setState(true, worldIn, pos);
         if (!heldItem.getItem().hasContainerItem(heldItem)) {
             heldItem.shrink(1);
@@ -153,9 +155,9 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
     }
 
     private boolean tryAddFuelByFlintAndSteel(World worldIn, BlockPos pos, EntityPlayer playerIn,
-                                              TileEntityCampfirePot teCampfire, ItemStack heldItem) {
+                                              TileEntityCampfirePot te, ItemStack heldItem) {
         if (heldItem.getItem() != Items.FLINT_AND_STEEL) return false;
-        teCampfire.setBurnTime(teCampfire.getBurnTime() + 10000);
+        te.addBurnTime(10000);
         setState(true, worldIn, pos);
         heldItem.damageItem(1, playerIn);
         return true;
@@ -167,8 +169,10 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
     }
 
     public static void setState(boolean active, World worldIn, BlockPos pos) {
-        TileEntity tileentity = worldIn.getTileEntity(pos);
-        keepInventory = true;
+        final TileEntity te = worldIn.getTileEntity(pos);
+
+        KEEP_INVENTORY = true;
+
         if (active) {
             worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_LIT.getDefaultState());
             worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_LIT.getDefaultState());
@@ -176,10 +180,12 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
             worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_IDLE.getDefaultState());
             worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_IDLE.getDefaultState());
         }
-        keepInventory = false;
-        if (tileentity != null) {
-            tileentity.validate();
-            worldIn.setTileEntity(pos, tileentity);
+
+        KEEP_INVENTORY = false;
+
+        if (te != null) {
+            te.validate();
+            worldIn.setTileEntity(pos, te);
         }
     }
 
@@ -201,14 +207,8 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        if (!keepInventory) {
-            final TileEntityCampfirePot te = getTileEntity(worldIn, pos);
-            if (te != null) {
-                dropInventoryItems(worldIn, pos, te);
-                worldIn.updateComparatorOutputLevel(pos, this);
-            }
-
-            spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(BlockLoader.CAMPFIRE_IDLE)));
+        if (!KEEP_INVENTORY) {
+            spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(BlockLoader.CAMPFIRE)));
             spawnAsEntity(worldIn, pos, new ItemStack(ItemLoader.POT));
         }
 
