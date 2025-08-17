@@ -4,7 +4,6 @@ import cn.mcmod.sakura.api.recipes.PotRecipes;
 import cn.mcmod.sakura.base.ItemStackHandlerBase;
 import cn.mcmod.sakura.base.TileEntityBase;
 import cn.mcmod.sakura.base.wrapper.ItemHandlerWrapper;
-import cn.mcmod.sakura.block.BlockCampfire;
 import cn.mcmod.sakura.block.BlockCampfirePot;
 import cn.mcmod.sakura.util.CapabilityUtil;
 import cn.mcmod_mmf.mmlib.item.ItemMetaDurability;
@@ -45,19 +44,17 @@ public class TileEntityCampfirePot extends TileEntityBase {
     private int cookTime;
     private int totalCookTime = 200;
 
-    private final MyItemHandler itemHandler = new MyItemHandler() {
+    private final CampfirePotItemHandler itemHandler = new CampfirePotItemHandler() {
         @Override
         protected void onContentsChanged(int slot) {
-            markDirty();
-            notifyBlockUpdate();
+            tryMarkAndNotify();
         }
     };
 
     private final FluidTank inputTank = new FluidTank(2000) {
         @Override
         protected void onContentsChanged() {
-            markDirty();
-            notifyBlockUpdate();
+            tryMarkAndNotify();
         }
     };
 
@@ -79,8 +76,7 @@ public class TileEntityCampfirePot extends TileEntityBase {
 
     public void addBurnTime(int burnTime) {
         this.burnTime += burnTime;
-        markDirty();
-        notifyBlockUpdate();
+        tryMarkAndNotify();
     }
 
     public int getCookTime() {
@@ -296,7 +292,7 @@ public class TileEntityCampfirePot extends TileEntityBase {
         onReadFromNBT(pkt.getNbtCompound());
     }
 
-    private static class MyItemHandler extends ItemStackHandlerBase {
+    private static class CampfirePotItemHandler extends ItemStackHandlerBase {
         private final Supplier<ItemHandlerWrapper> upWrapper = Suppliers.memoize(
                 () -> new ItemHandlerWrapper(this, 0)
         );
@@ -309,7 +305,7 @@ public class TileEntityCampfirePot extends TileEntityBase {
                 () -> new ItemHandlerWrapper(this, 9)
         );
 
-        public MyItemHandler() {
+        public CampfirePotItemHandler() {
             super(10);
         }
 

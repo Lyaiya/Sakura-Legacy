@@ -83,8 +83,19 @@ public abstract class TileEntityBase extends TileEntity implements ITickable, IW
         compound.setString(KEY_CUSTOM_NAME, name);
     }
 
-    protected void notifyBlockUpdate() {
+    private void notifyBlockUpdate() {
         final IBlockState state = world.getBlockState(pos);
         world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
+    }
+
+    protected void tryMark() {
+        if (world.isRemote) return;
+        markDirty();
+    }
+
+    protected void tryMarkAndNotify() {
+        if (world.isRemote) return;
+        markDirty();
+        notifyBlockUpdate();
     }
 }

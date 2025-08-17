@@ -34,8 +34,7 @@ public class TileEntityCampfire extends TileEntityBase {
 
         @Override
         protected void onContentsChanged(int slot) {
-            markDirty();
-            notifyBlockUpdate();
+            tryMarkAndNotify();
         }
 
         @Override
@@ -57,8 +56,7 @@ public class TileEntityCampfire extends TileEntityBase {
 
     public void addBurnTime(int burnTime) {
         this.burnTime += burnTime;
-        markDirty();
-        notifyBlockUpdate();
+        tryMarkAndNotify();
     }
 
     public int getBurnTime() {
