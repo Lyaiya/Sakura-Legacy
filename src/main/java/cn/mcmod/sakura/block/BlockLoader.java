@@ -126,8 +126,7 @@ public class BlockLoader {
     public static Block MAPLE_PLANK = new BlockSakuraPlank(Material.WOOD);
     public static Block MAPLE_CAULDRON = new BlockMapleSyrupCauldron();
     public static Block CAMPFIRE = new BlockCampfire();
-    public static Block CAMPFIRE_POT_IDLE = new BlockCampfirePot(false);
-    public static Block CAMPFIRE_POT_LIT = new BlockCampfirePot(true);
+    public static Block CAMPFIRE_POT = new BlockCampfirePot();
     public static Block RICECROP = new BlockRiceCrop();
     public static Block STONEMORTAR = new BlockStoneMortar();
     public static Block BARREL = new BlockBarrel();
@@ -443,8 +442,7 @@ public class BlockLoader {
         registerNoItem(SEAWEED, "seaweed");
         registerNoItem(FUTON, "futon");
         registerNoItem(TARO_CROP, "taro_crop");
-        registerNoItem(CAMPFIRE_POT_IDLE, "campfire_pot_idle");
-        registerNoItem(CAMPFIRE_POT_LIT, "campfire_pot_lit");
+        registerNoItem(CAMPFIRE_POT, "campfire_pot");
         registerNoItem(RICECROP, "ricecrop");
         registerNoItem(ONIONCROP, "onioncrop");
         registerNoItem(RAPESEEDCROP, "rapeseedcrop");

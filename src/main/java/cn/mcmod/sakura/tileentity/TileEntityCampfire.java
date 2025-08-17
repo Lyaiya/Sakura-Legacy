@@ -24,7 +24,7 @@ public class TileEntityCampfire extends TileEntityBase {
 
     private int burnTime;
     private int cookTime;
-    private final int maxCookTime = 700;
+    private final int totalCookTime = 700;
 
     private final ItemStackHandlerBase itemHandler = new ItemStackHandlerBase() {
         @Override
@@ -34,7 +34,8 @@ public class TileEntityCampfire extends TileEntityBase {
 
         @Override
         protected void onContentsChanged(int slot) {
-            refresh();
+            markDirty();
+            notifyBlockUpdate();
         }
 
         @Override
@@ -57,7 +58,7 @@ public class TileEntityCampfire extends TileEntityBase {
     public void addBurnTime(int burnTime) {
         this.burnTime += burnTime;
         markDirty();
-        refresh();
+        notifyBlockUpdate();
     }
 
     public int getBurnTime() {
@@ -66,6 +67,10 @@ public class TileEntityCampfire extends TileEntityBase {
 
     public int getCookTime() {
         return cookTime;
+    }
+
+    public int getTotalCookTime() {
+        return totalCookTime;
     }
 
     public ItemStack getItemBurning() {
@@ -87,7 +92,7 @@ public class TileEntityCampfire extends TileEntityBase {
                 ItemStack resultStack = FurnaceRecipes.instance().getSmeltingResult(burningStack);
                 if (!burningStack.isEmpty() && !resultStack.isEmpty()) {
                     ++cookTime;
-                    if (cookTime >= maxCookTime) {
+                    if (cookTime >= totalCookTime) {
                         // TODO: 是否可以改成直接弹出？
                         itemHandler.setStackInSlot(0, resultStack.copy());
 

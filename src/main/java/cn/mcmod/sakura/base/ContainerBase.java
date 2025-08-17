@@ -20,13 +20,13 @@ public abstract class ContainerBase<T extends TileEntity> extends Container {
         final IItemHandler handler = CapabilityUtil.getItemHandler(te, null);
         if (handler != null) {
             addSlots(handler);
-            addPlayerInventorySlots();
+            addPlayerSlots();
         }
     }
 
     protected abstract void addSlots(IItemHandler itemHandler);
 
-    private void addPlayerInventorySlots() {
+    private void addPlayerSlots() {
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));

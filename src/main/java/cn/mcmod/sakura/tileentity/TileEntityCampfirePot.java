@@ -4,6 +4,7 @@ import cn.mcmod.sakura.api.recipes.PotRecipes;
 import cn.mcmod.sakura.base.ItemStackHandlerBase;
 import cn.mcmod.sakura.base.TileEntityBase;
 import cn.mcmod.sakura.base.wrapper.ItemHandlerWrapper;
+import cn.mcmod.sakura.block.BlockCampfire;
 import cn.mcmod.sakura.block.BlockCampfirePot;
 import cn.mcmod.sakura.util.CapabilityUtil;
 import cn.mcmod_mmf.mmlib.item.ItemMetaDurability;
@@ -47,14 +48,16 @@ public class TileEntityCampfirePot extends TileEntityBase {
     private final MyItemHandler itemHandler = new MyItemHandler() {
         @Override
         protected void onContentsChanged(int slot) {
-            refresh();
+            markDirty();
+            notifyBlockUpdate();
         }
     };
 
     private final FluidTank inputTank = new FluidTank(2000) {
         @Override
         protected void onContentsChanged() {
-            refresh();
+            markDirty();
+            notifyBlockUpdate();
         }
     };
 
@@ -77,7 +80,7 @@ public class TileEntityCampfirePot extends TileEntityBase {
     public void addBurnTime(int burnTime) {
         this.burnTime += burnTime;
         markDirty();
-        refresh();
+        notifyBlockUpdate();
     }
 
     public int getCookTime() {
@@ -139,16 +142,13 @@ public class TileEntityCampfirePot extends TileEntityBase {
         if (isBurning()) {
             --burnTime;
         }
-        // check can cook
-        if (!world.isRemote) return;
+        if (world.isRemote) return;
 
         List<ItemStack> inputs = Lists.newArrayList();
-
-        ItemStack temp;
         for (int i = 0; i < 9; i++) {
-            temp = itemHandler.getStackInSlot(i);
-            if (temp.isEmpty()) continue;
-            inputs.add(temp.copy());
+            ItemStack itemStack = itemHandler.getStackInSlot(i);
+            if (itemStack.isEmpty()) continue;
+            inputs.add(itemStack.copy());
         }
 
         boolean updateCook = false;
@@ -164,8 +164,9 @@ public class TileEntityCampfirePot extends TileEntityBase {
 
             if (simulated.isEmpty() && isBurning()) {
                 cookTime += 1;
+                updateCook = true;
             } else {
-                cookTime = 0;
+                break run;
             }
 
             if (cookTime >= totalCookTime) {
@@ -186,7 +187,7 @@ public class TileEntityCampfirePot extends TileEntityBase {
 
                     if (item.hasContainerItem(itemStack)) {
                         final ItemStack containerItem = item.getContainerItem(itemStack);
-
+                        
                         if (itemStack.getCount() == 1) {
                             itemHandler.setStackInSlot(i, containerItem.copy());
                         } else {
@@ -210,16 +211,12 @@ public class TileEntityCampfirePot extends TileEntityBase {
 
         if (flag != isBurning()) {
             flag1 = true;
-            BlockCampfirePot.setState(isBurning(), world, pos);
+            world.setBlockState(pos, world.getBlockState(pos)
+                    .withProperty(BlockCampfirePot.LIT, false));
         }
         if (flag1) {
             markDirty();
         }
-    }
-
-    @Override
-    public void markDirty() {
-        super.markDirty();
     }
 
     @SideOnly(Side.CLIENT)

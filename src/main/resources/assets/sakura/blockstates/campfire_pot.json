@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "sakura:campfire"
+    },
+    "lit=true": {
+      "model": "sakura:campfire_lit"
+    }
+  }
+}

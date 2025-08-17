@@ -18,7 +18,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockStoneMortar extends BlockContainerBase {
+public class BlockStoneMortar extends BlockContainerBase<TileEntityStoneMortar> {
     protected BlockStoneMortar() {
         super(Material.ROCK, TileEntityStoneMortar.class);
         setHardness(2.0F);

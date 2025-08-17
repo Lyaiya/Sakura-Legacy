@@ -2,7 +2,6 @@ package cn.mcmod.sakura.base;
 
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.util.CapabilityUtil;
-import cn.mcmod.sakura.util.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.ITileEntityProvider;
@@ -36,13 +35,12 @@ public abstract class BlockContainerBase<T extends TileEntity> extends BlockCont
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (worldIn.isRemote) return true;
         final T te = getTileEntity(worldIn, pos);
         if (onBlockActivatedExt(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ, te)) {
             return true;
         }
         if (te != null) {
-            if (tryOpenGui(playerIn, worldIn, pos)) {
+            if (!worldIn.isRemote && tryOpenGui(playerIn, worldIn, pos)) {
                 return true;
             }
         }
@@ -101,7 +99,11 @@ public abstract class BlockContainerBase<T extends TileEntity> extends BlockCont
 
     @Nullable
     protected T getTileEntity(World world, BlockPos pos) {
-        return WorldUtil.getTileEntity(world, pos, teClass);
+        final TileEntity tileEntity = world.getTileEntity(pos);
+        if (teClass.isInstance(tileEntity)) {
+            return teClass.cast(tileEntity);
+        }
+        return null;
     }
 
     private boolean tryOpenGui(EntityPlayer player, World world, BlockPos pos) {

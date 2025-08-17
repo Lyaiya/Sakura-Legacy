@@ -52,7 +52,7 @@ public class TileEntityBarrel extends TileEntityBase {
 
         @Override
         protected void onContentsChanged() {
-            refresh();
+            markDirty();
         }
     };
 
@@ -64,11 +64,16 @@ public class TileEntityBarrel extends TileEntityBase {
 
         @Override
         protected void onContentsChanged() {
-            refresh();
+            markDirty();
         }
     };
 
-    private final BarrelItemStackHandler itemStackHandler = new BarrelItemStackHandler(5);
+    private final BarrelItemStackHandler itemStackHandler = new BarrelItemStackHandler(5) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            markDirty();
+        }
+    };
 
     public TileEntityBarrel() {
     }

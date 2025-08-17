@@ -44,17 +44,21 @@ public class BlockBarrel extends BlockContainerBase<TileEntityBarrel> {
                                           @Nullable TileEntityBarrel te) {
         if (te == null) return false;
         final ItemStack heldItem = playerIn.getHeldItem(hand);
-        return tryFillByHandItem(playerIn, hand, facing, te, heldItem);
+        return tryFillByHandItem(worldIn, playerIn, hand, facing, te, heldItem);
     }
 
-    private boolean tryFillByHandItem(EntityPlayer playerIn, EnumHand hand, EnumFacing facing, TileEntity te,
+    private boolean tryFillByHandItem(World worldIn, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, TileEntity te,
                                       ItemStack heldItem) {
         IFluidHandlerItem handler = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(heldItem, 1));
         if (handler == null) return false;
 
         final IFluidHandler fluidHandler = CapabilityUtil.getFluidHandler(te, facing);
         if (fluidHandler == null) return false;
-        return FluidUtil.interactWithFluidHandler(playerIn, hand, fluidHandler);
+
+        if (!worldIn.isRemote) {
+            return FluidUtil.interactWithFluidHandler(playerIn, hand, fluidHandler);
+        }
+        return true;
     }
 
     @Nullable

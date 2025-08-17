@@ -3,14 +3,15 @@ package cn.mcmod.sakura.block;
 import cn.mcmod.sakura.base.BlockContainerBase;
 import cn.mcmod.sakura.gui.SakuraGuiHandler;
 import cn.mcmod.sakura.item.ItemLoader;
-import cn.mcmod.sakura.proxy.CommonProxy;
 import cn.mcmod.sakura.tileentity.TileEntityCampfirePot;
 import cn.mcmod.sakura.util.CapabilityUtil;
 import cn.mcmod_mmf.mmlib.util.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,28 +37,41 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 
 public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> {
-    private static boolean KEEP_INVENTORY;
+    public static final PropertyBool LIT = PropertyBool.create("lit");
+    private static final int LIT_OFF = 0;
+    private static final int LIT_ON = 1;
 
-    // TODO: PropertyBool 替换
-    private final boolean isBurning;
-
-    public BlockCampfirePot(boolean isBurning) {
-        super(Material.WOOD, TileEntityCampfirePot.class);
+    public BlockCampfirePot() {
+        super(Material.IRON, TileEntityCampfirePot.class);
         setHardness(0.5F);
-        setSoundType(SoundType.WOOD);
+        setSoundType(SoundType.METAL);
         setGuiId(SakuraGuiHandler.ID_CAMPFIRE_POT);
-        this.isBurning = isBurning;
-
-        if (isBurning) {
-            setLightLevel(0.85F);
-        } else {
-            setCreativeTab(CommonProxy.TAB);
-        }
+        setDefaultState(blockState.getBaseState().withProperty(LIT, false));
     }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityCampfirePot();
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, LIT);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(LIT) ? LIT_ON : LIT_OFF;
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(LIT, meta == 1);
+    }
+
+    @Override
+    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return state.getValue(LIT) ? 12 : 0;
     }
 
     @Override
@@ -119,47 +133,60 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
         if (te == null) return true;
         final ItemStack heldItem = playerIn.getHeldItem(hand);
         if (hand == EnumHand.MAIN_HAND) {
-            if (tryFillByHeldItem(playerIn, hand, facing, te, heldItem)) {
+            if (tryFillByHeldItem(worldIn, playerIn, hand, facing, te, heldItem)) {
                 return true;
             }
 
-            if (tryAddFuelByHeldItem(worldIn, pos, te, heldItem)) {
+            if (tryAddFuelByHeldItem(worldIn, pos, state, te, heldItem)) {
                 return true;
             }
 
-            if (tryAddFuelByFlintAndSteel(worldIn, pos, playerIn, te, heldItem)) {
+            if (tryAddFuelByFlintAndSteel(worldIn, pos, state, playerIn, te, heldItem)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean tryFillByHeldItem(EntityPlayer playerIn, EnumHand hand, EnumFacing facing, TileEntity te,
+    private boolean tryFillByHeldItem(World worldIn, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, TileEntity te,
                                       ItemStack heldItem) {
         IFluidHandlerItem handler = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(heldItem, 1));
         if (handler == null) return false;
-
         final IFluidHandler fluidHandler = CapabilityUtil.getFluidHandler(te, facing);
         if (fluidHandler == null) return false;
-        return FluidUtil.interactWithFluidHandler(playerIn, hand, fluidHandler);
-    }
 
-    private boolean tryAddFuelByHeldItem(World worldIn, BlockPos pos, TileEntityCampfirePot te, ItemStack heldItem) {
-        if (!WorldUtil.getInstance().isItemFuel(heldItem)) return false;
-        te.addBurnTime(TileEntityFurnace.getItemBurnTime(heldItem));
-        setState(true, worldIn, pos);
-        if (!heldItem.getItem().hasContainerItem(heldItem)) {
-            heldItem.shrink(1);
+        if (!worldIn.isRemote) {
+            return FluidUtil.interactWithFluidHandler(playerIn, hand, fluidHandler);
         }
         return true;
     }
 
-    private boolean tryAddFuelByFlintAndSteel(World worldIn, BlockPos pos, EntityPlayer playerIn,
+    private boolean tryAddFuelByHeldItem(World worldIn, BlockPos pos, IBlockState state, TileEntityCampfirePot te, ItemStack heldItem) {
+        if (!WorldUtil.getInstance().isItemFuel(heldItem)) return false;
+        if (!worldIn.isRemote) {
+            te.addBurnTime(TileEntityFurnace.getItemBurnTime(heldItem));
+            if (!isLit(state)) {
+                worldIn.setBlockState(pos, state.withProperty(LIT, true));
+            }
+            if (!heldItem.getItem().hasContainerItem(heldItem)) {
+                heldItem.shrink(1);
+            }
+        }
+        return true;
+    }
+
+    private boolean tryAddFuelByFlintAndSteel(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
                                               TileEntityCampfirePot te, ItemStack heldItem) {
         if (heldItem.getItem() != Items.FLINT_AND_STEEL) return false;
-        te.addBurnTime(10000);
-        setState(true, worldIn, pos);
-        heldItem.damageItem(1, playerIn);
+        if (!worldIn.isRemote) {
+            te.addBurnTime(10000);
+            if (!isLit(state)) {
+                worldIn.setBlockState(pos, state.withProperty(LIT, true));
+            }
+            heldItem.damageItem(1, playerIn);
+        } else {
+            worldIn.playSound(playerIn, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, worldIn.rand.nextFloat() * 0.4F + 0.8F);
+        }
         return true;
     }
 
@@ -168,34 +195,13 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
         worldIn.getBlockState(pos.up()).getBlock().onNeighborChange(worldIn, pos.up(), pos);
     }
 
-    public static void setState(boolean active, World worldIn, BlockPos pos) {
-        final TileEntity te = worldIn.getTileEntity(pos);
-
-        KEEP_INVENTORY = true;
-
-        if (active) {
-            worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_LIT.getDefaultState());
-            worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_LIT.getDefaultState());
-        } else {
-            worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_IDLE.getDefaultState());
-            worldIn.setBlockState(pos, BlockLoader.CAMPFIRE_POT_IDLE.getDefaultState());
-        }
-
-        KEEP_INVENTORY = false;
-
-        if (te != null) {
-            te.validate();
-            worldIn.setTileEntity(pos, te);
-        }
-    }
-
     @SideOnly(Side.CLIENT)
     @Override
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
         double d0 = pos.getX() + 0.5D;
         double d2 = pos.getZ() + 0.5D;
         double d4 = rand.nextDouble() * 0.4D - 0.2D;
-        if (isBurning) {
+        if (isLit(stateIn)) {
             worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, pos.getY() + 0.2D, d2 + d4, 0.0D, 0.0D, 0.0D);
             worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, pos.getY() + 0.2D, d2 + d4, 0.0D, 0.0D, 0.0D);
 
@@ -207,11 +213,8 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        if (!KEEP_INVENTORY) {
-            spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(BlockLoader.CAMPFIRE)));
-            spawnAsEntity(worldIn, pos, new ItemStack(ItemLoader.POT));
-        }
-
+        spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(BlockLoader.CAMPFIRE)));
+        spawnAsEntity(worldIn, pos, new ItemStack(ItemLoader.POT));
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -225,4 +228,7 @@ public class BlockCampfirePot extends BlockContainerBase<TileEntityCampfirePot> 
         return new ItemStack(ItemLoader.POT);
     }
 
+    private boolean isLit(IBlockState state) {
+        return state.getValue(LIT);
+    }
 }
