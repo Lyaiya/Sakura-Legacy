@@ -23,10 +23,13 @@ import java.util.Random;
 
 @EventBusSubscriber
 public class VillagerLoader {
-    public static final VillagerProfession WA_VILLAGER = new VillagerRegistry.VillagerProfession(SakuraMain.MODID + ":wa_profession",
+    public static final VillagerProfession WA_VILLAGER = new VillagerRegistry.VillagerProfession(
+            SakuraMain.MODID + ":wa_profession",
             SakuraMain.MODID + ":textures/entity/villager/wa_farmer.png",
             SakuraMain.MODID + ":textures/entity/villager/wa_zombie_farmer.png");
-    public static final VillagerProfession WA_KIMONO_VILLAGER = new VillagerRegistry.VillagerProfession(SakuraMain.MODID + ":wa_silk",
+
+    public static final VillagerProfession WA_KIMONO_VILLAGER = new VillagerRegistry.VillagerProfession(
+            SakuraMain.MODID + ":wa_silk",
             SakuraMain.MODID + ":textures/entity/villager/wa_silk.png",
             SakuraMain.MODID + ":textures/entity/villager/wa_zombie_silk.png");
 
@@ -42,7 +45,7 @@ public class VillagerLoader {
     }
 
     private static void registerSilk() {
-        VillagerRegistry.VillagerCareer silk = new VillagerRegistry.VillagerCareer(WA_KIMONO_VILLAGER, "wa_silk");
+        final var silk = new VillagerRegistry.VillagerCareer(WA_KIMONO_VILLAGER, "wa_silk");
         silk.addTrade(1, new SimpleSell(new ItemStack(ItemLoader.MATERIAL, 2, 59), new PriceInfo(1, 3)));
         silk.addTrade(1, new SimpleBuy(new ItemStack(ItemLoader.MATERIAL, 4, 59), new PriceInfo(2, 5)));
         silk.addTrade(1, new SimpleSell(new ItemStack(ItemLoader.KIMONO), new PriceInfo(10, 14)));
@@ -71,7 +74,7 @@ public class VillagerLoader {
     }
 
     private static void registerFarmer() {
-        final VillagerRegistry.VillagerCareer farmer = new VillagerRegistry.VillagerCareer(WA_VILLAGER, "wa_farmer");
+        final var farmer = new VillagerRegistry.VillagerCareer(WA_VILLAGER, "wa_farmer");
         farmer.addTrade(1, new SimpleSell(new ItemStack(ItemLoader.CABBAGE, 8), new PriceInfo(2, 4)));
         farmer.addTrade(1, new SimpleSell(new ItemStack(ItemLoader.EGGPLANT, 8), new PriceInfo(2, 4)));
         farmer.addTrade(1, new SimpleSell(new ItemStack(ItemLoader.BUCKWHEAT, 8), new PriceInfo(2, 4)));
@@ -96,7 +99,7 @@ public class VillagerLoader {
     }
 
     private static void registerFisher() {
-        final VillagerRegistry.VillagerCareer fisher = new VillagerRegistry.VillagerCareer(WA_VILLAGER, "wa_fisher");
+        final var fisher = new VillagerRegistry.VillagerCareer(WA_VILLAGER, "wa_fisher");
         fisher.addTrade(1, new SimpleSell(new ItemStack(Items.FISH, 16), new PriceInfo(1, 3)));
         fisher.addTrade(1, new SimpleBuy(new ItemStack(Items.FISH, 8), new PriceInfo(2, 4)));
         fisher.addTrade(1, new SimpleSell(new ItemStack(ItemLoader.FOODSET, 16, 78), new PriceInfo(2, 4)));
@@ -104,7 +107,7 @@ public class VillagerLoader {
     }
 
     private static void registerTrader() {
-        VillagerCareer trader = new VillagerCareer(WA_VILLAGER, "wa_trader");
+        final var trader = new VillagerCareer(WA_VILLAGER, "wa_trader");
         trader.addTrade(1, new SimpleBuy(new ItemStack(ItemLoader.MATERIAL, 8, 3), new PriceInfo(2, 7)));
         trader.addTrade(1, new SimpleBuy(new ItemStack(ItemLoader.MATERIAL, 8, 29), new PriceInfo(3, 6)));
         trader.addTrade(1, new SimpleBuy(new ItemStack(ItemLoader.MATERIAL, 8, 33), new PriceInfo(3, 7)));
@@ -122,7 +125,7 @@ public class VillagerLoader {
     }
 
     private static void registerWineTrader() {
-        final VillagerRegistry.VillagerCareer trader = new VillagerRegistry.VillagerCareer(WA_VILLAGER, "wine_trader");
+        final var trader = new VillagerRegistry.VillagerCareer(WA_VILLAGER, "wine_trader");
         trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 0), new PriceInfo(20, 30)));
         trader.addTrade(1, new SimpleSell(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 0), new PriceInfo(10, 20)));
         trader.addTrade(1, new SimpleBuy(new ItemStack(DrinksLoader.BOTTLE_ALCOHOLIC, 1, 1), new PriceInfo(20, 30)));

@@ -2,6 +2,7 @@ package cn.mcmod.sakura.item;
 
 import cn.mcmod.sakura.block.BlockFuton;
 import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.util.I18nUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -20,7 +21,7 @@ import net.minecraft.world.World;
 
 public class ItemFuton extends Item {
     public ItemFuton() {
-        setTranslationKey("sakura.futon");
+        setTranslationKey(I18nUtil.getKey("futon"));
     }
 
     /**

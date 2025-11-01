@@ -273,7 +273,6 @@ public class ItemLoader {
                     new FoodInfo("suikatsugan", 4, 0.5f, false, 20F, 1.5F, 2F, 0F, 0F, 0F, 0F, 1f, 480f),
 
                     new FoodInfo("fish_bake_salt", 8, 0.8f, false, 0.5F, 0F, 0f, 0f, 4f, 0f, 3f, 1f, 480f),
-
             }
     );
     public static ItemDoor BAMBOO_DOOR = new ItemDoor(BlockLoader.BAMBOODOOR);
@@ -358,8 +357,8 @@ public class ItemLoader {
     public static Item KODACHI = new ItemKotachi(Item.ToolMaterial.IRON, "kodachi");
     public static ItemSheath SHEATH = new ItemSheath();
     public static Item SHINAI = new ItemShinai("shinai");
-    public static Item SAKURAKATANA = new ItemKatana(SAKURA_TOOLMATERIAL, "sakura_katana");
-    public static Item SAKURAKODACHI = new ItemKotachi(SAKURA_TOOLMATERIAL, "sakura_kodachi");
+    public static Item SAKURA_KATANA = new ItemKatana(SAKURA_TOOLMATERIAL, "sakura_katana");
+    public static Item SAKURA_KODACHI = new ItemKotachi(SAKURA_TOOLMATERIAL, "sakura_kodachi");
     public static Item HYDRA_RAMEN = new ItemFood(20, 14F * 0.25F, false).setPotionEffect(new PotionEffect(MobEffects.REGENERATION, 220, 0), 1.0F).setPotionEffect(new PotionEffect(MobEffects.SATURATION, 80, 0), 0.4F);
     public static Item BUGGYS_MEAT = new ItemBuggysMeat(20, 22F * 0.25F, false).setPotionEffect(new PotionEffect(MobEffects.STRENGTH, 2000, 0), 1.0F).setPotionEffect(new PotionEffect(MobEffects.HEALTH_BOOST, 2400, 1), 1.0F);
     public static Item STRAW_HAT = new ItemStrawHat();
@@ -367,7 +366,7 @@ public class ItemLoader {
     public static Item HAORI = new ItemHaori();
     public static Item FUTON = new ItemFuton();
     public static ItemSheathKatana KATANA_SHEATH = new ItemSheathKatana(KATANA);
-    public static ItemSheathKatana SAKURAKATANA_SHEATH = new ItemSheathKatana(SAKURAKATANA);
+    public static ItemSheathKatana SAKURA_KATANA_SHEATH = new ItemSheathKatana(SAKURA_KATANA);
     public static Item STONE_HAMMER = new ItemHammer(ToolMaterial.STONE).setTranslationKey("sakura.stone_hammer");
     public static Item IRON_HAMMER = new ItemHammer(ToolMaterial.IRON).setTranslationKey("sakura.iron_hammer");
     public static Item SAKURA_HAMMER = new ItemHammer(SAKURA_TOOLMATERIAL).setTranslationKey("sakura.sakura_hammer");
@@ -436,12 +435,12 @@ public class ItemLoader {
         register(BROOM);
         register(SHINAI);
         register(KATANA);
-        register(SAKURAKATANA);
+        register(SAKURA_KATANA);
         register(SHEATH);
         register(KATANA_SHEATH);
-        register(SAKURAKATANA_SHEATH);
+        register(SAKURA_KATANA_SHEATH);
         register(KODACHI);
-        register(SAKURAKODACHI);
+        register(SAKURA_KODACHI);
         register(TACHI);
         register(SAMURAI_HELMET);
         register(SAMURAI_CHEST);
@@ -509,7 +508,7 @@ public class ItemLoader {
         ItemRegister.getInstance().registerRender(ONION_SEEDS);
         ItemRegister.getInstance().registerRender(SHINAI);
         ItemRegister.getInstance().registerRender(KODACHI);
-        ItemRegister.getInstance().registerRender(SAKURAKODACHI);
+        ItemRegister.getInstance().registerRender(SAKURA_KODACHI);
         ItemRegister.getInstance().registerRender(KNIFE_NOODLE);
         ItemRegister.getInstance().registerRender(POT);
         ItemRegister.getInstance().registerRender(CABBAGE);
@@ -532,9 +531,9 @@ public class ItemLoader {
         ItemRegister.getInstance().registerRender(STRAW_HAT);
         ItemRegister.getInstance().registerRender(SAKURA_DIAMOND);
         ItemRegister.getInstance().registerRender(KATANA);
-        ItemRegister.getInstance().registerRender(SAKURAKATANA);
+        ItemRegister.getInstance().registerRender(SAKURA_KATANA);
         ItemRegister.getInstance().registerRender(KATANA_SHEATH);
-        ItemRegister.getInstance().registerRender(SAKURAKATANA_SHEATH);
+        ItemRegister.getInstance().registerRender(SAKURA_KATANA_SHEATH);
         ItemRegister.getInstance().registerRender(CUP);
     }
 

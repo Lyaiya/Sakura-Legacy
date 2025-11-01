@@ -1,6 +1,7 @@
 package cn.mcmod.sakura.item;
 
 import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.util.I18nUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -23,13 +24,13 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 public class ItemSeaweed extends Item implements IPlantable {
     public ItemSeaweed() {
-        this.setTranslationKey("sakura.seaweed_raw");
+        setTranslationKey(I18nUtil.getKey("seaweed_raw"));
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
-        RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
+        RayTraceResult raytraceresult = rayTrace(worldIn, playerIn, true);
 
         if (raytraceresult == null) {
             return new ActionResult<>(EnumActionResult.PASS, itemstack);

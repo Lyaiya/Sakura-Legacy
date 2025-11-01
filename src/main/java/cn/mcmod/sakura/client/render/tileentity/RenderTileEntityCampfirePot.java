@@ -19,7 +19,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandler;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
@@ -37,14 +36,14 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
         GlStateManager.disableCull();
 
         if (destroyStage >= 0) {
-            this.bindTexture(DESTROY_STAGES[destroyStage]);
+            bindTexture(DESTROY_STAGES[destroyStage]);
             GlStateManager.matrixMode(5890);
             GlStateManager.pushMatrix();
             GlStateManager.scale(4.0F, 4.0F, 1.0F);
             GlStateManager.translate(0.0625F, 0.0625F, 0.0625F);
             GlStateManager.matrixMode(5888);
         } else {
-            this.bindTexture(TEXTURES);
+            bindTexture(TEXTURES);
         }
 
         GlStateManager.pushMatrix();
@@ -60,12 +59,12 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
         GlStateManager.scale(0.9995F, 0.9995F, 0.9995F);
         GlStateManager.translate(0.0F, -1.0F, 0.0F);
 
-        this.model.ironBar3.render(0.0625F);
-        this.model.ironBar2.render(0.0625F);
-        this.model.base.render(0.0625F);
-        this.model.ironBar.render(0.0625F);
-        this.model.ironBar4.render(0.0625F);
-        this.model.pot1.render(0.0625F);
+        model.ironBar3.render(0.0625F);
+        model.ironBar2.render(0.0625F);
+        model.base.render(0.0625F);
+        model.ironBar.render(0.0625F);
+        model.ironBar4.render(0.0625F);
+        model.pot1.render(0.0625F);
         GlStateManager.enableCull();
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
@@ -126,10 +125,10 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
     }
 
     protected void renderItem(TileEntityCampfirePot te, double posX, double posY, double posZ, float partialTicks) {
-        final IItemHandler itemHandler = CapabilityUtil.getItemHandler(te, null);
+        final var itemHandler = CapabilityUtil.getItemHandler(te, null);
         if (itemHandler == null) return;
 
-        ItemStack itemStack1 = itemHandler.getStackInSlot(0);
+        final var itemStack1 = itemHandler.getStackInSlot(0);
         if (itemStack1 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
@@ -144,7 +143,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemStack2 = itemHandler.getStackInSlot(1);
+        final var itemStack2 = itemHandler.getStackInSlot(1);
         if (itemStack2 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
@@ -159,7 +158,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemStack3 = itemHandler.getStackInSlot(2);
+        final var itemStack3 = itemHandler.getStackInSlot(2);
         if (itemStack3 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
@@ -174,7 +173,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemStack4 = itemHandler.getStackInSlot(3);
+        final var itemStack4 = itemHandler.getStackInSlot(3);
         if (itemStack4 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
@@ -189,7 +188,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemStack5 = itemHandler.getStackInSlot(4);
+        final var itemStack5 = itemHandler.getStackInSlot(4);
         if (itemStack5 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
@@ -203,7 +202,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemStack6 = itemHandler.getStackInSlot(5);
+        final var itemStack6 = itemHandler.getStackInSlot(5);
         if (itemStack6 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
@@ -218,7 +217,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemStack7 = itemHandler.getStackInSlot(6);
+        final var itemStack7 = itemHandler.getStackInSlot(6);
         if (itemStack7 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
@@ -233,7 +232,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemStack8 = itemHandler.getStackInSlot(7);
+        final var itemStack8 = itemHandler.getStackInSlot(7);
         if (itemStack8 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;
@@ -248,7 +247,7 @@ public class RenderTileEntityCampfirePot extends TileEntitySpecialRenderer<TileE
             GlStateManager.popMatrix();
         }
 
-        ItemStack itemStack9 = itemHandler.getStackInSlot(8);
+        final var itemStack9 = itemHandler.getStackInSlot(8);
         if (itemStack9 != ItemStack.EMPTY) {
             GlStateManager.pushMatrix();
             float scale = 0.3F;

@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandler;
 
 @SideOnly(Side.CLIENT)
 public class RenderTileEntityCampfire extends TileEntitySpecialRenderer<TileEntityCampfire> {
@@ -26,7 +25,7 @@ public class RenderTileEntityCampfire extends TileEntitySpecialRenderer<TileEnti
     }
 
     private void renderItem(TileEntityCampfire te, double posX, double posY, double posZ, float partialTicks) {
-        final IItemHandler itemHandler = CapabilityUtil.getItemHandler(te, null);
+        final var itemHandler = CapabilityUtil.getItemHandler(te, null);
         if (itemHandler == null) return;
         ItemStack stack = itemHandler.getStackInSlot(0);
         GlStateManager.scale(0.65F, 0.65F, 0.65F);

@@ -2,6 +2,7 @@ package cn.mcmod.sakura.packet;
 
 import cn.mcmod.sakura.item.katana.ItemSheath;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -13,31 +14,34 @@ public class PacketKeyMessageHandler implements IMessageHandler<PacketKeyMessage
     @Nullable
     @Override
     public IMessage onMessage(PacketKeyMessage message, MessageContext ctx) {
-        EntityPlayer player = ctx.getServerHandler().player;
-        if (isPlayerHoldingSheath(player)) {
-            ItemStack sheath = getHeldItemSheath(player);
-            ((ItemSheath) sheath.getItem()).sheathIn(player);
+        final EntityPlayer player = ctx.getServerHandler().player;
+
+        ItemStack itemStack;
+        ItemSheath itemSheath;
+
+        itemStack = player.getHeldItemMainhand();
+        itemSheath = getItemSheath(itemStack);
+        if (itemSheath != null) {
+            itemSheath.sheathIn(player);
+            return null;
+        }
+
+        itemStack = player.getHeldItemOffhand();
+        itemSheath = getItemSheath(itemStack);
+        if (itemSheath != null) {
+            itemSheath.sheathIn(player);
+            return null;
         }
         return null;
     }
 
-    public ItemStack getHeldItemSheath(EntityPlayer player) {
-        ItemStack stack = player.getHeldItemMainhand();
-        if (stack.isEmpty() || !(stack.getItem() instanceof ItemSheath)) {
-            stack = player.getHeldItemOffhand();
+    @Nullable
+    private ItemSheath getItemSheath(ItemStack stack) {
+        final Item item = stack.getItem();
+        if (item instanceof ItemSheath) {
+            return (ItemSheath) item;
+        } else {
+            return null;
         }
-        return stack;
-    }
-
-    public boolean isPlayerHoldingSheath(EntityPlayer player) {
-        if (!(!player.getHeldItemMainhand().isEmpty() || !player.getHeldItemOffhand().isEmpty())) {
-            return false;
-        }
-        ItemStack heldItem = player.getHeldItemMainhand();
-        if (heldItem.getItem() instanceof ItemSheath) {
-            return true;
-        }
-        heldItem = player.getHeldItemOffhand();
-        return heldItem.getItem() instanceof ItemSheath;
     }
 }

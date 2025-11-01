@@ -3,6 +3,7 @@ package cn.mcmod.sakura.entity;
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.client.render.RenderDeer;
 import cn.mcmod.sakura.client.render.RenderSamuraiIllager;
+import cn.mcmod.sakura.util.I18nUtil;
 import cn.mcmod.sakura.util.RLUtil;
 import cn.mcmod.sakura.world.biome.SakuraBiomes;
 import net.minecraft.entity.EnumCreatureType;
@@ -13,12 +14,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class SakuraEntityRegister {
     public static void registerEntity() {
-        EntityRegistry.registerModEntity(RLUtil.of("deer"), EntityDeer.class, prefix("Deer"), 1, SakuraMain.INSTANCE, 90, 2, false, 0xe8a96d, 0xdcdcdc);
-        EntityRegistry.registerModEntity(RLUtil.of("samuraiillger"), EntitySamuraiIllager.class, prefix("SamuraiIllager"), 2, SakuraMain.INSTANCE, 90, 2, true, 9804699, 2580065);
-    }
-
-    private static String prefix(String path) {
-        return SakuraMain.MODID + "." + path;
+        EntityRegistry.registerModEntity(RLUtil.of("deer"), EntityDeer.class, I18nUtil.getKey("Deer"), 1, SakuraMain.INSTANCE, 90, 2, false, 0xe8a96d, 0xdcdcdc);
+        EntityRegistry.registerModEntity(RLUtil.of("samuraiillger"), EntitySamuraiIllager.class, I18nUtil.getKey("SamuraiIllager"), 2, SakuraMain.INSTANCE, 90, 2, true, 9804699, 2580065);
     }
 
     @SideOnly(Side.CLIENT)

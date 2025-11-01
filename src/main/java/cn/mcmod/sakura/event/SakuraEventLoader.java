@@ -91,7 +91,7 @@ public class SakuraEventLoader {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (ClientProxy.ChangeMode.isPressed()) {
+        if (ClientProxy.CHANGE_MODE.isPressed()) {
             ClientProxy.getNetwork().sendToServer(new PacketKeyMessage(SakuraMain.MODID));
         }
     }

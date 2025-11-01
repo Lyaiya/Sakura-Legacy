@@ -1,4 +1,4 @@
-package cn.mcmod.sakura.compat.jei;
+package cn.mcmod.sakura.compat.jei.category;
 
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.BlockLoader;
@@ -14,16 +14,15 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 public class CategoryDistillation implements IRecipeCategory<IRecipeWrapper> {
-    protected final IDrawable background;
+    private final IDrawable background;
     private final IDrawable icon;
 
     public CategoryDistillation(IGuiHelper helper) {
-        ResourceLocation backgroundTexture = RLUtil.of("textures/gui/jei_compat.png");
-        this.icon = helper.createDrawableIngredient(new ItemStack(BlockLoader.BARREL_DISTILLATION));
-        this.background = helper.createDrawable(backgroundTexture, 0, 0, 100, 80);
+        final var bgRL = RLUtil.of("textures/gui/jei_compat.png");
+        icon = helper.createDrawableIngredient(new ItemStack(BlockLoader.BARREL_DISTILLATION));
+        background = helper.createDrawable(bgRL, 0, 0, 100, 80);
     }
 
     @Override

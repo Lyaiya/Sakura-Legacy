@@ -19,12 +19,14 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.UnknownNullability;
 import org.lwjgl.input.Keyboard;
 
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
-    public static ResourceLocation leafTexture = RLUtil.of("textures/particles/particles.png");
-    public static KeyBinding ChangeMode;
+    public static ResourceLocation TEXTURE_LEAF = RLUtil.of("textures/particles/particles.png");
+    @UnknownNullability
+    public static KeyBinding CHANGE_MODE;
 
     @Override
     public void onPreInit(FMLPreInitializationEvent event) {
@@ -40,8 +42,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onInit(FMLInitializationEvent event) {
         super.onInit(event);
-        ChangeMode = new KeyBinding("key.sakura.sheath_in", Keyboard.KEY_V, "key.categories.sakura");
-        ClientRegistry.registerKeyBinding(ChangeMode);
+        CHANGE_MODE = new KeyBinding("key.sakura.sheath_in", Keyboard.KEY_V, "key.categories.sakura");
+        ClientRegistry.registerKeyBinding(CHANGE_MODE);
     }
 
     @Override
@@ -50,42 +52,39 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void spawnParticle(SakuraParticleType particleType, double x, double y, double z, double velX, double velY, double velZ) {
+    public void spawnParticle(SakuraParticleType particleType, double x, double y, double z,
+                              double velX, double velY, double velZ) {
         Minecraft mc = Minecraft.getMinecraft();
         World world = mc.world;
         if (world == null) return;
 
-        if (mc.effectRenderer != null) {
-            int i = mc.gameSettings.particleSetting;
-            if (i == 1 && world.rand.nextInt(3) == 0) i = 2;
-            Particle particle = null;
-            switch (particleType) {
-                case MAPLE_RED:
-                    particle = new ParticleMapleRedLeaf(world, x, y, z, velX, velY, velZ);
-                    break;
-                case MAPLE_GREEN:
-                    particle = new ParticleMapleGreenLeaf(world, x, y, z, velX, velY, velZ);
-                    break;
-                case MAPLE_ORANGE:
-                    particle = new ParticleMapleOrangeLeaf(world, x, y, z, velX, velY, velZ);
-                    break;
-                case MAPLE_YELLOW:
-                    particle = new ParticleMapleYellowLeaf(world, x, y, z, velX, velY, velZ);
-                    break;
-                case LEAVES_SAKURA:
-                    particle = new ParticleSakuraLeaf(world, x, y, z, velX, velY, velZ);
-                    break;
-                case SYRUP_DROP:
-                    particle = new ParticleSyrupDrop(world, x, y, z, velX, velY, velZ);
-                    break;
-                default:
-                    break;
+        if (mc.effectRenderer == null) return;
+        Particle particle = null;
+        switch (particleType) {
+            case MAPLE_RED:
+                particle = new ParticleMapleRedLeaf(world, x, y, z, velX, velY, velZ);
+                break;
+            case MAPLE_GREEN:
+                particle = new ParticleMapleGreenLeaf(world, x, y, z, velX, velY, velZ);
+                break;
+            case MAPLE_ORANGE:
+                particle = new ParticleMapleOrangeLeaf(world, x, y, z, velX, velY, velZ);
+                break;
+            case MAPLE_YELLOW:
+                particle = new ParticleMapleYellowLeaf(world, x, y, z, velX, velY, velZ);
+                break;
+            case LEAVES_SAKURA:
+                particle = new ParticleSakuraLeaf(world, x, y, z, velX, velY, velZ);
+                break;
+            case SYRUP_DROP:
+                particle = new ParticleSyrupDrop(world, x, y, z, velX, velY, velZ);
+                break;
+            default:
+                break;
+        }
 
-            }
-
-            if (particle != null) {
-                mc.effectRenderer.addEffect(particle);
-            }
+        if (particle != null) {
+            mc.effectRenderer.addEffect(particle);
         }
     }
 

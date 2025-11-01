@@ -86,23 +86,23 @@ public class ItemSheath extends Item {
     }
 
     public void sheathIn(EntityPlayer player) {
-        ItemStack item_l = player.getHeldItemMainhand();
-        ItemStack item_r = player.getHeldItemOffhand();
-        if (item_r.getItem() == ItemLoader.KATANA) {
+        ItemStack itemMainhand = player.getHeldItemMainhand();
+        ItemStack itemOffhand = player.getHeldItemOffhand();
+        if (itemOffhand.getItem() == ItemLoader.KATANA) {
             player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
-            player.setHeldItem(EnumHand.MAIN_HAND, ItemLoader.KATANA_SHEATH.setBlade(item_r));
+            player.setHeldItem(EnumHand.MAIN_HAND, ItemLoader.KATANA_SHEATH.setBlade(itemOffhand));
             player.setHeldItem(EnumHand.OFF_HAND, ItemStack.EMPTY);
-        } else if (item_r.getItem() == ItemLoader.SAKURAKATANA) {
+        } else if (itemOffhand.getItem() == ItemLoader.SAKURA_KATANA) {
             player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
-            player.setHeldItem(EnumHand.MAIN_HAND, ItemLoader.SAKURAKATANA_SHEATH.setBlade(item_r));
+            player.setHeldItem(EnumHand.MAIN_HAND, ItemLoader.SAKURA_KATANA_SHEATH.setBlade(itemOffhand));
             player.setHeldItem(EnumHand.OFF_HAND, ItemStack.EMPTY);
-        } else if (item_l.getItem() == ItemLoader.KATANA) {
+        } else if (itemMainhand.getItem() == ItemLoader.KATANA) {
             player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
-            player.setHeldItem(EnumHand.OFF_HAND, ItemLoader.KATANA_SHEATH.setBlade(item_l));
+            player.setHeldItem(EnumHand.OFF_HAND, ItemLoader.KATANA_SHEATH.setBlade(itemMainhand));
             player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
-        } else if (item_l.getItem() == ItemLoader.SAKURAKATANA) {
+        } else if (itemMainhand.getItem() == ItemLoader.SAKURA_KATANA) {
             player.playSound(SoundEvents.BLOCK_ANVIL_HIT, 1F, 1F);
-            player.setHeldItem(EnumHand.OFF_HAND, ItemLoader.SAKURAKATANA_SHEATH.setBlade(item_l));
+            player.setHeldItem(EnumHand.OFF_HAND, ItemLoader.SAKURA_KATANA_SHEATH.setBlade(itemMainhand));
             player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
         }
     }

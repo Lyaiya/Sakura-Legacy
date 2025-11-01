@@ -43,7 +43,7 @@ public class ParticleMapleRedLeaf extends Particle {
     @Override
     public void renderParticle(BufferBuilder buffer, Entity entity, float partialTicks, float rotX, float rotXZ, float rotZ, float rotYZ, float rotXY) {
         // EffectRenderer will by default bind the vanilla particles texture, override with our own
-        FMLClientHandler.instance().getClient().renderEngine.bindTexture(ClientProxy.leafTexture);
+        FMLClientHandler.instance().getClient().renderEngine.bindTexture(ClientProxy.TEXTURE_LEAF);
 
         GlStateManager.depthMask(false);
         GlStateManager.enableBlend();

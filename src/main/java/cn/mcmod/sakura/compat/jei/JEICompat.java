@@ -1,26 +1,25 @@
 package cn.mcmod.sakura.compat.jei;
 
 import cn.mcmod.sakura.block.BlockLoader;
+import cn.mcmod.sakura.compat.jei.category.*;
 import cn.mcmod.sakura.gui.*;
 import cn.mcmod.sakura.inventory.ContainerBarrel;
 import cn.mcmod.sakura.inventory.ContainerCampfirePot;
 import cn.mcmod.sakura.inventory.ContainerDistillation;
 import cn.mcmod.sakura.inventory.ContainerStoneMortar;
 import cn.mcmod.sakura.item.ItemLoader;
-import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
-import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.item.ItemStack;
 
 @JEIPlugin
 public class JEICompat implements IModPlugin {
     @Override
     public void register(IModRegistry registry) {
-        IJeiHelpers jeiHelpers = registry.getJeiHelpers();
-        IRecipeTransferRegistry recipeTransferRegistry = registry.getRecipeTransferRegistry();
+        final var jeiHelpers = registry.getJeiHelpers();
+        final var recipeTransferRegistry = registry.getRecipeTransferRegistry();
 
         registry.addRecipes(PotRecipeMaker.getRecipes(jeiHelpers), "sakura.cooking_pot");
         registry.addRecipes(MortarRecipeMaker.getRecipes(jeiHelpers), "sakura.mortar");
@@ -54,12 +53,13 @@ public class JEICompat implements IModPlugin {
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registry) {
+        final var guiHelper = registry.getJeiHelpers().getGuiHelper();
         registry.addRecipeCategories(
-                new CategoryPot(registry.getJeiHelpers().getGuiHelper()),
-                new CategoryMortar(registry.getJeiHelpers().getGuiHelper()),
-                new CategoryBarrel(registry.getJeiHelpers().getGuiHelper()),
-                new CategoryDistillation(registry.getJeiHelpers().getGuiHelper()),
-                new CategoryL2IS(registry.getJeiHelpers().getGuiHelper()),
-                new CategoryWeb(registry.getJeiHelpers().getGuiHelper()));
+                new CategoryPot(guiHelper),
+                new CategoryMortar(guiHelper),
+                new CategoryBarrel(guiHelper),
+                new CategoryDistillation(guiHelper),
+                new CategoryL2IS(guiHelper),
+                new CategoryWeb(guiHelper));
     }
 }

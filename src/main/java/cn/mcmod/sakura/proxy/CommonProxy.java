@@ -7,6 +7,8 @@ import cn.mcmod.sakura.api.armor.ArmorLoader;
 import cn.mcmod.sakura.block.BlockLoader;
 import cn.mcmod.sakura.compat.CompatConst;
 import cn.mcmod.sakura.compat.tfc.TFCCompat;
+import cn.mcmod.sakura.compat.waila.CampfirePlugin;
+import cn.mcmod.sakura.compat.waila.CampfirePotPlugin;
 import cn.mcmod.sakura.entity.SakuraEntityRegister;
 import cn.mcmod.sakura.entity.villager.VillagerCreationWA;
 import cn.mcmod.sakura.item.ItemLoader;
@@ -40,10 +42,10 @@ public class CommonProxy implements IProxy {
 
     public static final CreativeTabs TAB = new CreativeTabsSakura();
 
-    private static SimpleNetworkWrapper network;
+    private static SimpleNetworkWrapper NETWORK;
 
     public static SimpleNetworkWrapper getNetwork() {
-        return network;
+        return NETWORK;
     }
 
     @Override
@@ -74,12 +76,14 @@ public class CommonProxy implements IProxy {
             TFCCompat.registerTFCFuel();
         }
         if (Loader.isModLoaded(CompatConst.WAILA)) {
-            FMLInterModComms.sendMessage(CompatConst.WAILA, "register", "cn.mcmod.sakura.compat.waila.CampfirePlugin.register");
-            FMLInterModComms.sendMessage(CompatConst.WAILA, "register", "cn.mcmod.sakura.compat.waila.CampfirePotPlugin.register");
+            final String campfirePluginRegisterName = CampfirePlugin.class.getName();
+            final String campfirePotPluginRegisterName = CampfirePotPlugin.class.getName();
+            FMLInterModComms.sendMessage(CompatConst.WAILA, "register", campfirePluginRegisterName);
+            FMLInterModComms.sendMessage(CompatConst.WAILA, "register", campfirePotPluginRegisterName);
         }
 
-        network = NetworkRegistry.INSTANCE.newSimpleChannel(SakuraMain.MODID);
-        network.registerMessage(new PacketKeyMessageHandler(), PacketKeyMessage.class, 0, Side.SERVER);
+        NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(SakuraMain.MODID);
+        NETWORK.registerMessage(new PacketKeyMessageHandler(), PacketKeyMessage.class, 0, Side.SERVER);
     }
 
     @Override

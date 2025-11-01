@@ -21,8 +21,8 @@ public class BarrelRecipe implements IRecipeWrapper {
 
     @Override
     public void getIngredients(IIngredients ingredients) {
-        ingredients.setInputLists(VanillaTypes.ITEM, this.inputItemStacks);
-        ingredients.setInputLists(VanillaTypes.FLUID, this.inputFluidStacks);
-        ingredients.setOutput(VanillaTypes.FLUID, this.outputFluidStack);
+        ingredients.setInputLists(VanillaTypes.ITEM, inputItemStacks);
+        ingredients.setInputLists(VanillaTypes.FLUID, inputFluidStacks);
+        ingredients.setOutput(VanillaTypes.FLUID, outputFluidStack);
     }
 }

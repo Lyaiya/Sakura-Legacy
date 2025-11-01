@@ -1,5 +1,6 @@
 package cn.mcmod.sakura.item;
 
+import cn.mcmod.sakura.util.I18nUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -13,7 +14,7 @@ import java.util.List;
 public class ItemBuggysMeat extends ItemFood {
     public ItemBuggysMeat(int amount, float saturation, boolean isWolfFood) {
         super(amount, saturation, isWolfFood);
-        this.setTranslationKey("sakura.buggys_meat");
+        setTranslationKey(I18nUtil.getKey("buggys_meat"));
     }
 
     @SideOnly(Side.CLIENT)

@@ -2,6 +2,7 @@ package cn.mcmod.sakura.item;
 
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.client.SakuraParticleType;
+import cn.mcmod.sakura.util.I18nUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -13,15 +14,14 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 public class ItemSakuraDiamond extends Item {
-
     public ItemSakuraDiamond() {
-        this.setTranslationKey("sakura.sakura_diamond");
+        setTranslationKey(I18nUtil.getKey("sakura_diamond"));
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
-        RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, false);
+        RayTraceResult raytraceresult = rayTrace(worldIn, playerIn, false);
 
         if (raytraceresult != null
                 && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK

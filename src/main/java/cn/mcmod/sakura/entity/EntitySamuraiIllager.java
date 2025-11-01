@@ -23,34 +23,34 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.Nullable;
 
 public class EntitySamuraiIllager extends AbstractIllager {
-    public EntitySamuraiIllager(World p_i47509_1_) {
-        super(p_i47509_1_);
-        this.setSize(0.6F, 1.95F);
+    public EntitySamuraiIllager(World worldIn) {
+        super(worldIn);
+        setSize(0.6F, 1.95F);
     }
 
     @Override
     protected void initEntityAI() {
         super.initEntityAI();
-        this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(1, new EntityAIRestrictOpenDoor(this));
-        this.tasks.addTask(2, new EntityAIOpenDoor(this, true));
-        this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.0D, false));
-        this.tasks.addTask(8, new EntityAIWander(this, 0.6D));
-        this.tasks.addTask(9, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
-        this.tasks.addTask(10, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, AbstractIllager.class));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, true));
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<EntityVillager>(this, EntityVillager.class, true));
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<EntityIronGolem>(this, EntityIronGolem.class, true));
+        tasks.addTask(0, new EntityAISwimming(this));
+        tasks.addTask(1, new EntityAIRestrictOpenDoor(this));
+        tasks.addTask(2, new EntityAIOpenDoor(this, true));
+        tasks.addTask(4, new EntityAIAttackMelee(this, 1.0D, false));
+        tasks.addTask(8, new EntityAIWander(this, 0.6D));
+        tasks.addTask(9, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
+        tasks.addTask(10, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
+        targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, AbstractIllager.class));
+        targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
+        targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityVillager.class, true));
+        targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, true));
     }
 
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3499999940395355D);
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(20.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(24.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
+        getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3499999940395355D);
+        getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(20.0D);
+        getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(24.0D);
+        getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
     }
 
     @Override
@@ -65,11 +65,11 @@ public class EntitySamuraiIllager extends AbstractIllager {
 
     @SideOnly(Side.CLIENT)
     public boolean isAggressive() {
-        return this.isAggressive(1);
+        return isAggressive(1);
     }
 
     public void setAggressive(boolean p_190636_1_) {
-        this.setAggressive(1, p_190636_1_);
+        setAggressive(1, p_190636_1_);
     }
 
     /**
@@ -83,7 +83,7 @@ public class EntitySamuraiIllager extends AbstractIllager {
     @SideOnly(Side.CLIENT)
     @Override
     public AbstractIllager.IllagerArmPose getArmPose() {
-        return this.isAggressive() ? AbstractIllager.IllagerArmPose.ATTACKING : AbstractIllager.IllagerArmPose.CROSSED;
+        return isAggressive() ? AbstractIllager.IllagerArmPose.ATTACKING : AbstractIllager.IllagerArmPose.CROSSED;
     }
 
     /**
@@ -102,8 +102,8 @@ public class EntitySamuraiIllager extends AbstractIllager {
     @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
         IEntityLivingData ientitylivingdata = super.onInitialSpawn(difficulty, livingdata);
-        this.setEquipmentBasedOnDifficulty(difficulty);
-        this.setEnchantmentBasedOnDifficulty(difficulty);
+        setEquipmentBasedOnDifficulty(difficulty);
+        setEnchantmentBasedOnDifficulty(difficulty);
         return ientitylivingdata;
     }
 
@@ -112,19 +112,19 @@ public class EntitySamuraiIllager extends AbstractIllager {
      */
     @Override
     protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        float f = this.world.getDifficultyForLocation(new BlockPos(this)).getAdditionalDifficulty();
+        float f = world.getDifficultyForLocation(new BlockPos(this)).getAdditionalDifficulty();
 
-        if (this.rand.nextFloat() < f * 0.2F) {
-            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemLoader.TACHI));
+        if (rand.nextFloat() < f * 0.2F) {
+            setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemLoader.TACHI));
         } else {
-            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemLoader.KATANA));
+            setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemLoader.KATANA));
         }
     }
 
     @Override
     protected void updateAITasks() {
         super.updateAITasks();
-        this.setAggressive(this.getAttackTarget() != null);
+        setAggressive(getAttackTarget() != null);
     }
 
     /**
@@ -135,7 +135,7 @@ public class EntitySamuraiIllager extends AbstractIllager {
         if (super.isOnSameTeam(entityIn)) {
             return true;
         } else if (entityIn instanceof EntityLivingBase && ((EntityLivingBase) entityIn).getCreatureAttribute() == EnumCreatureAttribute.ILLAGER) {
-            return this.getTeam() == null && entityIn.getTeam() == null;
+            return getTeam() == null && entityIn.getTeam() == null;
         } else {
             return false;
         }

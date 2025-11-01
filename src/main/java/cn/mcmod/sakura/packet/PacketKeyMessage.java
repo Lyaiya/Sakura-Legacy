@@ -18,7 +18,7 @@ public class PacketKeyMessage implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.sender = ByteBufUtils.readUTF8String(buf);
+        sender = ByteBufUtils.readUTF8String(buf);
     }
 
     @Override

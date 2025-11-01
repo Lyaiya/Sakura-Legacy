@@ -1,4 +1,4 @@
-package cn.mcmod.sakura.compat.jei;
+package cn.mcmod.sakura.compat.jei.category;
 
 import cn.mcmod.sakura.SakuraMain;
 import cn.mcmod.sakura.block.BlockLoader;
@@ -14,14 +14,14 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public class CategoryWeb implements IRecipeCategory<IRecipeWrapper> {
-    private final IDrawable background;
+public class CategoryMortar implements IRecipeCategory<IRecipeWrapper> {
+    protected final IDrawable background;
     private final IDrawable icon;
 
-    public CategoryWeb(IGuiHelper helper) {
-        ResourceLocation backgroundTexture = RLUtil.of("textures/gui/jei_compat.png");
-        this.icon = helper.createDrawableIngredient(new ItemStack(BlockLoader.STRAW_WEB));
-        this.background = helper.createDrawable(backgroundTexture, 0, 81, 93, 46);
+    public CategoryMortar(IGuiHelper helper) {
+        ResourceLocation backgroundTexture = RLUtil.of("textures/gui/stonemortar.png");
+        this.icon = helper.createDrawableIngredient(new ItemStack(BlockLoader.STONEMORTAR));
+        this.background = helper.createDrawable(backgroundTexture, 38, 24, 112, 39);
     }
 
     @Override
@@ -36,19 +36,25 @@ public class CategoryWeb implements IRecipeCategory<IRecipeWrapper> {
 
     @Override
     public String getTitle() {
-        return I18n.format("jei.sakura.category.straw_web");
+        return I18n.format("jei.sakura.category.mortar");
     }
 
     @Override
     public String getUid() {
-        return "sakura.straw_web";
+        return "sakura.mortar";
     }
 
     @Override
     public void setRecipe(IRecipeLayout arg0, IRecipeWrapper arg1, IIngredients arg2) {
         IGuiItemStackGroup items = arg0.getItemStacks();
-        items.init(0, true, 13, 14);
-        items.init(1, false, 62, 14);
+
+        items.init(0, true, 1, 1);
+        items.init(1, true, 19, 1);
+        items.init(2, true, 1, 19);
+        items.init(3, true, 19, 19);
+        items.init(4, false, 69, 12);
+        items.init(5, false, 93, 12);
+
         items.set(arg2);
     }
 
