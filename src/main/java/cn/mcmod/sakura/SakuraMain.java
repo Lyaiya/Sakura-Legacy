@@ -2,7 +2,7 @@ package cn.mcmod.sakura;
 
 import cn.mcmod.sakura.gui.SakuraGuiHandler;
 import cn.mcmod.sakura.proxy.IProxy;
-import cn.mcmod.sakura.sakura.Tags;
+import cn.mcmod.sakura.sakura.Reference;
 import cn.mcmod.sakura.world.biome.SakuraBiomes;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,9 +24,9 @@ import org.jetbrains.annotations.UnknownNullability;
 
 @Mod(modid = SakuraMain.MODID, name = SakuraMain.NAME, version = SakuraMain.VERSION, dependencies = "required-after:mm_lib@[2.2.0,);")
 public class SakuraMain {
-    public static final String MODID = Tags.MOD_ID;
-    public static final String NAME = Tags.MOD_NAME;
-    public static final String VERSION = Tags.VERSION;
+    public static final String MODID = Reference.MOD_ID;
+    public static final String NAME = Reference.MOD_NAME;
+    public static final String VERSION = Reference.VERSION;
 
     @UnknownNullability
     @Instance(SakuraMain.MODID)

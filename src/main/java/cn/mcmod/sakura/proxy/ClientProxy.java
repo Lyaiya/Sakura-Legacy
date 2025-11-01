@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.UnknownNullability;
-import org.lwjgl.input.Keyboard;
+import org.lwjglx.input.Keyboard;
 
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
