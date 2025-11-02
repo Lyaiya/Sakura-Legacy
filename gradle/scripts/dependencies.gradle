@@ -75,7 +75,7 @@ dependencies {
     modImplementation "maven.modrinth:mmlib:2.3.0-1.12.2"
 
     modCompileOnly "maven.modrinth:patchouli:1.0-23.6-forge"
-    modCompileOnly "blusunrize:ImmersiveEngineering:0.12-92-559"
+    modCompileOnly "maven.modrinth:immersiveengineering:0.12-98"
 
     modImplementation "maven.modrinth:had-enough-items:4.29.8"
     // Just Enough Characters v3.7.2
@@ -84,18 +84,18 @@ dependencies {
     modRuntimeOnly "curse.maven:hecharacters-640802:4874506"
 
     // JEI Integration v1.6.0
-    modCompileOnly "curse.maven:jeiintegration-265917:2951731"
+    modRuntimeOnly "curse.maven:jeiintegration-265917:2951731"
 
     // ProjectPotman v1.0.0
     modCompileOnly "curse.maven:proj_pot-432017:3152243"
 
     // TerraFirmaCraft
-    modImplementation "maven.modrinth:terrafirmacraft:1.7.23.181"
+    modCompileOnly "maven.modrinth:terrafirmacraft:1.7.23.181"
 
     // ToughAsNails v3.1.0.141
     modCompileOnly "curse.maven:toughasnails-246391:2710969"
 
-    // Hwyla v1.8.26-B41
+    // Hwyla
     modImplementation "maven.modrinth:hwyla:1.8.26-B41"
 
     // Kiwi v0.5.3.32
