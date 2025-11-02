@@ -3,7 +3,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'com.gradleup.shadow' version '9.2.2'
-    id 'xyz.wagyourtail.unimined' version '1.4.2-kappa'
+    id 'xyz.wagyourtail.unimined' version '1.4.3-kappa'
     id 'net.kyori.blossom' version '2.2.0'
     id 'io.github.joselion.strict-null-check' version '3.5.0'
 }
@@ -67,7 +67,7 @@ unimined.minecraft {
         if (propertyBool('use_access_transformer')) {
             accessTransformer "${rootProject.projectDir}/src/main/resources/" + propertyString('access_transformer_locations')
         }
-        loader "0.3.21-alpha"
+        loader "0.3.24-alpha"
         runs.auth.username = minecraft_username
         runs.all {
             def extraArgs = propertyString('extra_jvm_args')
